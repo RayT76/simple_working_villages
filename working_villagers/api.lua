@@ -196,6 +196,258 @@ function working_villages.villager:get_nearest_item_by_condition(cond, range_dis
   return item;
 end
 
+
+
+
+
+
+
+-- TODO RT Editing this for testing
+
+-- working_villages.villager.get_nearest_item_by_condition returns the position of
+-- an item that returns true for the condition
+function working_villages.villager:lists_nearest_item_by_condition(cond, range_distance)
+  local max_distance=range_distance
+  if type(range_distance) == "table" then
+    max_distance=math.max(math.max(range_distance.x,range_distance.y),range_distance.z)
+  end
+  local item = nil
+  local min_distance = max_distance
+  local position = self.object:get_pos()
+--  print("")
+  local all_objects = minetest.get_objects_inside_radius(position, max_distance)
+  for _, object in pairs(all_objects) do
+
+
+
+    if object:get_luaentity() then
+
+	local my_oname = object:get_luaentity().name
+
+	if my_oname == "working_villages:villager_male" then
+--		print("Found a ",my_oname)
+	elseif my_oname == "working_villages:villager_female" then
+--		print("Found a ",my_oname)
+	elseif my_oname == "mobs_npc:npc" then  
+--		print("Found a ",my_oname)
+	elseif my_oname == "mobs_npc:igor" then
+--		print("Found a ",my_oname)
+	elseif my_oname == "mobs_npc:trader" then
+--		print("Found a ",my_oname)
+
+	elseif my_oname == "visual_harm_1ndicators:hpbar" then
+--		print("Found a ",my_oname)
+	elseif my_oname == "working_villages:dummy_item" then
+--		print("Found a ",my_oname)
+	elseif my_oname == "__builtin:item" then
+--		print("Found a ",my_oname)
+
+	elseif my_oname == "mobs_monster:dirt_monster" then
+--		print("Found a ",my_oname)
+	elseif my_oname == "mobs_monster:fire_spirit" then
+--		print("Found a ",my_oname)
+	elseif my_oname == "mobs_monster:land_guard" then
+--		print("Found a ",my_oname)
+	elseif my_oname == "mobs_monster:lava_flan" then
+--		print("Found a ",my_oname)
+	elseif my_oname == "mobs_monster:mese_monster" then
+--		print("Found a ",my_oname)
+	elseif my_oname == "mobs_monster:obsidian_flan" then
+--		print("Found a ",my_oname)
+	elseif my_oname == "mobs_monster:oerkki" then
+--		print("Found a ",my_oname)
+	elseif my_oname == "mobs_monster:sand_monster" then
+--		print("Found a ",my_oname)
+	elseif my_oname == "mobs_monster:spider" then
+--		print("Found a ",my_oname)
+	elseif my_oname == "mobs_monster:stone_monster" then
+--		print("Found a ",my_oname)
+	elseif my_oname == "mobs_monster:tree_monster" then
+--		print("Found a ",my_oname)
+
+	elseif my_oname == "mobs_skeletons:skeleton_archer" then
+--		print("Found a ",my_oname)
+	elseif my_oname == "mobs_skeletons:skeleton_archer_dark" then
+--		print("Found a ",my_oname)
+	elseif my_oname == "mobs_skeletons:skeleton" then
+--		print("Found a ",my_oname)
+
+	elseif my_oname == "mobs_monster:dirt_monster" then
+--		print("Found a ",my_oname)
+	elseif my_oname == "mobs_monster:dirt_monster" then
+--		print("Found a ",my_oname)
+	elseif my_oname == "mobs_monster:dirt_monster" then
+--		print("Found a ",my_oname)
+	elseif my_oname == "mobs_monster:dirt_monster" then
+--		print("Found a ",my_oname)
+	elseif my_oname == "mobs_monster:dirt_monster" then
+--		print("Found a ",my_oname)
+	elseif my_oname == "mobs_monster:dirt_monster" then
+--		print("Found a ",my_oname)
+
+	elseif string.find(my_oname,"mobs_animal:sheep_") then
+	--elseif my_oname == "mobs_animal:sheep_white" then
+		if object:get_luaentity().health < object:get_hp() then
+			item = object
+			return item;
+		end
+--	elseif my_oname == "mobs_animal:sheep_brown" then
+--		if object:get_luaentity().health < object:get_hp() then
+--			item = object
+--			return item;
+--		end
+--	elseif my_oname == "mobs_animal:sheep_dark_grey" then
+--		if object:get_luaentity().health < object:get_hp() then
+--			item = object
+--			return item;
+--		end
+--	elseif my_oname == "mobs_animal:sheep_black" then
+---		if object:get_luaentity().health < object:get_hp() then
+--			item = object
+--			return item;
+--		end
+--	elseif my_oname == "mobs_animal:sheep_blue" then
+--		if object:get_luaentity().health < object:get_hp() then
+--			item = object
+--			return item;
+--		end
+--	elseif my_oname == "mobs_animal:sheep_red" then
+--		if object:get_luaentity().health < object:get_hp() then
+--			item = object
+--			return item;
+--		end
+--	elseif my_oname == "mobs_animal:sheep_green" then
+--		if object:get_luaentity().health < object:get_hp() then
+--			item = object
+--			return item;
+--		end
+--	elseif my_oname == "mobs_animal:sheep_yellow" then
+--		if object:get_luaentity().health < object:get_hp() then
+--			item = object
+--			return item;
+--		end
+--	elseif my_oname == "mobs_animal:sheep_pink" then
+--		if object:get_luaentity().health < object:get_hp() then
+--			item = object
+--			return item;
+--		end
+--	elseif my_oname == "mobs_animal:sheep_magenta" then
+--		if object:get_luaentity().health < object:get_hp() then
+--			item = object
+--			return item;
+--		end
+--	elseif my_oname == "mobs_animal:sheep_orange" then
+--		if object:get_luaentity().health < object:get_hp() then
+--			item = object
+--			return item;
+--		end
+--	elseif my_oname == "mobs_animal:sheep_dark_green" then
+--		if object:get_luaentity().health < object:get_hp() then
+--			item = object
+--			return item;
+--		end
+--	elseif my_oname == "mobs_animal:sheep_violet" then
+--		if object:get_luaentity().health < object:get_hp() then
+--			item = object
+--			return item;
+--		end
+--	elseif my_oname == "mobs_animal:sheep_grey" then
+--		if object:get_luaentity().health < object:get_hp() then
+--			item = object
+--			return item;
+--		end
+--	elseif my_oname == "mobs_animal:sheep_cyan" then
+--		if object:get_luaentity().health < object:get_hp() then
+--			item = object
+--			return item;
+--		end
+
+	elseif my_oname == "mobs_animal:pumba" then
+		if object:get_luaentity().health < object:get_hp() then
+			item = object
+			return item;
+		end
+	elseif my_oname == "mobs_animal:chicken" then
+		if object:get_luaentity().health < object:get_hp() then
+			item = object
+			return item;
+		end
+	elseif my_oname == "mobs_animal:panda" then
+		if object:get_luaentity().health < object:get_hp() then
+			item = object
+			return item;
+		end
+	elseif my_oname == "mobs_animal:penguin" then
+		if object:get_luaentity().health < object:get_hp() then
+			item = object
+			return item;
+		end
+	elseif my_oname == "mobs_animal:bunny" then
+		if object:get_luaentity().health < object:get_hp() then
+			item = object
+			return item;
+		end
+	elseif my_oname == "mobs_animal:bee" then
+		if object:get_luaentity().health < object:get_hp() then
+			item = object
+			return item;
+		end
+	elseif my_oname == "mobs_animal:cow" then
+		if object:get_luaentity().health < object:get_hp() then
+			item = object
+			return item;
+		end
+	elseif my_oname == "mobs_animal:kitten" then
+		if object:get_luaentity().health < object:get_hp() then
+			item = object
+			return item;
+		end
+	elseif my_oname == "mobs_animal:rat" then
+		if object:get_luaentity().health < object:get_hp() then
+			item = object
+			return item;
+		end
+	else
+		print("WHAT IS A : ",my_oname)
+	end
+
+
+
+
+
+	--print("Found LUAOBJ: ", object:get_luaentity().name);
+    end
+
+
+
+    --if not object:is_player() and object:get_luaentity() and object:get_luaentity().name == "__builtin:item" then
+    --  local found_item = ItemStack(object:get_luaentity().itemstring):to_table()
+    --  if found_item then
+    --    if cond(found_item) then
+    --      local item_position = object:get_pos()
+    --      local distance = vector.distance(position, item_position)
+    --
+    --      if distance < min_distance then
+    --        min_distance = distance
+    --        item = object
+    --      end
+    --    end
+    --  end
+    --end
+  end
+  return item;
+end
+
+
+
+
+
+
+
+
+
+
+
 -- working_villages.villager.get_front returns a position in front of the villager.
 function working_villages.villager:get_front()
   local direction = self:get_look_direction()
@@ -451,6 +703,11 @@ function working_villages.villager:handle_liquids()
   end
 end
 
+
+
+
+
+
 function working_villages.villager:jump()
   local ctrl = self.object
   local below_node = minetest.get_node(vector.subtract(ctrl:get_pos(),{x=0,y=1,z=0}))
@@ -464,63 +721,234 @@ function working_villages.villager:jump()
   ctrl:set_velocity{x = velocity.x, y = jump_force, z = velocity.z}
 end
 
+
+
+
+
+
 --working_villages.villager.handle_obstacles(ignore_fence,ignore_doors)
 --if the villager hits a walkable he wil jump
 --if ignore_fence is false the villager will not jump over fences
 --if ignore_doors is false and the villager hits a door he opens it
 function working_villages.villager:handle_obstacles(ignore_fence,ignore_doors)
-  local velocity = self.object:get_velocity()
-  local front_diff = self:get_look_direction()
-  for i,v in pairs(front_diff) do
-    local front_pos = vector.new(0,0,0)
-    front_pos[i] = v
-    front_pos = vector.add(front_pos, vector.round(self.object:get_pos()))
-    front_pos.y = math.floor(self.object:get_pos().y)+0.5
-    local above_node = vector.new(front_pos)
-    local front_node = minetest.get_node(front_pos)
-    above_node = vector.add(above_node,{x=0,y=1,z=0})
-    above_node = minetest.get_node(above_node)
-    if minetest.get_item_group(front_node.name, "fence") > 0 and not(ignore_fence) then
-      self:change_direction_randomly()
-    elseif string.find(front_node.name,"doors:door") and not(ignore_doors) then
-      local door = doors.get(front_pos)
-      local door_dir = vector.apply(minetest.facedir_to_dir(front_node.param2),math.abs)
-      local villager_dir = vector.round(vector.apply(front_diff,math.abs))
-      if vector.equals(door_dir,villager_dir) then
-        if door:state() then
-          door:close()
-        else
-          door:open()
-        end
-      end
-    elseif minetest.registered_nodes[front_node.name].walkable
-      and not(minetest.registered_nodes[above_node.name].walkable) then
-      if velocity.y == 0 then
-        local nBox = minetest.registered_nodes[front_node.name].node_box
-        if (nBox == nil) then
-          nBox = {-0.5,-0.5,-0.5,0.5,0.5,0.5}
-        else
-          nBox = nBox.fixed
-        end
-        if type(nBox[1])=="number" then
-          nBox = {nBox}
-        end
-        for _,box in pairs(nBox) do --TODO: check rotation of the nodebox
-          local nHeight = (box[5] - box[2]) + front_pos.y
-          if nHeight > self.object:get_pos().y + .5 then
-            self:jump()
-          end
-        end
-      end
-    end
-  end
-  if not ignore_doors then
-    local back_pos = self:get_back()
-    if string.find(minetest.get_node(back_pos).name,"doors:door") then
-      local door = doors.get(back_pos)
-      door:close()
-    end
-  end
+
+	local my_debug = false; 
+
+
+	local my_pos = vector.round(self.object:get_pos())
+	local my_vel = self.object:get_velocity()
+	local my_dir = self:get_look_direction()
+	local my_fwd = vector.add(my_pos, vector.round(my_dir));
+	local my_abv = vector.add(my_pos, vector.new(0,2,0)); -- directly above head
+	local my_blw = vector.add(my_pos, vector.new(0,-1,0)); -- directly below feet
+	local above_node = minetest.get_node(my_abv)
+	local below_node = minetest.get_node(my_blw)
+	local my_fwd_a = vector.new(0,-2,0) -- below by two
+	local my_fwd_b = vector.new(0,-1,0) -- below by one
+	local my_fwd_c = vector.new(0,0,0) -- legs level
+	local my_fwd_d = vector.new(0,1,0) -- head level
+	local my_fwd_e = vector.new(0,2,0) -- directly above head
+	my_fwd_a = vector.add(my_fwd_a, my_fwd);
+	my_fwd_b = vector.add(my_fwd_b, my_fwd);
+	my_fwd_c = vector.add(my_fwd_c, my_fwd);
+	my_fwd_d = vector.add(my_fwd_d, my_fwd);
+	my_fwd_e = vector.add(my_fwd_e, my_fwd);
+	local front_node_a = minetest.get_node(my_fwd_a)
+	local front_node_b = minetest.get_node(my_fwd_b)
+	local front_node_c = minetest.get_node(my_fwd_c)
+	local front_node_d = minetest.get_node(my_fwd_d)
+	local front_node_e = minetest.get_node(my_fwd_e)
+
+	local is_above_solid = minetest.registered_nodes[above_node.name].walkable;
+	local is_below_solid = minetest.registered_nodes[below_node.name].walkable;
+	local is_forwarda_solid = minetest.registered_nodes[front_node_a.name].walkable;
+	local is_forwardb_solid = minetest.registered_nodes[front_node_b.name].walkable;
+	local is_forwardc_solid = minetest.registered_nodes[front_node_c.name].walkable; -- legs level
+	local is_forwardd_solid = minetest.registered_nodes[front_node_d.name].walkable;
+	local is_forwarde_solid = minetest.registered_nodes[front_node_e.name].walkable;
+	local back_pos = self:get_back()
+
+
+	if my_debug then
+		print("");
+		print("MYPOSITION  :",my_pos);
+	--	print("MYVELOCITY:",my_vel);
+		print("MYDIRECTION  :",my_dir);
+		print("MYFORWARD  :",my_fwd);
+	end
+	
+-- TODO RT : have to implement the ignore doors and fences functionality
+-- TODO RT : have to change get node "doors:door" to group door function here and elsewhere in the modw
+-- TODO RT : have to check for water and act accordingly
+
+
+--	local my_entity = object:get_luaentity().name
+--	local my_entity = obj:get_luaentity()
+--	if my_entity ~= nil then 
+--		print("Entity = ", my_entity.name);
+--		local name_split = string.split(obj:get_luaentity().name, ':')
+--	end
+
+
+
+--    if pointedobject:get_luaentity() then
+--mods/mob_core/api.lua:                    pointedobject = pointedobject:get_luaentity()
+
+
+
+
+	--if minetest.get_item_group(item_name, key) > 0 then
+
+
+	if string.find(front_node_c.name,"default:river_water_") then
+		--print("Found a River.");
+		if string.find(front_node_b.name,"default:river_water_") then
+			--print("Too deep for me");
+			self:change_direction_randomly()
+			return true
+		end
+	end
+
+	if string.find(front_node_c.name,"default:water_") then
+		--print("Found some Water.");
+
+		if string.find(front_node_b.name,"default:water_") then
+			--print("Too deep for me");
+			self:change_direction_randomly()
+			return true
+		end
+	end
+
+
+
+
+	if string.find(minetest.get_node(back_pos).name,"doors:") then
+		local door = doors.get(back_pos)
+		door:close()
+	end
+
+
+	if not is_below_solid then
+		-- allow to fall to get new location
+		-- stops getting on stuck of pyramids
+	elseif doors.registered_doors[front_node_c.name] then
+		
+		local door = doors.get(my_fwd_c)
+		local door_dir = vector.apply(minetest.facedir_to_dir(front_node_c.param2),math.abs)
+
+		local door_dest = vector.new(0,my_pos.y,0);
+		door_dest.x = my_pos.x + math.round(my_dir.x);
+		door_dest.z = my_pos.z + math.round(my_dir.z);
+
+		local villager_dir = vector.round(vector.apply(my_dir,math.abs))
+		--if vector.equals(door_dir,villager_dir) then
+		--	if door:state() then
+				--door:close()
+		--	else
+				door:open()
+		--	end
+		--end
+		self.object:set_pos(vector.round(door_dest))
+				--dwddoor:close()
+		if my_debug then
+			print("DOOR FOUND =", front_node_c.name);
+			print("DOORDIR=", door_dir);
+			print("DOORDEST=", door_dest);
+			print("VillagerDIR=", villager_dir);
+		end
+
+	elseif not is_forwarda_solid and not is_forwarda_solid then
+--		print("HAVE TO WATCH MY STEP - CHANGE DIR");
+		self:change_direction_randomly()
+
+	elseif is_above_solid then
+		-- CANNOT JUMP !
+--		print("Something Above");
+		if is_forwardd_solid then 
+--			print("In my face - ", front_node_d.name, " - change dir");
+			self:change_direction_randomly()
+		elseif is_forwardc_solid or is_forwardd_solid then 
+--			print("Above and nowhere to go - change dir");
+			self:change_direction_randomly()
+		else
+--			print("Not sure what to do");
+		end
+
+	 else 
+		-- CAN JUMP ?
+--		print("Nothing Above");
+		if is_forwardd_solid then 
+--			print("In my face - ", front_node_d.name, " - change dir");
+			self:change_direction_randomly()
+		else
+--			print("Not in my face");
+			if is_forwardc_solid then 
+--				print("Step found - looking for room");
+				if is_forwarde_solid then 
+--					print("No room to jump up - change dir");
+					self:change_direction_randomly()
+				else
+--					print("Is room to jump up - Try Jumping");
+					self:jump()
+				end
+			end
+		end
+
+
+
+	end
+
+	
+
+
+
+
+--				    if minetest.get_item_group(front_node.name, "fence") > 0 and not(ignore_fence) then
+--				--	print("HandleObstacles:Not Ignore Fences?");
+--				      self:change_direction_randomly()
+--				    elseif string.find(front_node.name,"doors:door") and not(ignore_doors) then
+--				--	print("HandleObstacles:Not Ignore Doors?");
+--				      local door = doors.get(front_pos)
+--				      local door_dir = vector.apply(minetest.facedir_to_dir(front_node.param2),math.abs)
+--				      local villager_dir = vector.round(vector.apply(front_diff,math.abs))
+--				      if vector.equals(door_dir,villager_dir) then
+--					if door:state() then
+--					  door:close()
+--					else
+--					  door:open()
+---					end
+--				      end
+--
+--
+--				-- TODO RT : have to do some more checks for blocks above head when jumpingid
+--				    elseif minetest.registered_nodes[front_node.name].walkable and not(minetest.registered_nodes[above_node.name].walkable) then
+--					print("Something to Jump over");
+--				      if velocity.y == 0 then
+--					local nBox = minetest.registered_nodes[front_node.name].node_box
+--					if (nBox == nil) then
+--					  nBox = {-0.5,-0.5,-0.5,0.5,0.5,0.5}
+--					else
+--					  nBox = nBox.fixed
+--					end
+--					if type(nBox[1])=="number" then
+--					  nBox = {nBox}
+--					end
+--					for _,box in pairs(nBox) do --TODO: check rotation of the nodebox
+--					  local nHeight = (box[5] - box[2]) + front_pos.y
+--					  if nHeight > self.object:get_pos().y + .5 then
+--					    self:jump()
+--					  end
+--					end
+--				      end
+--				    end
+--				  end
+--				  if not ignore_doors then
+--				    local back_pos = self:get_back()
+--				    if string.find(minetest.get_node(back_pos).name,"doors:door") then
+--				      local door = doors.get(back_pos)
+--				      door:close()
+--				    end
+--				  end
 end
 
 -- working_villages.villager.pickup_item pickup items placed and put it to main slot.
@@ -603,9 +1031,15 @@ function working_villages.villager:get_player_name()
   return self.object:get_player_name()
 end
 
+
+
+-- TODO TEST true from false
+
 function working_villages.villager:is_player()
   return false
 end
+
+-- TODO TEST true from false
 
 function working_villages.villager:get_wield_index()
   return 1

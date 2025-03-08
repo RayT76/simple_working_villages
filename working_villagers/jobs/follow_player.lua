@@ -31,6 +31,9 @@ function follower.step(v)
   local position = v.object:get_pos()
   local player,player_position = v:get_nearest_player(10,position)
   local direction = vector.new(0,0,0)
+
+
+
   if player~=nil then
     direction = vector.subtract(player_position, position)
   end

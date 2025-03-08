@@ -5,6 +5,7 @@ local func = working_villages.require("jobs/util")
 local farming_plants = {
 	names = {
 		["farming:artichoke_5"]={replant={"farming:artichoke"}},
+		["farming:asparagus_5"]={replant={"farming:asparagus"}},
 		["farming:barley_7"]={replant={"farming:seed_barley"}},
 		["farming:beanpole_5"]={replant={"farming:beanpole","farming:beans"}},
 		["farming:beetroot_5"]={replant={"farming:beetroot"}},
@@ -18,6 +19,7 @@ local farming_plants = {
 		["farming:corn_8"]={replant={"farming:corn"}},
 		["farming:cotton_8"]={replant={"farming:seed_cotton"}},
 		["farming:cucumber_4"]={replant={"farming:cucumber"}},
+		["farming:eggplant_4"]={replant={"farming:eggplant"}},
 		["farming:garlic_5"]={replant={"farming:garlic_clove"}},
 		["farming:grapes_8"]={replant={"farming:trellis","farming:grapes"}},
 		["farming:hemp_8"]={replant={"farming:seed_hem["}},
@@ -37,6 +39,7 @@ local farming_plants = {
 		["farming:rice_8"]={replant={"farming:seed_rice"}},
 		["farming:rye_8"]={replant={"farming:seed_rye"}},
 		["farming:soy_7"]={replant={"farming:soy_pod"}},
+		["farming:spinach_4"]={replant={"farming:spinach"}},
 		["farming:sunflower_8"]={replant={"farming:seed_sunflower"}},
 		["farming:tomato_8"]={replant={"farming:tomato"}},
 		["farming:vanilla_8"]={replant={"farming:vanilla"}},
@@ -69,6 +72,12 @@ end
 
 local function find_plant_node(pos)
 	local node = minetest.get_node(pos);
+-- check here for wild or cultivated
+	if (node.param2 == 0) then 
+		return false;
+	end;
+
+
 	local data = farming_plants.get_plant(node.name);
 	if (not data) then
 		return false;

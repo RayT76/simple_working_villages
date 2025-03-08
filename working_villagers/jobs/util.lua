@@ -49,7 +49,8 @@ end
 function func.clear_pos(pos)
 	local node=minetest.get_node(pos)
 	local above_node=minetest.get_node({x=pos.x,y=pos.y+1,z=pos.z})
-	return not(pathfinder.walkable(node) or pathfinder.walkable(above_node))
+	local above_above_node=minetest.get_node({x=pos.x,y=pos.y+2,z=pos.z})
+	return not(pathfinder.walkable(node) or pathfinder.walkable(above_node) or pathfinder.walkable(above_above_node))
 end
 
 function func.walkable_pos(pos)

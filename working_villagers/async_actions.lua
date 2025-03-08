@@ -54,7 +54,7 @@ function working_villages.villager:go_to(pos)
 
 			if #self.path == 0 then -- end of path
 				 --keep walking another step for good measure
-				coroutine.yield()
+--rt				coroutine.yield()
 				break
 			else -- else next step, follow next path.
 				self:set_timer("go_to:find_path",0)
@@ -303,7 +303,7 @@ function working_villages.villager:manipulate_chest(chest_pos, take_func, put_fu
 			end
 		end
 	else
-		log.error("Villager %s doe's not find cheston position %s.", self.inventory_name, minetest.pos_to_string(chest_pos))
+		log.error("Villager %s doe's not find chest on position %s.", self.inventory_name, minetest.pos_to_string(chest_pos))
 	end
 end
 
@@ -330,7 +330,7 @@ function working_villages.villager:sleep()
 		log.info("villager %s found no bed", self.inventory_name)
 	end
 	self:set_animation(working_villages.animation_frames.LAY)
-	self.object:setpos(bed_pos)
+	self.object:set_pos(bed_pos)
 	self:set_state_info("Zzzzzzz...")
 	self:set_displayed_action("sleeping")
 
@@ -346,6 +346,7 @@ end
 
 function working_villages.villager:goto_bed()
 	if self.pos_data.home_pos==nil then
+		print("I Don't know what Home is !");
 		log.action("villager %s is waiting until dawn", self.inventory_name)
 		self:set_state_info("I'm waiting for dawn to come.")
 		self:set_displayed_action("waiting until dawn")
@@ -356,26 +357,29 @@ function working_villages.villager:goto_bed()
 		self:set_state_info("I'm starting into the new day.")
 		self:set_displayed_action("active")
 	else
+		print("I am going Home !");
 		log.action("villager %s is going home", self.inventory_name)
 		self:set_state_info("I'm going home, it's late.")
 		self:set_displayed_action("going home")
 		self:go_to(self.pos_data.home_pos)
 		if (self.pos_data.bed_pos==nil) then
+			print("I Don't know what Bed is !");
 			log.warning("villager %s couldn't find his bed",self.inventory_name)
 			--TODO: go home anyway
 			self:set_state_info("I am going to rest soon.\nI would love to have a bed in my home though.")
 			self:set_displayed_action("waiting for dusk")
 			local tod = minetest.get_timeofday()
-			while (tod > 0.2 and tod < 0.805) do
-				coroutine.yield()
-				tod = minetest.get_timeofday()
-			end
+--			while (tod > 0.2 and tod < 0.805) do
+--				coroutine.yield()
+--				tod = minetest.get_timeofday()
+--			end
 			self:set_state_info("I'm waiting for dawn to come.")
 			self:set_displayed_action("waiting until dawn")
 			self:set_animation(working_villages.animation_frames.SIT)
 			self.object:set_velocity{x = 0, y = 0, z = 0}
 			self.wait_until_dawn()
 		else
+			print("I am going to Bed !");
 			log.info("villager %s bed is at: %s", self.inventory_name, minetest.pos_to_string(self.pos_data.bed_pos))
 			self:set_state_info("I'm going to bed, it's late.")
 			self:set_displayed_action("going to bed")
