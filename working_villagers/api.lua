@@ -209,7 +209,7 @@ end
 function working_villages.villager:get_nearest_wounded_animal(distance)
 	local animal = nil
 	local myposition = self.object:get_pos() -- should round this function for pathing error prevention
-	local all_objects = minetest.get_objects_inside_radius(position, distance)
+	local all_objects = minetest.get_objects_inside_radius(myposition, distance)
 	for _, object in pairs(all_objects) do
 
 		if object:get_luaentity() then
@@ -339,7 +339,10 @@ end
 function working_villages.villager:get_nearest_wounded_npc(distance)
 	local animal = nil
 	local myposition = self.object:get_pos() -- should round this function for pathing error prevention
-	local all_objects = minetest.get_objects_inside_radius(position, distance)
+	print("get wounded npc started")
+
+	local all_objects = minetest.get_objects_inside_radius(myposition, distance)
+	print("got all objects")
 	for _, object in pairs(all_objects) do
 
 		if object:get_luaentity() then
@@ -347,27 +350,68 @@ function working_villages.villager:get_nearest_wounded_npc(distance)
 			local my_oname = object:get_luaentity().name
 
 			if my_oname == "working_villages:villager_male" then
-				if object:get_luaentity().health < object:get_hp() then
-					return object
+				ohp = object:get_hp()
+				olhp = object:get_luaentity().health
+				if ohp == nil  then 
+					print("ohp returned nil")
+					return nil 
 				end
+				if olhp == nil  then 
+					print("ohp returned nil")
+					return nil 
+				end
+				return object
 			elseif my_oname == "working_villages:villager_female" then
-				if object:get_luaentity().health < object:get_hp() then
-					return object
+				ohp = object:get_hp()
+				olhp = object:get_luaentity().health
+				if ohp == nil  then 
+					print("ohp returned nil")
+					return nil 
 				end
+				if olhp == nil  then 
+					print("ohp returned nil")
+					return nil 
+				end
+				return object
 			elseif my_oname == "mobs_npc:npc" then  
-				if object:get_luaentity().health < object:get_hp() then
-					return object
+				ohp = object:get_hp()
+				olhp = object:get_luaentity().health
+				if ohp == nil  then 
+					print("ohp returned nil")
+					return nil 
 				end
+				if olhp == nil  then 
+					print("ohp returned nil")
+					return nil 
+				end
+				return object
 			elseif my_oname == "mobs_npc:igor" then
-				if object:get_luaentity().health < object:get_hp() then
-					return object
+				ohp = object:get_hp()
+				olhp = object:get_luaentity().health
+				if ohp == nil  then 
+					print("ohp returned nil")
+					return nil 
 				end
+				if olhp == nil  then 
+					print("ohp returned nil")
+					return nil 
+				end
+				return object
 			elseif my_oname == "mobs_npc:trader" then
-				if object:get_luaentity().health < object:get_hp() then
-					return object
+				ohp = object:get_hp()
+				olhp = object:get_luaentity().health
+				if ohp == nil  then 
+					print("ohp returned nil")
+					return nil 
 				end
+				if olhp == nil  then 
+					print("ohp returned nil")
+					return nil 
+				end
+				return object
 
 			elseif my_oname == "visual_harm_1ndicators:hpbar" then
+			
 			elseif my_oname == "working_villages:dummy_item" then
 			elseif my_oname == "__builtin:item" then
 
@@ -395,52 +439,52 @@ function working_villages.villager:get_nearest_wounded_npc(distance)
 			elseif my_oname == "mobs_monster:dirt_monster" then
 
 			elseif string.find(my_oname,"mobs_animal:sheep_") then
-				if object:get_luaentity().health < object:get_hp() then
-					return object
-				end
+--				if object:get_luaentity().health < object:get_hp() then
+--					return object
+--				end
 
 			elseif my_oname == "mobs_animal:pumba" then
-				if object:get_luaentity().health < object:get_hp() then
-					return object
-				end
+--				if object:get_luaentity().health < object:get_hp() then
+--					return object
+--				end
 			elseif my_oname == "mobs_animal:chicken" then
-				if object:get_luaentity().health < object:get_hp() then
-					return object
-				end
+--				if object:get_luaentity().health < object:get_hp() then
+--					return object
+--				end
 			elseif my_oname == "mobs_animal:panda" then
-				if object:get_luaentity().health < object:get_hp() then
-					return object
-				end
+--				if object:get_luaentity().health < object:get_hp() then
+--					return object
+--				end
 			elseif my_oname == "mobs_animal:penguin" then
-				if object:get_luaentity().health < object:get_hp() then
-					item = object
-					return item;
-				end
+--				if object:get_luaentity().health < object:get_hp() then
+--					item = object
+--					return item;
+--				end
 			elseif my_oname == "mobs_animal:bunny" then
-				if object:get_luaentity().health < object:get_hp() then
-					item = object
-					return item;
-				end
+--				if object:get_luaentity().health < object:get_hp() then
+--					item = object
+--					return item;
+--				end
 			elseif my_oname == "mobs_animal:bee" then
-				if object:get_luaentity().health < object:get_hp() then
-					item = object
-					return item;
-				end
+--				if object:get_luaentity().health < object:get_hp() then
+--					item = object
+--					return item;
+--				end
 			elseif my_oname == "mobs_animal:cow" then
-				if object:get_luaentity().health < object:get_hp() then
-					item = object
-					return item;
-				end
+--				if object:get_luaentity().health < object:get_hp() then
+--					item = object
+--					return item;
+--				end
 			elseif my_oname == "mobs_animal:kitten" then
-				if object:get_luaentity().health < object:get_hp() then
-					item = object
-					return item;
-				end
+--				if object:get_luaentity().health < object:get_hp() then
+--					item = object
+--					return item;
+--				end
 			elseif my_oname == "mobs_animal:rat" then
-				if object:get_luaentity().health < object:get_hp() then
-					item = object
-					return item;
-				end
+--				if object:get_luaentity().health < object:get_hp() then
+--					item = object
+--					return item;
+--				end
 			else
 				print("WHAT IS A : ",my_oname)
 			end

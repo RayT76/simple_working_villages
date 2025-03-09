@@ -84,7 +84,7 @@ working_villages.register_job("working_villages:job_grass_cutter", {
 	inventory_image  = "default_paper.png^working_villages_grass_collector.png",
 	jobfunc = function(self)
 
-		self:lists_nearest_item_by_condition(true,100)
+		--self:lists_nearest_item_by_condition(true,100)
 		self:handle_night()
 		self:handle_chest(nil, put_func)
 		self:handle_job_pos()

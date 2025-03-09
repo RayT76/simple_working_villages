@@ -51,7 +51,7 @@ local entity = {
 
 function entity.get_entity(entity_name)
 	for key, value in pairs(entity.names) do
-		if item_name==key then
+		if entity_name==key then
 			return value
 		end
 	end
