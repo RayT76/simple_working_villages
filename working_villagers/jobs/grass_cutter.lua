@@ -80,7 +80,7 @@ end
 
 working_villages.register_job("working_villages:job_grass_cutter", {
 	description      = "Grass cutter (working_villages)",
-	long_description = "I look for grass and cut it.",
+	long_description = "I keep your lawns looking prim and proper.",
 	inventory_image  = "default_paper.png^working_villages_grass_collector.png",
 	jobfunc = function(self)
 

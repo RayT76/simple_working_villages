@@ -206,236 +206,270 @@ end
 
 -- working_villages.villager.get_nearest_item_by_condition returns the position of
 -- an item that returns true for the condition
-function working_villages.villager:lists_nearest_item_by_condition(cond, range_distance)
-  local max_distance=range_distance
-  if type(range_distance) == "table" then
-    max_distance=math.max(math.max(range_distance.x,range_distance.y),range_distance.z)
-  end
-  local item = nil
-  local min_distance = max_distance
-  local position = self.object:get_pos()
---  print("")
-  local all_objects = minetest.get_objects_inside_radius(position, max_distance)
-  for _, object in pairs(all_objects) do
+function working_villages.villager:get_nearest_wounded_animal(distance)
+	local animal = nil
+	local myposition = self.object:get_pos() -- should round this function for pathing error prevention
+	local all_objects = minetest.get_objects_inside_radius(position, distance)
+	for _, object in pairs(all_objects) do
+
+		if object:get_luaentity() then
+
+			local my_oname = object:get_luaentity().name
+
+			if my_oname == "working_villages:villager_male" then
+			elseif my_oname == "working_villages:villager_female" then
+			elseif my_oname == "mobs_npc:npc" then  
+			elseif my_oname == "mobs_npc:igor" then
+			elseif my_oname == "mobs_npc:trader" then
+
+			elseif my_oname == "visual_harm_1ndicators:hpbar" then
+			elseif my_oname == "working_villages:dummy_item" then
+			elseif my_oname == "__builtin:item" then
+
+			elseif my_oname == "mobs_monster:dirt_monster" then
+			elseif my_oname == "mobs_monster:fire_spirit" then
+			elseif my_oname == "mobs_monster:land_guard" then
+			elseif my_oname == "mobs_monster:lava_flan" then
+			elseif my_oname == "mobs_monster:mese_monster" then
+			elseif my_oname == "mobs_monster:obsidian_flan" then
+			elseif my_oname == "mobs_monster:oerkki" then
+			elseif my_oname == "mobs_monster:sand_monster" then
+			elseif my_oname == "mobs_monster:spider" then
+			elseif my_oname == "mobs_monster:stone_monster" then
+			elseif my_oname == "mobs_monster:tree_monster" then
+
+			elseif my_oname == "mobs_skeletons:skeleton_archer" then
+			elseif my_oname == "mobs_skeletons:skeleton_archer_dark" then
+			elseif my_oname == "mobs_skeletons:skeleton" then
+
+			elseif my_oname == "mobs_monster:dirt_monster" then
+			elseif my_oname == "mobs_monster:dirt_monster" then
+			elseif my_oname == "mobs_monster:dirt_monster" then
+			elseif my_oname == "mobs_monster:dirt_monster" then
+			elseif my_oname == "mobs_monster:dirt_monster" then
+			elseif my_oname == "mobs_monster:dirt_monster" then
+
+			elseif string.find(my_oname,"mobs_animal:sheep_") then
+				if object:get_luaentity().health < object:get_hp() then
+					return object
+				end
+
+			elseif my_oname == "mobs_animal:pumba" then
+				if object:get_luaentity().health < object:get_hp() then
+					return object
+				end
+			elseif my_oname == "mobs_animal:chicken" then
+				if object:get_luaentity().health < object:get_hp() then
+					return object
+				end
+			elseif my_oname == "mobs_animal:panda" then
+				if object:get_luaentity().health < object:get_hp() then
+					return object
+				end
+			elseif my_oname == "mobs_animal:penguin" then
+				if object:get_luaentity().health < object:get_hp() then
+					item = object
+					return item;
+				end
+			elseif my_oname == "mobs_animal:bunny" then
+				if object:get_luaentity().health < object:get_hp() then
+					item = object
+					return item;
+				end
+			elseif my_oname == "mobs_animal:bee" then
+				if object:get_luaentity().health < object:get_hp() then
+					item = object
+					return item;
+				end
+			elseif my_oname == "mobs_animal:cow" then
+				if object:get_luaentity().health < object:get_hp() then
+					item = object
+					return item;
+				end
+			elseif my_oname == "mobs_animal:kitten" then
+				if object:get_luaentity().health < object:get_hp() then
+					item = object
+					return item;
+				end
+			elseif my_oname == "mobs_animal:rat" then
+				if object:get_luaentity().health < object:get_hp() then
+					item = object
+					return item;
+				end
+			else
+				print("WHAT IS A : ",my_oname)
+			end
 
 
 
-    if object:get_luaentity() then
+		
 
-	local my_oname = object:get_luaentity().name
-
-	if my_oname == "working_villages:villager_male" then
---		print("Found a ",my_oname)
-	elseif my_oname == "working_villages:villager_female" then
---		print("Found a ",my_oname)
-	elseif my_oname == "mobs_npc:npc" then  
---		print("Found a ",my_oname)
-	elseif my_oname == "mobs_npc:igor" then
---		print("Found a ",my_oname)
-	elseif my_oname == "mobs_npc:trader" then
---		print("Found a ",my_oname)
-
-	elseif my_oname == "visual_harm_1ndicators:hpbar" then
---		print("Found a ",my_oname)
-	elseif my_oname == "working_villages:dummy_item" then
---		print("Found a ",my_oname)
-	elseif my_oname == "__builtin:item" then
---		print("Found a ",my_oname)
-
-	elseif my_oname == "mobs_monster:dirt_monster" then
---		print("Found a ",my_oname)
-	elseif my_oname == "mobs_monster:fire_spirit" then
---		print("Found a ",my_oname)
-	elseif my_oname == "mobs_monster:land_guard" then
---		print("Found a ",my_oname)
-	elseif my_oname == "mobs_monster:lava_flan" then
---		print("Found a ",my_oname)
-	elseif my_oname == "mobs_monster:mese_monster" then
---		print("Found a ",my_oname)
-	elseif my_oname == "mobs_monster:obsidian_flan" then
---		print("Found a ",my_oname)
-	elseif my_oname == "mobs_monster:oerkki" then
---		print("Found a ",my_oname)
-	elseif my_oname == "mobs_monster:sand_monster" then
---		print("Found a ",my_oname)
-	elseif my_oname == "mobs_monster:spider" then
---		print("Found a ",my_oname)
-	elseif my_oname == "mobs_monster:stone_monster" then
---		print("Found a ",my_oname)
-	elseif my_oname == "mobs_monster:tree_monster" then
---		print("Found a ",my_oname)
-
-	elseif my_oname == "mobs_skeletons:skeleton_archer" then
---		print("Found a ",my_oname)
-	elseif my_oname == "mobs_skeletons:skeleton_archer_dark" then
---		print("Found a ",my_oname)
-	elseif my_oname == "mobs_skeletons:skeleton" then
---		print("Found a ",my_oname)
-
-	elseif my_oname == "mobs_monster:dirt_monster" then
---		print("Found a ",my_oname)
-	elseif my_oname == "mobs_monster:dirt_monster" then
---		print("Found a ",my_oname)
-	elseif my_oname == "mobs_monster:dirt_monster" then
---		print("Found a ",my_oname)
-	elseif my_oname == "mobs_monster:dirt_monster" then
---		print("Found a ",my_oname)
-	elseif my_oname == "mobs_monster:dirt_monster" then
---		print("Found a ",my_oname)
-	elseif my_oname == "mobs_monster:dirt_monster" then
---		print("Found a ",my_oname)
-
-	elseif string.find(my_oname,"mobs_animal:sheep_") then
-	--elseif my_oname == "mobs_animal:sheep_white" then
-		if object:get_luaentity().health < object:get_hp() then
-			item = object
-			return item;
+		--print("Found LUAOBJ: ", object:get_luaentity().name);
 		end
---	elseif my_oname == "mobs_animal:sheep_brown" then
---		if object:get_luaentity().health < object:get_hp() then
---			item = object
---			return item;
---		end
---	elseif my_oname == "mobs_animal:sheep_dark_grey" then
---		if object:get_luaentity().health < object:get_hp() then
---			item = object
---			return item;
---		end
---	elseif my_oname == "mobs_animal:sheep_black" then
----		if object:get_luaentity().health < object:get_hp() then
---			item = object
---			return item;
---		end
---	elseif my_oname == "mobs_animal:sheep_blue" then
---		if object:get_luaentity().health < object:get_hp() then
---			item = object
---			return item;
---		end
---	elseif my_oname == "mobs_animal:sheep_red" then
---		if object:get_luaentity().health < object:get_hp() then
---			item = object
---			return item;
---		end
---	elseif my_oname == "mobs_animal:sheep_green" then
---		if object:get_luaentity().health < object:get_hp() then
---			item = object
---			return item;
---		end
---	elseif my_oname == "mobs_animal:sheep_yellow" then
---		if object:get_luaentity().health < object:get_hp() then
---			item = object
---			return item;
---		end
---	elseif my_oname == "mobs_animal:sheep_pink" then
---		if object:get_luaentity().health < object:get_hp() then
---			item = object
---			return item;
---		end
---	elseif my_oname == "mobs_animal:sheep_magenta" then
---		if object:get_luaentity().health < object:get_hp() then
---			item = object
---			return item;
---		end
---	elseif my_oname == "mobs_animal:sheep_orange" then
---		if object:get_luaentity().health < object:get_hp() then
---			item = object
---			return item;
---		end
---	elseif my_oname == "mobs_animal:sheep_dark_green" then
---		if object:get_luaentity().health < object:get_hp() then
---			item = object
---			return item;
---		end
---	elseif my_oname == "mobs_animal:sheep_violet" then
---		if object:get_luaentity().health < object:get_hp() then
---			item = object
---			return item;
---		end
---	elseif my_oname == "mobs_animal:sheep_grey" then
---		if object:get_luaentity().health < object:get_hp() then
---			item = object
---			return item;
---		end
---	elseif my_oname == "mobs_animal:sheep_cyan" then
---		if object:get_luaentity().health < object:get_hp() then
---			item = object
---			return item;
---		end
 
-	elseif my_oname == "mobs_animal:pumba" then
-		if object:get_luaentity().health < object:get_hp() then
-			item = object
-			return item;
-		end
-	elseif my_oname == "mobs_animal:chicken" then
-		if object:get_luaentity().health < object:get_hp() then
-			item = object
-			return item;
-		end
-	elseif my_oname == "mobs_animal:panda" then
-		if object:get_luaentity().health < object:get_hp() then
-			item = object
-			return item;
-		end
-	elseif my_oname == "mobs_animal:penguin" then
-		if object:get_luaentity().health < object:get_hp() then
-			item = object
-			return item;
-		end
-	elseif my_oname == "mobs_animal:bunny" then
-		if object:get_luaentity().health < object:get_hp() then
-			item = object
-			return item;
-		end
-	elseif my_oname == "mobs_animal:bee" then
-		if object:get_luaentity().health < object:get_hp() then
-			item = object
-			return item;
-		end
-	elseif my_oname == "mobs_animal:cow" then
-		if object:get_luaentity().health < object:get_hp() then
-			item = object
-			return item;
-		end
-	elseif my_oname == "mobs_animal:kitten" then
-		if object:get_luaentity().health < object:get_hp() then
-			item = object
-			return item;
-		end
-	elseif my_oname == "mobs_animal:rat" then
-		if object:get_luaentity().health < object:get_hp() then
-			item = object
-			return item;
-		end
-	else
-		print("WHAT IS A : ",my_oname)
+
+
+	    --if not object:is_player() and object:get_luaentity() and object:get_luaentity().name == "__builtin:item" then
+	    --  local found_item = ItemStack(object:get_luaentity().itemstring):to_table()
+	    --  if found_item then
+	    --    if cond(found_item) then
+	    --      local item_position = object:get_pos()
+	    --      local distance = vector.distance(position, item_position)
+	    --
+	    --      if distance < min_distance then
+	    --        min_distance = distance
+	    --        item = object
+	    --      end
+	    --    end
+	    --  end
+	    --end
 	end
+	return item;
+end
 
 
 
 
 
-	--print("Found LUAOBJ: ", object:get_luaentity().name);
-    end
+
+-- TODO RT Editing this for testing
+
+-- working_villages.villager.get_nearest_item_by_condition returns the position of
+-- an item that returns true for the condition
+function working_villages.villager:get_nearest_wounded_npc(distance)
+	local animal = nil
+	local myposition = self.object:get_pos() -- should round this function for pathing error prevention
+	local all_objects = minetest.get_objects_inside_radius(position, distance)
+	for _, object in pairs(all_objects) do
+
+		if object:get_luaentity() then
+
+			local my_oname = object:get_luaentity().name
+
+			if my_oname == "working_villages:villager_male" then
+				if object:get_luaentity().health < object:get_hp() then
+					return object
+				end
+			elseif my_oname == "working_villages:villager_female" then
+				if object:get_luaentity().health < object:get_hp() then
+					return object
+				end
+			elseif my_oname == "mobs_npc:npc" then  
+				if object:get_luaentity().health < object:get_hp() then
+					return object
+				end
+			elseif my_oname == "mobs_npc:igor" then
+				if object:get_luaentity().health < object:get_hp() then
+					return object
+				end
+			elseif my_oname == "mobs_npc:trader" then
+				if object:get_luaentity().health < object:get_hp() then
+					return object
+				end
+
+			elseif my_oname == "visual_harm_1ndicators:hpbar" then
+			elseif my_oname == "working_villages:dummy_item" then
+			elseif my_oname == "__builtin:item" then
+
+			elseif my_oname == "mobs_monster:dirt_monster" then
+			elseif my_oname == "mobs_monster:fire_spirit" then
+			elseif my_oname == "mobs_monster:land_guard" then
+			elseif my_oname == "mobs_monster:lava_flan" then
+			elseif my_oname == "mobs_monster:mese_monster" then
+			elseif my_oname == "mobs_monster:obsidian_flan" then
+			elseif my_oname == "mobs_monster:oerkki" then
+			elseif my_oname == "mobs_monster:sand_monster" then
+			elseif my_oname == "mobs_monster:spider" then
+			elseif my_oname == "mobs_monster:stone_monster" then
+			elseif my_oname == "mobs_monster:tree_monster" then
+
+			elseif my_oname == "mobs_skeletons:skeleton_archer" then
+			elseif my_oname == "mobs_skeletons:skeleton_archer_dark" then
+			elseif my_oname == "mobs_skeletons:skeleton" then
+
+			elseif my_oname == "mobs_monster:dirt_monster" then
+			elseif my_oname == "mobs_monster:dirt_monster" then
+			elseif my_oname == "mobs_monster:dirt_monster" then
+			elseif my_oname == "mobs_monster:dirt_monster" then
+			elseif my_oname == "mobs_monster:dirt_monster" then
+			elseif my_oname == "mobs_monster:dirt_monster" then
+
+			elseif string.find(my_oname,"mobs_animal:sheep_") then
+				if object:get_luaentity().health < object:get_hp() then
+					return object
+				end
+
+			elseif my_oname == "mobs_animal:pumba" then
+				if object:get_luaentity().health < object:get_hp() then
+					return object
+				end
+			elseif my_oname == "mobs_animal:chicken" then
+				if object:get_luaentity().health < object:get_hp() then
+					return object
+				end
+			elseif my_oname == "mobs_animal:panda" then
+				if object:get_luaentity().health < object:get_hp() then
+					return object
+				end
+			elseif my_oname == "mobs_animal:penguin" then
+				if object:get_luaentity().health < object:get_hp() then
+					item = object
+					return item;
+				end
+			elseif my_oname == "mobs_animal:bunny" then
+				if object:get_luaentity().health < object:get_hp() then
+					item = object
+					return item;
+				end
+			elseif my_oname == "mobs_animal:bee" then
+				if object:get_luaentity().health < object:get_hp() then
+					item = object
+					return item;
+				end
+			elseif my_oname == "mobs_animal:cow" then
+				if object:get_luaentity().health < object:get_hp() then
+					item = object
+					return item;
+				end
+			elseif my_oname == "mobs_animal:kitten" then
+				if object:get_luaentity().health < object:get_hp() then
+					item = object
+					return item;
+				end
+			elseif my_oname == "mobs_animal:rat" then
+				if object:get_luaentity().health < object:get_hp() then
+					item = object
+					return item;
+				end
+			else
+				print("WHAT IS A : ",my_oname)
+			end
 
 
 
-    --if not object:is_player() and object:get_luaentity() and object:get_luaentity().name == "__builtin:item" then
-    --  local found_item = ItemStack(object:get_luaentity().itemstring):to_table()
-    --  if found_item then
-    --    if cond(found_item) then
-    --      local item_position = object:get_pos()
-    --      local distance = vector.distance(position, item_position)
-    --
-    --      if distance < min_distance then
-    --        min_distance = distance
-    --        item = object
-    --      end
-    --    end
-    --  end
-    --end
-  end
-  return item;
+		
+
+		--print("Found LUAOBJ: ", object:get_luaentity().name);
+		end
+
+
+
+	    --if not object:is_player() and object:get_luaentity() and object:get_luaentity().name == "__builtin:item" then
+	    --  local found_item = ItemStack(object:get_luaentity().itemstring):to_table()
+	    --  if found_item then
+	    --    if cond(found_item) then
+	    --      local item_position = object:get_pos()
+	    --      local distance = vector.distance(position, item_position)
+	    --
+	    --      if distance < min_distance then
+	    --        min_distance = distance
+	    --        item = object
+	    --      end
+	    --    end
+	    --  end
+	    --end
+	end
+	return item;
 end
 
 

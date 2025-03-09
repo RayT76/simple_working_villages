@@ -46,13 +46,19 @@ working_villages.require("jobs/empty")
 working_villages.require("jobs/builder")
 working_villages.require("jobs/follow_player")
 working_villages.require("jobs/guard")
-working_villages.require("jobs/grass_cutter")
 working_villages.require("jobs/plant_collector")
 working_villages.require("jobs/farmer")
 working_villages.require("jobs/woodcutter")
 --testing jobs
 working_villages.require("jobs/torcher")
 working_villages.require("jobs/snowclearer")
+
+
+working_villages.require("jobs/grass_cutter")
+working_villages.require("jobs/medic")
+working_villages.require("jobs/vet")
+
+
 
 if working_villages.setting_enabled("spawn",false) then
   working_villages.require("spawn")
