@@ -1,4 +1,5 @@
 local func = working_villages.require("jobs/util")
+local use_vh1 = minetest.get_modpath("visual_harm_1ndicators")
 
 local cutter = {
   -- more priority definitions
@@ -83,6 +84,7 @@ working_villages.register_job("working_villages:job_grass_cutter", {
 	long_description = "I keep your lawns looking prim and proper.",
 	inventory_image  = "default_paper.png^working_villages_grass_collector.png",
 	jobfunc = function(self)
+		if use_vh1 then VH1.update_bar(self.object, self.health) end
 
 		--self:lists_nearest_item_by_condition(true,100)
 		self:handle_night()

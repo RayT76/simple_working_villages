@@ -250,52 +250,26 @@ function working_villages.villager:get_nearest_wounded_animal(distance)
 			elseif my_oname == "mobs_monster:dirt_monster" then
 
 			elseif string.find(my_oname,"mobs_animal:sheep_") then
-				if object:get_luaentity().health < object:get_hp() then
-					return object
-				end
+				if object:get_luaentity().health < object:get_hp() then return object end
 
 			elseif my_oname == "mobs_animal:pumba" then
-				if object:get_luaentity().health < object:get_hp() then
-					return object
-				end
+				if object:get_luaentity().health < object:get_hp() then return object end
 			elseif my_oname == "mobs_animal:chicken" then
-				if object:get_luaentity().health < object:get_hp() then
-					return object
-				end
+				if object:get_luaentity().health < object:get_hp() then return object end
 			elseif my_oname == "mobs_animal:panda" then
-				if object:get_luaentity().health < object:get_hp() then
-					return object
-				end
+				if object:get_luaentity().health < object:get_hp() then return object end
 			elseif my_oname == "mobs_animal:penguin" then
-				if object:get_luaentity().health < object:get_hp() then
-					item = object
-					return item;
-				end
+				if object:get_luaentity().health < object:get_hp() then return object end
 			elseif my_oname == "mobs_animal:bunny" then
-				if object:get_luaentity().health < object:get_hp() then
-					item = object
-					return item;
-				end
+				if object:get_luaentity().health < object:get_hp() then return object end
 			elseif my_oname == "mobs_animal:bee" then
-				if object:get_luaentity().health < object:get_hp() then
-					item = object
-					return item;
-				end
+				if object:get_luaentity().health < object:get_hp() then return object end
 			elseif my_oname == "mobs_animal:cow" then
-				if object:get_luaentity().health < object:get_hp() then
-					item = object
-					return item;
-				end
+				if object:get_luaentity().health < object:get_hp() then return object end
 			elseif my_oname == "mobs_animal:kitten" then
-				if object:get_luaentity().health < object:get_hp() then
-					item = object
-					return item;
-				end
+				if object:get_luaentity().health < object:get_hp() then return object end
 			elseif my_oname == "mobs_animal:rat" then
-				if object:get_luaentity().health < object:get_hp() then
-					item = object
-					return item;
-				end
+				if object:get_luaentity().health < object:get_hp() then return object end
 			else
 				print("WHAT IS A : ",my_oname)
 			end
@@ -339,10 +313,12 @@ end
 function working_villages.villager:get_nearest_wounded_npc(distance)
 	local animal = nil
 	local myposition = self.object:get_pos() -- should round this function for pathing error prevention
-	print("get wounded npc started")
+--	print("get wounded npc started")
 
+	local ohp = nil
+	local olhp = nil
 	local all_objects = minetest.get_objects_inside_radius(myposition, distance)
-	print("got all objects")
+--	print("got all objects")
 	for _, object in pairs(all_objects) do
 
 		if object:get_luaentity() then
@@ -350,70 +326,32 @@ function working_villages.villager:get_nearest_wounded_npc(distance)
 			local my_oname = object:get_luaentity().name
 
 			if my_oname == "working_villages:villager_male" then
-				ohp = object:get_hp()
-				olhp = object:get_luaentity().health
-				if ohp == nil  then 
-					print("ohp returned nil")
-					return nil 
-				end
-				if olhp == nil  then 
-					print("ohp returned nil")
-					return nil 
-				end
-				return object
+				if object:get_luaentity().health < object:get_hp() then return object end
 			elseif my_oname == "working_villages:villager_female" then
-				ohp = object:get_hp()
-				olhp = object:get_luaentity().health
-				if ohp == nil  then 
-					print("ohp returned nil")
-					return nil 
-				end
-				if olhp == nil  then 
-					print("ohp returned nil")
-					return nil 
-				end
-				return object
+				if object:get_luaentity().health < object:get_hp() then return object end
 			elseif my_oname == "mobs_npc:npc" then  
-				ohp = object:get_hp()
-				olhp = object:get_luaentity().health
-				if ohp == nil  then 
-					print("ohp returned nil")
-					return nil 
-				end
-				if olhp == nil  then 
-					print("ohp returned nil")
-					return nil 
-				end
-				return object
+				if object:get_luaentity().health < object:get_hp() then return object end
 			elseif my_oname == "mobs_npc:igor" then
-				ohp = object:get_hp()
-				olhp = object:get_luaentity().health
-				if ohp == nil  then 
-					print("ohp returned nil")
-					return nil 
-				end
-				if olhp == nil  then 
-					print("ohp returned nil")
-					return nil 
-				end
-				return object
+				--if object:get_luaentity().health < object:get_hp() then return object end
 			elseif my_oname == "mobs_npc:trader" then
-				ohp = object:get_hp()
-				olhp = object:get_luaentity().health
-				if ohp == nil  then 
-					print("ohp returned nil")
-					return nil 
-				end
-				if olhp == nil  then 
-					print("ohp returned nil")
-					return nil 
-				end
-				return object
+				if object:get_luaentity().health < object:get_hp() then return object end
 
+
+			-- WITCHES
+
+			elseif string.find(my_oname,"witches:witch_") then
+				if object:get_luaentity().health < object:get_hp() then return object end
+
+
+
+			elseif my_oname == "leads:lead" then
 			elseif my_oname == "visual_harm_1ndicators:hpbar" then
-			
 			elseif my_oname == "working_villages:dummy_item" then
 			elseif my_oname == "__builtin:item" then
+
+
+
+
 
 			elseif my_oname == "mobs_monster:dirt_monster" then
 			elseif my_oname == "mobs_monster:fire_spirit" then
@@ -487,6 +425,8 @@ function working_villages.villager:get_nearest_wounded_npc(distance)
 --				end
 			else
 				print("WHAT IS A : ",my_oname)
+				print("DUMP : ", object)
+					
 			end
 
 
@@ -1183,6 +1123,7 @@ do
       if working_villages.is_villager(luaentity.name) then
         self.object:set_attach(obj, "Arm_R", {x = 0.065, y = 0.50, z = -0.15}, {x = -45, y = 0, z = 0})
         self.object:set_properties{textures={"working_villages:dummy_empty_craftitem"}}
+        self.object:set_properties{health={15}}
         return
       end
     end
@@ -1582,6 +1523,7 @@ function working_villages.register_villager(product_name, def)
   villager_def.job_thread                  = false
   villager_def.product_name                = ""
   villager_def.manufacturing_number        = -1
+  villager_def.health			   = 18
   villager_def.owner_name                  = ""
   villager_def.time_counters               = {}
   villager_def.destination                 = vector.new(0,0,0)

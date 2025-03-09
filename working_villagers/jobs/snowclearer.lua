@@ -1,6 +1,7 @@
 local func = working_villages.require("jobs/util")
 local function find_snow(p) return minetest.get_node(p).name == "default:snow" end
 local searching_range = {x = 10, y = 3, z = 10}
+local use_vh1 = minetest.get_modpath("visual_harm_1ndicators")
 
 working_villages.register_job("working_villages:job_snowclearer", {
 	description      = "snowclearer (working_villages)",
@@ -10,6 +11,7 @@ I must confess this job seems useless.\
 I'm doing anyway, clearing the snow away.",
 	inventory_image  = "default_paper.png^memorandum_letters.png",
 	jobfunc = function(self)
+		if use_vh1 then VH1.update_bar(self.object, self.health) end
 		self:handle_night()
 		self:handle_job_pos()
 

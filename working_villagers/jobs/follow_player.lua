@@ -1,4 +1,5 @@
 local follower = {}
+local use_vh1 = minetest.get_modpath("visual_harm_1ndicators")
 
 function follower.walk_in_direction(v,dir)
   local position = v.object:get_pos()
@@ -55,6 +56,7 @@ working_villages.register_job("working_villages:job_folow_player", {
   long_description = "I'll just follow you wherever you go.",
   inventory_image  = "default_paper.png^memorandum_letters.png",
   jobfunc = function(v)
+		if use_vh1 then VH1.update_bar(self.object, self.health) end
     while (v.pause) do
       coroutine.yield()
     end

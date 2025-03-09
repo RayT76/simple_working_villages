@@ -1,5 +1,6 @@
 
 local func = working_villages.require("jobs/util")
+local use_vh1 = minetest.get_modpath("visual_harm_1ndicators")
 
 -- limited support to two replant definitions
 local farming_plants = {
@@ -111,6 +112,7 @@ working_villages.register_job("working_villages:job_farmer", {
 	long_description = "I look for farming plants to collect and replant them.",
 	inventory_image	= "default_paper.png^working_villages_farmer.png",
 	jobfunc = function(self)
+		if use_vh1 then VH1.update_bar(self.object, self.health) end
 		self:handle_night()
 		self:handle_chest(take_func, put_func)
 		self:handle_job_pos()

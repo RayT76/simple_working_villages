@@ -1,6 +1,7 @@
 local func = working_villages.require("jobs/util")
 local function find_snow(p) return minetest.get_node(p).name == "default:snow" end
 local searching_range = {x = 5, y = 3, z = 5}
+local use_vh1 = minetest.get_modpath("visual_harm_1ndicators")
 
 working_villages.register_job("working_villages:vet", {
 	description      = "vet (working_villages)",
@@ -8,6 +9,7 @@ working_villages.register_job("working_villages:vet", {
 I Love it.",
 	inventory_image  = "default_paper.png^working_villages_vet.png",
 	jobfunc = function(self)
+		if use_vh1 then VH1.update_bar(self.object, self.health) end
 		self:handle_night()
 		self:handle_job_pos()
 
@@ -28,7 +30,7 @@ I Love it.",
 				destination = func.find_adjacent_clear(dobj:get_pos())				
 				local distance = vector.distance(self.object:get_pos(), destination)
 
-				if distance < 2 then
+				if distance < 2.5 then
 					--print("Found a wounded animal")
 					local tophp = dobj:get_hp()
 					--print("get_tophp = ", tophp) -- returns 12 for sheep which is their max

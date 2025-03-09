@@ -1,5 +1,6 @@
 local func = working_villages.require("jobs/util")
 local co_command = working_villages.require("job_coroutines").commands
+local use_vh1 = minetest.get_modpath("visual_harm_1ndicators")
 
 local function find_building(p)
 	if minetest.get_node(p).name ~= "working_villages:building_marker" then
@@ -28,6 +29,7 @@ If I have the materials of course. Also I'll look for building markers within a 
 "And I ignore paused building sites.",
 	inventory_image  = "default_paper.png^working_villages_builder.png",
 	jobfunc = function(self)
+		if use_vh1 then VH1.update_bar(self.object, self.health) end
 		self:handle_night()
 		self:handle_job_pos()
 

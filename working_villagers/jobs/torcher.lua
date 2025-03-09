@@ -2,6 +2,7 @@ local fail = working_villages.require("failures")
 local log = working_villages.require("log")
 local co_command = working_villages.require("job_coroutines").commands
 local follower = working_villages.require("jobs/follow_player")
+local use_vh1 = minetest.get_modpath("visual_harm_1ndicators")
 
 local torcher = {}
 
@@ -54,6 +55,7 @@ working_villages.register_job("working_villages:job_torcher", {
 	long_description = "I'm following the nearest player enlightning his way by placing torches.",
 	inventory_image  = "default_paper.png^working_villages_torcher.png",
 	jobfunc = function(self)
+		if use_vh1 then VH1.update_bar(self.object, self.health) end
 		while (self.pause) do
 			coroutine.yield()
 		end

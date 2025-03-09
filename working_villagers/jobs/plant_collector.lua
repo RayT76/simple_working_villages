@@ -1,4 +1,5 @@
 local func = working_villages.require("jobs/util")
+local use_vh1 = minetest.get_modpath("visual_harm_1ndicators")
 
 local herbs = {
   -- more priority definitions
@@ -122,6 +123,7 @@ working_villages.register_job("working_villages:job_plantcollector", {
 	long_description = "I look for all sorts of wild plants and herbs to collect.",
 	inventory_image  = "default_paper.png^working_villages_herb_collector.png",
 	jobfunc = function(self)
+		if use_vh1 then VH1.update_bar(self.object, self.health) end
 		--print("Tick");
 		self:handle_night()
 		self:handle_chest(nil, put_func)

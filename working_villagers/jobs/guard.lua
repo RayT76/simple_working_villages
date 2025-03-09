@@ -1,5 +1,6 @@
 local log = working_villages.require("log")
 local co_command = working_villages.require("job_coroutines").commands
+local use_vh1 = minetest.get_modpath("visual_harm_1ndicators")
 
 --modes: stationary,escort,patrol,wandering
 
@@ -8,6 +9,7 @@ working_villages.register_job("working_villages:job_guard", {
 	long_description = "I'm here on guard defending against all those whom I see as enemies.",
 	inventory_image  = "default_paper.png^memorandum_letters.png", --TODO: sword/bow/shield
 	jobfunc = function(self)
+		if use_vh1 then VH1.update_bar(self.object, self.health) end
 		local guard_mode = self:get_job_data("mode") or "stationary"
 
 		if guard_mode == "stationary" or self.pause then
