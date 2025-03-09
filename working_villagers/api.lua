@@ -323,25 +323,34 @@ function working_villages.villager:get_nearest_wounded_npc(distance)
 
 		if object:get_luaentity() then
 
-			local my_oname = object:get_luaentity().name
+			local luae = object:get_luaentity()
+			local my_oname = luae.name
 
 			if my_oname == "working_villages:villager_male" then
-				if object:get_luaentity().health < object:get_hp() then return object end
+				if luae.health < object:get_hp() then return object end
 			elseif my_oname == "working_villages:villager_female" then
-				if object:get_luaentity().health < object:get_hp() then return object end
+				if luae.health < object:get_hp() then return object end
 			elseif my_oname == "mobs_npc:npc" then  
-				if object:get_luaentity().health < object:get_hp() then return object end
+				if luae.health < object:get_hp() then return object end
 			elseif my_oname == "mobs_npc:igor" then
 				--if object:get_luaentity().health < object:get_hp() then return object end
 			elseif my_oname == "mobs_npc:trader" then
-				if object:get_luaentity().health < object:get_hp() then return object end
+				if luae.health < object:get_hp() then return object end
 
 
 			-- WITCHES
 
 			elseif string.find(my_oname,"witches:witch_") then
-				if object:get_luaentity().health < object:get_hp() then return object end
 
+				if luae.health ~= nil then
+					if object:get_hp() ~= nil then
+						if luae.health < object:get_hp() then return object end
+					else
+						print("Object:get_hp() returned NIL")
+					end
+				else
+					print("LUAE.health returned NIL")
+				end
 
 
 			elseif my_oname == "leads:lead" then
@@ -422,10 +431,10 @@ function working_villages.villager:get_nearest_wounded_npc(distance)
 --				if object:get_luaentity().health < object:get_hp() then
 --					item = object
 --					return item;
---				end
+--				end   nativevillages:toad
 			else
 				print("WHAT IS A : ",my_oname)
-				print("DUMP : ", object)
+				print("DUMP : ", object:get_luaentity())
 					
 			end
 
@@ -738,6 +747,11 @@ function working_villages.villager:jump()
   end
   ctrl:set_velocity{x = velocity.x, y = jump_force, z = velocity.z}
 end
+
+
+
+
+
 
 
 
