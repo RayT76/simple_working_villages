@@ -5,22 +5,36 @@ local pathfinder = working_villages.require("pathfinder")
 
 --TODO: add variable precision
 function working_villages.villager:go_to(pos)
+	print("GO_TO FUNCTION START")
+	print("GO_TO FUNCTION", pos)
 	self.destination=vector.round(pos)
+	print("GO_TO FUNCTION", self.destination)
+
+
 	if func.walkable_pos(self.destination) then
+		print("GO_TO FUNCTION DESTINATION IS GROUND ?")
 		self.destination=pathfinder.get_ground_level(vector.round(self.destination))
+		print("GO_TO FUNCTION NEW DESTINATION", self.destination)
+
 	end
 	local val_pos = func.validate_pos(self.object:get_pos())
+
+
+	print("GO_TO FUNCTION VALIDATEPOS", val_pos)
+
 	self.path = pathfinder.find_path(val_pos, self.destination, self)
 	self:set_timer("go_to:find_path",0) -- find path interval
 	self:set_timer("go_to:change_dir",0)
 	self:set_timer("go_to:give_up",0)
 	if self.path == nil then
+		print("GO_TO FUNCTION SELF.PATH = NIL")
+		
 		--TODO: actually no path shouldn't be accepted
 		--we'd have to check whether we can find a shorter path in the right direction
 		--return false, fail.no_path
 		self.path = {self.destination}
 	end
-	--print("the first waypiont on his path:" .. minetest.pos_to_string(self.path[1]))
+	print("the first waypiont on his path:" .. minetest.pos_to_string(self.path[1]))
 	self:change_direction(self.path[1])
 	self:set_animation(working_villages.animation_frames.WALK)
 
@@ -170,6 +184,7 @@ function working_villages.villager:dig(pos,collect_drops)
 end
 
 function working_villages.villager:place(item,pos)
+	print("Trying to place ",item, " at pos ", pos)
 	if type(pos)~="table" then
 		error("no target position given")
 	end
@@ -194,24 +209,25 @@ function working_villages.villager:place(item,pos)
 			error("no item to place given")
 		end
 	end
+	print("wield_stack")
 	local wield_stack = self:get_wield_item_stack()
-	--move item to wield
+	print("move item to wield")
 	if not (find_item(wield_stack:get_name()) or self:move_main_to_wield(find_item)) then
 	 return false, fail.not_in_inventory
 	end
-	--set animation
+	print("set animation")
 	if self.object:get_velocity().x==0 and self.object:get_velocity().z==0 then
 		self:set_animation(working_villages.animation_frames.MINE)
 	else
 		self:set_animation(working_villages.animation_frames.WALK_MINE)
 	end
-	--turn to target
+	print("turn to target")
 	self:set_yaw_by_direction(dist)
 	--wait 15 steps
 	for _=0,15 do coroutine.yield() end
 	--get wielded item
 	local stack = self:get_wield_item_stack()
-	--create pointed_thing facing upward
+	print("create pointed_thing facing upward")
 	--TODO: support given pointed thing via function parameter
 	local pointed_thing = {
 		type = "node",
@@ -220,20 +236,40 @@ function working_villages.villager:place(item,pos)
 	}
 	--TODO: try making a placer
 	local itemname = stack:get_name()
-	--place item
+	print("place item")
 	if type(item)=="table" then
+		print("Table Found")
 		minetest.set_node(pointed_thing.above, item)
 		--minetest.place_node(pos, item) --loses param2
 		stack:take_item(1)
 	else
+		print("No Table Found")
+		print("Get before node")
 		local before_node = minetest.get_node(pos)
+		print("Get before count")
 		local before_count = stack:get_count()
+		print("Get Definition")
 		local itemdef = stack:get_definition()
 		if itemdef.on_place then
-			stack = itemdef.on_place(stack, self, pointed_thing)
+			print("On Place")
+			print("Itemdef:", dump(itemdef))
+			print("Pointed_Thing:", dump(pointed_thing))
+			print("Self:", dump(self))
+
+			local daowner = core.get_player_by_name(self.owner_name)
+			if daowner ~= nil then
+				stack = itemdef.on_place(stack, daowner, pointed_thing)
+			end
+			print("splaced?)")
+
+--			stack = minetest.item_place_node(stack, self, pointed_thing)
+
+
 		elseif itemdef.type=="node" then
+			print("Off Place (in space?)")
 			stack = minetest.item_place_node(stack, self, pointed_thing)
 		end
+		print("After Place")
 		local after_node = minetest.get_node(pos)
 		-- if the node didn't change, then the callback failed
 		if before_node.name == after_node.name then
@@ -244,10 +280,10 @@ function working_villages.villager:place(item,pos)
 			stack:take_item(1)
 		end
 	end
-	--take item
+	print("take item")
 	self:set_wield_item_stack(stack)
 	coroutine.yield()
-	--handle sounds
+	print("handle sounds")
 	local sounds = minetest.registered_nodes[itemname]
 	if sounds then
 		if sounds.sounds then
@@ -257,7 +293,7 @@ function working_villages.villager:place(item,pos)
 			end
 		end
 	end
-	--reset animation
+	print("reset animation")
 	if self.object:get_velocity().x==0 and self.object:get_velocity().z==0 then
 		self:set_animation(working_villages.animation_frames.STAND)
 	else
@@ -380,10 +416,16 @@ function working_villages.villager:goto_bed()
 			self.wait_until_dawn()
 		else
 			print("I am going to Bed !");
-			log.info("villager %s bed is at: %s", self.inventory_name, minetest.pos_to_string(self.pos_data.bed_pos))
+			print("villager %s bed is at: %s", self.inventory_name, minetest.pos_to_string(self.pos_data.bed_pos))
+			--log.info("villager %s bed is at: %s", self.inventory_name, minetest.pos_to_string(self.pos_data.bed_pos))
 			self:set_state_info("I'm going to bed, it's late.")
 			self:set_displayed_action("going to bed")
-			self:go_to(self.pos_data.bed_pos)
+
+			if self:go_to(self.pos_data.bed_pos) then
+				print("Got to the BED")
+			else
+				print("Could not get to the BED")
+			end
 			self:set_state_info("I am going to sleep soon.")
 			self:set_displayed_action("waiting for dusk")
 			local tod = minetest.get_timeofday()
