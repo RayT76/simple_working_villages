@@ -853,7 +853,7 @@ function pathfinder.plot_movement_to_pos(from_pos, to_pos, can_fall)
 	local lcost = plot_movement_lowest_cost(start_cost)
 
 --	print("START PLOT MOVEMENT WHILE")	
-	local max_loop_count = 10000
+	local max_loop_count = 1000
 	while (lindex ~= nil) and (lcost > 0) do
 	
 		max_loop_count = max_loop_count - 1
