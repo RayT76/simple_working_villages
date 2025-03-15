@@ -16,33 +16,48 @@ I Love it.",
 		self:count_timer("snowclearer:search")
 		self:count_timer("snowclearer:change_dir")
 		self:handle_obstacles()
-		if self:timer_exceeded("snowclearer:search",100) then
+		if self:timer_exceeded("snowclearer:search",40) then
 
 
   
 
 			local dobj = self:get_nearest_wounded_animal(10)
 			if dobj ~= nil then
-				ani_pos = dobj:get_pos()
-				local destination = func.find_adjacent_clear(ani_pos)
-				self:go_to(destination)
+				local ani_pos = dobj:get_pos()
+				local ani_pos = vector.round(vector.new(dobj:get_pos().x,dobj:get_pos().y-1,dobj:get_pos().z))
+--				print("ANIMAL LOC = ",ani_pos)
+				--tpos = vector.round(tpos)
+				local my_pos = vector.round(vector.new(self.object:get_pos().x,self.object:get_pos().y,self.object:get_pos().z))
+--				print("MY LOC = ", my_pos)
+				--local destination = func.find_adjacent_clear(ani_pos)
+				local my_dest = func.get_closest_clear_spot(my_pos,ani_pos)
+--				print("MY DEST = ", my_dest)				
 
-				destination = func.find_adjacent_clear(dobj:get_pos())				
-				local distance = vector.distance(self.object:get_pos(), destination)
 
-				if distance < 2.5 then
-					--print("Found a wounded animal")
-					local tophp = dobj:get_hp()
-					--print("get_tophp = ", tophp) -- returns 12 for sheep which is their max
+				if my_dest ~= nil then
+					self:go_to(my_dest)
 
-					local currhp = dobj:get_luaentity().health
-					--print("get_currhp = ", currhp) -- returns 12 for sheep which is their max
+					--destination = func.find_adjacent_clear(dobj:get_pos())	
+								
+					local distance = vector.distance(my_pos, ani_pos)
 
-					if currhp ~= tophp then 
-						dobj:get_luaentity().health = currhp + 1;
-						self:delay(50)
+					if distance < 2.5 then
+						--print("Found a wounded animal")
+						local tophp = dobj:get_hp()
+						--print("get_tophp = ", tophp) -- returns 12 for sheep which is their max
+
+						local currhp = dobj:get_luaentity().health
+						--print("get_currhp = ", currhp) -- returns 12 for sheep which is their max
+
+						if currhp ~= tophp then 
+							dobj:get_luaentity().health = currhp + 1;
+							self:delay(10)
+						end
 					end
+				else
+					print("VET CANNOT FIND THE WAY TO THE ANIMAL")
 				end
+
 			end
 			
 
@@ -58,7 +73,7 @@ I Love it.",
 --				self:dig(target,true)
 --			end
 			self:set_displayed_action("looking for work")
-		elseif self:timer_exceeded("snowclearer:change_dir",200) then
+		elseif self:timer_exceeded("snowclearer:change_dir",400) then
 --			if self:timer_exceeded("snowclearer:change_dir",200) then
 			self:count_timer("snowclearer:search")
 			self:change_direction_randomly()

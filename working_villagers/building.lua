@@ -1,6 +1,8 @@
 --TODO: replace with building_sign mod
-local SCHEMS = {"simple_hut.we", "fancy_hut.we", "[custom house]"}
+local SCHEMS = {"simple_hut.we", "fancy_hut.we", "simple_house.we", "[custom house]"}
 local DEFAULT_NODE = {name="air"}
+local use_we = minetest.get_modpath("worldedit")
+local use_hs = minetest.get_modpath("handle_schematics")
 
 local function out_of_limit(pos)
 	if (pos.x>30927 or pos.x<-30912
@@ -87,6 +89,8 @@ function working_villages.buildings.get_registered_nodename(name)
 	if name:find("doors:") then
 		name = name:gsub("_[b]_[12]", "")
 		name = name:gsub("_[a]", "")
+		name = name:gsub("_[c]", "")
+		name = name:gsub("_[d]", "")
 		if string.find(name, "_t") or name:find("hidden") then
 			name = "air"
 		end
@@ -98,20 +102,134 @@ function working_villages.buildings.get_registered_nodename(name)
 	return name
 end
 
+
+
 function working_villages.buildings.load_schematic(filename,pos)
 	local meta = minetest.get_meta(pos)
-	local input = io.open(working_villages.modpath.."/schems/"..filename, "r")
-	if not input then
-		minetest.log("warning","schematic \""..working_villages.modpath.."/schems/"..filename.."\" does not exist")
-		return
+
+	print("FILENAME:", filename)
+	print("POS:", pos)
+
+	local wpath = core.get_worldpath()
+	local spath = "/schems/simple_house.we"
+	local tpath = wpath .. spath
+
+	local input = io.open(tpath, "r")
+	if not(input) then
+		print("FILE DOES NOT EXIST - ABORTING:")
+		return nil
 	end
-	local data = minetest.deserialize(input:read('*all'))
+
+	local function escape_magic(pattern)
+		return (pattern:gsub("%W", "%%%1"))
+	end
+
+	local data = input:read('*all')
+	if not(data) then
+		print("DATA READ ERROR")
+		return nil
+	end
 	io.close(input)
-	if not data then
-		minetest.log("warning","schematic \""..working_villages.modpath.."/schems/"..filename.."\" is broken")
-		return
+
+	local hversion, hextra_fields, hcontent = worldedit.read_header(data)
+	if not(hversion) then 
+		print("HEADER READ ERROR")
+		return nil
 	end
-	table.sort(data, function(a,b)
+
+	local test1 = string.split(hcontent, ";", -1, false)
+	if not(string.find(test1[1],"local")) then
+		print("LOCAL NOT FOUND - ABORTING")
+		return nil
+	end
+
+	local linecount = 1
+	local templine = test1[linecount]
+	while templine ~= nil do
+		linecount = linecount + 1
+		templine = test1[linecount]
+		if string.find(templine,"return") then
+			templine = nil;			
+		end
+	end
+
+	local firstdef = 2
+	local lastdef = linecount -1
+	local nodetext = test1[linecount]
+
+	local repdata = {}
+	for var=firstdef,lastdef,1 do
+      		print("DEFA",var, " = ", test1[var])
+		local def = string.split(test1[var], "=", -1, false)
+		print("DEF", def[1])
+		print("ITEM", def[2])
+		repdata[def[1]] = def[2]
+    	end
+
+	local snodetext = string.split(nodetext, "},{", -1, false)
+	snodetext[1] = string.gsub(snodetext[1], "return {{", "")
+	-- hacky count lines
+	linecount = 1
+	templine = snodetext[linecount]
+	while templine ~= nil do
+		linecount = linecount + 1
+		templine = snodetext[linecount]
+	end
+	local slinecount = linecount -1
+
+	for svar=1,slinecount,1 do
+		local stext = snodetext[svar]
+		local ntext = stext
+		for k, v in pairs( repdata ) do
+			ntext = string.gsub(ntext, escape_magic(k), v)
+		end
+		snodetext[svar] = ntext
+    	end
+
+	local thenodes = {}
+	for svar=1,slinecount,1 do
+		local tempnode = string.split(snodetext[svar], ",", -1, false)
+		local anode = { ["x"] = nil,
+				["y"] = nil,
+				["z"] = nil,
+				["name"] = nil,
+				["param1"] = nil,
+				["param2"] = nil,
+	}
+		
+		local ncount = 1
+		while tempnode[ncount] ~= nil do
+
+			local tempval = string.split(tempnode[ncount], "=", -1, false)
+
+			if tempval[1] == "x" then
+				anode["x"] = tempval[2]	
+			end		
+			if tempval[1] == "y" then
+				anode["y"] = tempval[2]	
+			end
+			if tempval[1] == "z" then
+				anode["z"] = tempval[2]	
+			end
+			if tempval[1] == "name" then
+			local tname = string.gsub(tempval[2], "}", "")
+			tname = string.gsub(tname, "\"", "")
+				anode["name"] = tname	
+			end
+			if tempval[1] == "param1" then
+				anode["param1"] = tempval[2]	
+			end
+			if tempval[1] == "param2" then
+				anode["param2"] = tempval[2]	
+			end
+			ncount = ncount + 1
+		end
+		thenodes[svar] = anode
+		print("ANODE", svar, dump(anode))
+	end
+
+	print(slinecount, "SCHEMATIC NODES LOADED !!")
+	table.sort(thenodes, function(a,b)
 		if a.y == b.y then
 			if a.z == b.z then
 				return a.x < b.x
@@ -121,12 +239,17 @@ function working_villages.buildings.load_schematic(filename,pos)
 		return a.y < b.y
 	end)
 	local nodedata = {}
-	for i,v in ipairs(data) do --this is actually not nessecary
+	for i,v in ipairs(thenodes) do --this is actually not nessecary
 		if v.name and v.x and v.y and v.z then
 			local node = {name=v.name, param1=v.param1, param2=v.param2}
 			local npos = vector.add(working_villages.buildings.get_build_pos(meta), {x=v.x, y=v.y, z=v.z})
 			local name = working_villages.buildings.get_registered_nodename(v.name)
+			--local name = v.name
 			if minetest.registered_items[name]==nil then
+				print("NODE NAME UNREGISTERED")
+				print("NODENN=", name)
+				print("NODEVN=", v.name)
+				print("NODEDN=", DEFAULT_NODE)
 				node = DEFAULT_NODE
 			end
 			nodedata[i] = {pos=npos, node=node}

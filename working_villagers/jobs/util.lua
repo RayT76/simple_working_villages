@@ -1,6 +1,92 @@
 local func = {}
 local pathfinder = working_villages.require("pathfinder")
 
+
+
+function func.get_goto_distance_check(pos,dest)
+	local tempx = 0
+	local tempz = 0
+	local tempy = 0
+	--print("GET_GOTO_CHECK ", pos, " to ", dest)
+	if pos.x < dest.x then 
+		tempx = dest.x - pos.x
+	else
+		tempx = pos.x - dest.x 
+	end
+	if pos.z < dest.z then 
+		tempz = dest.z - pos.z
+	else
+		tempz = pos.z - dest.z 
+	end
+	if pos.y < dest.y then 
+		tempy = dest.y - pos.y
+	else
+		tempy = pos.y - dest.y 
+	end
+	--print("X:",tempx," Y:", tempy, " Z:", tempz)
+	if tempx < 0.1 and tempz < 0.1 and tempy < 1.1 then
+		return true
+	else
+		return false
+	end
+end
+
+
+
+function func.get_closest_clear_spot(frompos, topos)
+
+	
+--	print("GET CLOSEST SPOT TO ",topos)
+	local temppos = nil
+--	print("FROM ",frompos)
+	
+	local my_n = vector.add(topos,vector.new(0,0,1)) 
+	local my_e = vector.add(topos,vector.new(1,0,0)) 
+	local my_s = vector.add(topos,vector.new(0,0,-1))
+	local my_w = vector.add(topos,vector.new(-1,0,0))
+
+	local distance = 100 -- set high for now TODO correctly later
+	
+	if pathfinder.check_movement_to_pos(my_n) ~= nil then
+--		print("north ok")
+		if vector.distance(frompos,my_n) < distance then 
+			distance = vector.distance(frompos,my_n)
+			temppos = my_n
+		end
+	end
+
+	if pathfinder.check_movement_to_pos(my_s) ~= nil then
+--		print("south ok")
+		if vector.distance(frompos,my_s) < distance then 
+			distance = vector.distance(frompos,my_s)
+			temppos = my_s
+		end
+	end
+
+	if pathfinder.check_movement_to_pos(my_e) ~= nil then
+--		print("east ok")
+		if vector.distance(frompos,my_e) < distance then 
+			distance = vector.distance(frompos,my_e)
+			temppos = my_e
+		end
+	end
+
+	if pathfinder.check_movement_to_pos(my_w) ~= nil then
+--		print("west ok")
+		if vector.distance(frompos,my_w) < distance then 
+			distance = vector.distance(frompos,my_w)
+			temppos = my_w
+		end
+	end
+
+	return temppos
+
+end
+
+
+
+
+
 function func.find_path_toward(pos,villager)
   local dest = vector.round(pos)
   --TODO: spiral outward from pos and try to find reverse paths
@@ -72,6 +158,41 @@ function func.find_adjacent_clear(pos)
 
 end
 
+
+
+
+
+
+function func.find_building_marker(pos,dist_xy,dist_z)
+
+--minetest.registered_nodes[]
+local locresult = nil
+
+local pos1       = vector.subtract(pos, { x = dist_xy, y = dist_xy, z = dist_z })
+local pos2       = vector.add(pos, { x = dist_xy, y = dist_xy, z = dist_z })
+local pos_list   = core.find_nodes_in_area(pos1, pos2, { "working_villages:building_marker" })
+
+if pos_list == nil then return nil end
+
+--local minx = pos.x - dist_xyz
+--local miny = pos.y - dist_xyz
+--local minz = pos.z - dist_xyz
+--local maxx = pos.x + dist_xyz
+--local maxy = pos.y + dist_xyz
+--local maxz = pos.z + dist_xyz
+
+
+--for i=1, #pos_list do
+--    local delta = vector.subtract(pos_list[i], pos)
+--    if delta.x*delta.x + delta.y*delta.y + delta.z*delta.z <= 5*5 then
+        return pos_list
+--    end
+--end
+
+end
+
+
+
 local find_adjacent_clear = func.find_adjacent_clear
 
 -- search in an expanding box around pos in the XZ plane
@@ -81,8 +202,8 @@ local function search_surrounding(pos, pred, searching_range)
 	local max_xz = math.max(searching_range.x, searching_range.z)
 	local mod_y
 	if searching_range.h == nil then
-		if searching_range.y > 3 then
-			mod_y = 2
+		if searching_range.y > 5 then
+			mod_y = 6
 		else
 			mod_y = 0
 		end

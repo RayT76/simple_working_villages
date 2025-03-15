@@ -109,13 +109,14 @@ end
 
 working_villages.register_job("working_villages:job_farmer", {
 	description			= "farmer (working_villages)",
-	long_description = "I look for farming plants to collect and replant them.",
+	long_description = "I look for cultivated plants to harvest and replant.",
 	inventory_image	= "default_paper.png^working_villages_farmer.png",
 	jobfunc = function(self)
 		if use_vh1 then VH1.update_bar(self.object, self.health) end
 		self:handle_night()
 		self:handle_chest(take_func, put_func)
 		self:handle_job_pos()
+
 
 		self:count_timer("farmer:search")
 		self:count_timer("farmer:change_dir")
@@ -132,6 +133,7 @@ working_villages.register_job("working_villages:job_farmer", {
 					print("failure: no adjacent walkable found")
 					destination = target
 				end
+				--print("blip")
 				self:go_to(destination)
 				local plant_data = farming_plants.get_plant(minetest.get_node(target).name);
 				self:dig(target,true)

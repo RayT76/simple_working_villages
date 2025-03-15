@@ -5,13 +5,13 @@ Updating to a workable mod for adding extra people in the town you create.
 
 Added roles of
 
-NPC Medic
-Animal Vet
-Lawn Cutter
+NPC Medic<br>
+Animal Vet<br>
+Lawn Cutter<br>
 
-Fixed Plant gatherer to only pick up wild plants
-Added Farming Redo Plants
-Fixed Farmer to only pick up cultivated plants
+Fixed Plant gatherer to only pick up wild plants<br>
+Added Farming Redo Plants<br>
+Fixed Farmer to only pick up cultivated plants<br>
 
 
 Pathing is an Issue that will be shortly looked into, though with the better collision avoidance the NPC's are a less likely to become stuck.
@@ -67,7 +67,7 @@ TO GET THE NPC's WORKING (AFAIAK)
 
 Build a 7x7 house with a standard wood door ( only one it currently recognise's : [is on the list])
 
-Place a Standard Simple Bed on the wall oposite the Door with the Standard Chest next to it
+Place a Standard Simple Bed on the wall opposite the Door with the Standard Chest next to it
 Place the NPC in the center of the house
 With the control wand right click and select "change data" and change the following to
 

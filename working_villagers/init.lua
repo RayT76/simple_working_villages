@@ -54,6 +54,7 @@ working_villages.require("jobs/torcher")
 working_villages.require("jobs/snowclearer")
 
 
+working_villages.require("jobs/fireman")
 working_villages.require("jobs/grass_cutter")
 working_villages.require("jobs/medic")
 working_villages.require("jobs/vet")

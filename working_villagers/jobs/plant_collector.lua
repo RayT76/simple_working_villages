@@ -12,7 +12,7 @@ local herbs = {
 		["default:blueberry_bush_leaves_with_berries"]={},
 
 		["farming:artichoke_5"]={param2=0},
-		["farming:asparagus_5"]={param2=3},
+		["farming:asparagus_5"]={param2=3},   -- TODO BREAKS THE RULES ON PARAM 2 = IS THE SAME FOR WILD AND CULTIVATED
 		["farming:barley_7"]={param2=0},
 		["farming:beanpole_5"]={param2=0},
 		["farming:beetroot_5"]={param2=0},
@@ -134,7 +134,7 @@ working_villages.register_job("working_villages:job_plantcollector", {
 		self:count_timer("herbcollector:change_dir")
 		self:handle_obstacles()
 
-		if self:timer_exceeded("herbcollector:search",50) then
+		if self:timer_exceeded("herbcollector:search",20) then
 --			print("Looking for a Plant");
 			self:collect_nearest_item_by_condition(herbs.is_herb, searching_range)
 			local target = func.search_surrounding(self.object:get_pos(), find_herb_node, searching_range)
@@ -165,7 +165,7 @@ working_villages.register_job("working_villages:job_plantcollector", {
 --				print("Cant find a Plant");	
 			end
 			
-		elseif self:timer_exceeded("herbcollector:change_dir",600) then
+		elseif self:timer_exceeded("herbcollector:change_dir",400) then
 --			print("Changed Direction");
 			self:change_direction_randomly()
 		end

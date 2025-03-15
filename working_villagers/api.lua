@@ -216,8 +216,9 @@ function working_villages.villager:get_nearest_wounded_animal(distance)
 
 			local my_oname = object:get_luaentity().name
 
-			if my_oname == "working_villages:villager_male" then
-			elseif my_oname == "working_villages:villager_female" then
+			if string.find(my_oname,"working_villages:villager_male") then
+			elseif string.find(my_oname,"working_villages:villager_female") then
+
 			elseif my_oname == "mobs_npc:npc" then  
 			elseif my_oname == "mobs_npc:igor" then
 			elseif my_oname == "mobs_npc:trader" then
@@ -298,7 +299,7 @@ function working_villages.villager:get_nearest_wounded_animal(distance)
 	    --  end
 	    --end
 	end
-	return item;
+	return nil;
 end
 
 
@@ -326,9 +327,9 @@ function working_villages.villager:get_nearest_wounded_npc(distance)
 			local luae = object:get_luaentity()
 			local my_oname = luae.name
 
-			if my_oname == "working_villages:villager_male" then
+			if string.find(my_oname,"working_villages:villager_male") then
 				if luae.health < object:get_hp() then return object end
-			elseif my_oname == "working_villages:villager_female" then
+			elseif string.find(my_oname,"working_villages:villager_female") then
 				if luae.health < object:get_hp() then return object end
 			elseif my_oname == "mobs_npc:npc" then  
 				if luae.health < object:get_hp() then return object end
@@ -462,7 +463,7 @@ function working_villages.villager:get_nearest_wounded_npc(distance)
 	    --  end
 	    --end
 	end
-	return item;
+	return nil;
 end
 
 
@@ -621,10 +622,16 @@ end
 -- working_villages.villager.change_direction change direction to destination and velocity vector.
 function working_villages.villager:change_direction(destination)
   local position = self.object:get_pos()
+
+--print("DUMP : ", dump(self.object))
+
+  local tempvelocity = self.object:get_velocity()
+
   local direction = vector.subtract(destination, position)
   direction.y = 0
-  local velocity = vector.multiply(vector.normalize(direction), 1.5)
+  local velocity = vector.multiply(vector.normalize(direction), 2)
 
+  velocity.y = tempvelocity.y
   self.object:set_velocity(velocity)
   self:set_yaw_by_direction(direction)
 end
@@ -636,7 +643,7 @@ function working_villages.villager:change_direction_randomly()
     y = 0,
     z = math.random(0, 5) * 2 - 5,
   }
-  local velocity = vector.multiply(vector.normalize(direction), 1.5)
+  local velocity = vector.multiply(vector.normalize(direction), 2)
   self.object:set_velocity(velocity)
   self:set_yaw_by_direction(direction)
   self:set_animation(working_villages.animation_frames.WALK)
@@ -752,6 +759,38 @@ end
 
 
 
+function working_villages.villager:down()
+  local ctrl = self.object
+--  local below_node = minetest.get_node(vector.subtract(ctrl:get_pos(),{x=0,y=1,z=0}))
+--  local velocity = ctrl:get_velocity()
+--  if below_node.name == "default:ladder" then return false end
+--  local jump_force = math.sqrt(self.initial_properties.weight) * 1.5
+--  if minetest.get_item_group(below_node.name,"liquid") > 0 then
+--    local viscosity = minetest.registered_nodes[below_node.name].liquid_viscosity
+--    jump_force = jump_force/(viscosity*100)
+--  end
+  ctrl:set_velocity{x = 0, y = -1, z = 0}
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -810,7 +849,7 @@ function working_villages.villager:handle_obstacles(ignore_fence,ignore_doors)
 	end
 	
 -- TODO RT : have to implement the ignore doors and fences functionality
--- TODO RT : have to change get node "doors:door" to group door function here and elsewhere in the modw
+-- TODO RT : have to change get node "doors:door" to group door function here and elsewhere in the mod
 -- TODO RT : have to check for water and act accordingly
 
 
@@ -840,7 +879,6 @@ function working_villages.villager:handle_obstacles(ignore_fence,ignore_doors)
 			return true
 		end
 	end
-
 	if string.find(front_node_c.name,"default:water_") then
 		--print("Found some Water.");
 
@@ -854,9 +892,9 @@ function working_villages.villager:handle_obstacles(ignore_fence,ignore_doors)
 
 
 
-	if string.find(minetest.get_node(back_pos).name,"doors:") then
+	if doors.registered_doors[minetest.get_node(back_pos).name] then
 		local door = doors.get(back_pos)
-		door:close()
+		if door ~= nil then door:close() end
 	end
 
 
@@ -880,7 +918,7 @@ function working_villages.villager:handle_obstacles(ignore_fence,ignore_doors)
 				door:open()
 		--	end
 		--end
-		self.object:set_pos(vector.round(door_dest))
+		--self.object:set_pos(vector.round(door_dest))
 				--dwddoor:close()
 		if my_debug then
 			print("DOOR FOUND =", front_node_c.name);
@@ -889,7 +927,7 @@ function working_villages.villager:handle_obstacles(ignore_fence,ignore_doors)
 			print("VillagerDIR=", villager_dir);
 		end
 
-	elseif not is_forwarda_solid and not is_forwarda_solid then
+	elseif not is_forwarda_solid and not is_forwardb_solid then
 --		print("HAVE TO WATCH MY STEP - CHANGE DIR");
 		self:change_direction_randomly()
 
@@ -982,6 +1020,284 @@ function working_villages.villager:handle_obstacles(ignore_fence,ignore_doors)
 --				    end
 --				  end
 end
+
+
+
+
+
+
+
+
+
+
+
+
+
+function working_villages.villager:handle_goto_obstacles(ignore_fence,ignore_doors)
+
+	local my_debug = false
+	if my_debug then print("DEBUG HANDLE GOTO OBSTACLES") end
+
+	local my_pos = vector.round(self.object:get_pos())
+	local my_vel = self.object:get_velocity()
+	local my_dir = self:get_look_direction()
+	local my_fwd = vector.add(my_pos, vector.round(my_dir));
+	local my_abv = vector.add(my_pos, vector.new(0,2,0)); -- directly above head
+	local my_blw = vector.add(my_pos, vector.new(0,-1,0)); -- directly below feet
+	local above_node = minetest.get_node(my_abv)
+	local below_node = minetest.get_node(my_blw)
+	local my_fwd_a = vector.new(0,-2,0) -- below by two
+	local my_fwd_b = vector.new(0,-1,0) -- below by one
+	local my_fwd_c = vector.new(0,0,0) -- legs level
+	local my_fwd_d = vector.new(0,1,0) -- head level
+	local my_fwd_e = vector.new(0,2,0) -- directly above head
+	my_fwd_a = vector.add(my_fwd_a, my_fwd);
+	my_fwd_b = vector.add(my_fwd_b, my_fwd);
+	my_fwd_c = vector.add(my_fwd_c, my_fwd);
+	my_fwd_d = vector.add(my_fwd_d, my_fwd);
+	my_fwd_e = vector.add(my_fwd_e, my_fwd);
+
+	local pos_node = minetest.get_node(my_pos)
+	local front_node_a = minetest.get_node(my_fwd_a)
+	local front_node_b = minetest.get_node(my_fwd_b)
+	local front_node_c = minetest.get_node(my_fwd_c)
+	local front_node_d = minetest.get_node(my_fwd_d)
+	local front_node_e = minetest.get_node(my_fwd_e)
+
+	
+	local is_legs_solid = minetest.registered_nodes[pos_node.name].walkable;
+	local is_above_solid = minetest.registered_nodes[above_node.name].walkable;
+	local is_below_solid = minetest.registered_nodes[below_node.name].walkable;
+	local is_forwarda_solid = minetest.registered_nodes[front_node_a.name].walkable;
+	local is_forwardb_solid = minetest.registered_nodes[front_node_b.name].walkable;
+	local is_forwardc_solid = minetest.registered_nodes[front_node_c.name].walkable; -- legs level
+	local is_forwardd_solid = minetest.registered_nodes[front_node_d.name].walkable;
+	local is_forwarde_solid = minetest.registered_nodes[front_node_e.name].walkable;
+	local back_pos = self:get_back()
+
+
+	if my_debug then
+		print("MYPOSITION  :",my_pos);
+		print("MYVELOCITY:",my_vel);
+		print("MYDIRECTION  :",my_dir);
+		print("MYFORWARD  :",my_fwd);
+	end
+	
+-- TODO RT : have to implement the ignore doors and fences functionality
+-- TODO RT : have to change get node "doors:door" to group door function here and elsewhere in the mod
+-- TODO RT : have to check for water and act accordingly
+
+
+--	local my_entity = object:get_luaentity().name
+--	local my_entity = obj:get_luaentity()
+--	if my_entity ~= nil then 
+--		print("Entity = ", my_entity.name);
+--		local name_split = string.split(obj:get_luaentity().name, ':')
+--	end
+
+
+
+--    if pointedobject:get_luaentity() then
+--mods/mob_core/api.lua:                    pointedobject = pointedobject:get_luaentity()
+
+
+
+
+	--if minetest.get_item_group(item_name, key) > 0 then
+
+	if is_legs_solid then 
+		if my_debug then print("I AM STANDING IN SOMETHING") end
+		if string.find(pos_node.name,"stairs:slab") or doors.registered_doors[pos_node.name] then
+			if my_debug then print("TESTED GOTO JUMP POS") end
+		else 
+			if my_debug then print("TESTED GOTO JUMP NEG = JUMP") end
+			self:jump()
+		end
+	end
+
+	if string.find(front_node_c.name,"default:river_water_") then
+		if my_debug then print("Found a River.") end
+		if string.find(front_node_b.name,"default:river_water_") then
+			if my_debug then print("Too deep for me") end
+			--self:change_direction_randomly()
+			return true
+		end
+	end
+	if string.find(front_node_c.name,"default:water_") then
+		if my_debug then print("Found some Water.") end
+
+		if string.find(front_node_b.name,"default:water_") then
+			if my_debug then print("Too deep for me") end
+			--self:change_direction_randomly()
+			return true
+		end
+	end
+
+
+-- doors.registered_doors[pos_node.name]
+
+--	if string.find(minetest.get_node(back_pos).name,"doors:") then
+	if doors.registered_doors[minetest.get_node(back_pos).name] then
+		local door = doors.get(back_pos)
+		if door ~= nil then door:close() end
+	end
+
+
+	if not is_below_solid then
+		if my_debug then print("Allow to fall to get new location") end
+		-- stops getting on stuck of pyramids ??
+	end 
+
+	if doors.registered_doors[front_node_c.name] then
+		
+		local door = doors.get(my_fwd_c)
+		local door_dir = vector.apply(minetest.facedir_to_dir(front_node_c.param2),math.abs)
+
+		local door_dest = vector.new(0,my_pos.y,0);
+		door_dest.x = my_pos.x + math.round(my_dir.x);
+		door_dest.z = my_pos.z + math.round(my_dir.z);
+
+		local villager_dir = vector.round(vector.apply(my_dir,math.abs))
+		--if vector.equals(door_dir,villager_dir) then
+		--	if door:state() then
+				--door:close()
+		--	else
+				door:open()
+		--	end
+		--end
+		--self.object:set_pos(vector.round(door_dest))
+				--dwddoor:close()
+		if my_debug then
+			print("DOOR FOUND =", front_node_c.name);
+			print("DOORDIR=", door_dir);
+			print("DOORDEST=", door_dest);
+			print("VillagerDIR=", villager_dir);
+		end
+
+--	elseif not(is_forwarda_solid) and not(is_forwardb_solid) then
+--		if my_debug then 
+--			print("IS_FORWARDA_SOLID=",is_forwarda_solid) 
+--			print("IS_FORWARDB_SOLID=",is_forwardb_solid) 
+--		end
+
+		--self:change_direction_randomly()
+
+	elseif is_above_solid then
+		-- CANNOT JUMP !
+		if my_debug then print("Something Above") end
+		if is_forwardd_solid then 
+			if my_debug then print("In my face - ", front_node_d.name, " - change dir?") end
+			--self:change_direction_randomly()
+		elseif is_forwardc_solid or is_forwardd_solid then 
+			if my_debug then print("Above and nowhere to go - change dir") end
+			--self:change_direction_randomly()
+		else
+			if my_debug then print("Not sure what to do") end
+		end
+
+
+
+
+-- TRY LADDER HERE
+	elseif string.find(below_node.name,"default:ladder") then
+		-- ladder below !
+		if my_debug then print("ladder below") end
+		--self:down()
+ 
+	elseif string.find(above_node.name,"default:ladder") then
+		-- ladder below !
+		if my_debug then print("ladder above") end
+		self:jump()
+
+	 else 
+		-- CAN JUMP ?
+		if my_debug then print("Nothing Above") end
+		if is_forwardd_solid then 
+			if my_debug then print("In my face - ", front_node_d.name, " - change dir?") end
+			--self:change_direction_randomly()
+		else
+			if my_debug then print("Not in my face") end
+			if is_forwardc_solid then 
+				if my_debug then print("Step found - looking for room") end
+				if is_forwarde_solid then 
+					if my_debug then print("No room to jump up - change dir?") end
+					--self:change_direction_randomly()
+				else
+					if my_debug then print("Is room to jump up - Try Jumping") end
+					self:jump()
+				end
+			end
+		end
+
+
+
+	end
+
+	
+
+
+
+
+--				    if minetest.get_item_group(front_node.name, "fence") > 0 and not(ignore_fence) then
+--				--	print("HandleObstacles:Not Ignore Fences?");
+--				      self:change_direction_randomly()
+--				    elseif string.find(front_node.name,"doors:door") and not(ignore_doors) then
+--				--	print("HandleObstacles:Not Ignore Doors?");
+--				      local door = doors.get(front_pos)
+--				      local door_dir = vector.apply(minetest.facedir_to_dir(front_node.param2),math.abs)
+--				      local villager_dir = vector.round(vector.apply(front_diff,math.abs))
+--				      if vector.equals(door_dir,villager_dir) then
+--					if door:state() then
+--					  door:close()
+--					else
+--					  door:open()
+---					end
+--				      end
+--
+--
+--				-- TODO RT : have to do some more checks for blocks above head when jumpingid
+--				    elseif minetest.registered_nodes[front_node.name].walkable and not(minetest.registered_nodes[above_node.name].walkable) then
+--					print("Something to Jump over");
+--				      if velocity.y == 0 then
+--					local nBox = minetest.registered_nodes[front_node.name].node_box
+--					if (nBox == nil) then
+--					  nBox = {-0.5,-0.5,-0.5,0.5,0.5,0.5}
+--					else
+--					  nBox = nBox.fixed
+--					end
+--					if type(nBox[1])=="number" then
+--					  nBox = {nBox}
+--					end
+--					for _,box in pairs(nBox) do --TODO: check rotation of the nodebox
+--					  local nHeight = (box[5] - box[2]) + front_pos.y
+--					  if nHeight > self.object:get_pos().y + .5 then
+--					    self:jump()
+--					  end
+--					end
+--				      end
+--				    end
+--				  end
+--				  if not ignore_doors then
+--				    local back_pos = self:get_back()
+--				    if string.find(minetest.get_node(back_pos).name,"doors:door") then
+--				      local door = doors.get(back_pos)
+--				      door:close()
+--				    end
+--				  end
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 -- working_villages.villager.pickup_item pickup items placed and put it to main slot.
 function working_villages.villager:pickup_item()
@@ -1537,7 +1853,7 @@ function working_villages.register_villager(product_name, def)
   villager_def.job_thread                  = false
   villager_def.product_name                = ""
   villager_def.manufacturing_number        = -1
-  villager_def.health			   = 18
+  villager_def.health			   = 30
   villager_def.owner_name                  = ""
   villager_def.time_counters               = {}
   villager_def.destination                 = vector.new(0,0,0)

@@ -19,7 +19,7 @@ I love people.",
 		self:count_timer("snowclearer:change_dir")
 		self:handle_obstacles()
 		if self:timer_exceeded("snowclearer:search",50) then
-			print("Looking for a wounded person")
+--			print("Looking for a wounded person")
 
 
 
@@ -27,26 +27,27 @@ I love people.",
 
 			local dobj = self:get_nearest_wounded_npc(5)
 			if dobj ~= nil then
-				print("Found a wounded person")
-				ani_pos = dobj:get_pos()
-				local destination = func.find_adjacent_clear(ani_pos)
+--				print("Found a wounded person")
+				local ani_pos = dobj:get_pos()
+				--local destination = func.find_adjacent_clear(ani_pos)
+				local my_dest = func.get_closest_clear_spot(self.object:get_pos(),ani_pos)
+				
+				if my_dest ~= false then
+--					print("Going to ", my_dest)
+					self:go_to(my_dest)
 
-				if destination ~= false then
-					print("Going to ", destination)
-					self:go_to(destination)
-
-					destination = func.find_adjacent_clear(dobj:get_pos())				
-					local distance = vector.distance(self.object:get_pos(), destination)
+					--destination = func.find_adjacent_clear(dobj:get_pos())				
+					local distance = vector.distance(self.object:get_pos(), ani_pos)
 
 					if distance < 2 then
-						print("Got to the wounded NPC")
+--						print("Got to the wounded NPC")
 						self:set_animation(working_villages.animation_frames.MINE)
 						local tophp = dobj:get_hp()
 
 						if dobj:get_luaentity() then
 							local luae = dobj:get_luaentity()
 							local currhp = luae.health
-							print(luae.name, " = ", currhp, "/", tophp)
+							print("MEDIC_HEALING:", luae.name, " = ", currhp, "/", tophp)
 
 							if tophp == currhp then
 								print("ERR Why does the wounded NPC have full health?")
@@ -65,7 +66,7 @@ I love people.",
 						self:set_animation(working_villages.animation_frames.STAND)
 					end
 				else
-					print("I cannot find the destination to goto")
+					print("Medic cannot find the destination to goto")
 				end
 			end
 			
