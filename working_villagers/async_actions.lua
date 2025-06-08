@@ -1,95 +1,291 @@
 local fail = working_villages.require("failures")
 local log = working_villages.require("log")
 local func = working_villages.require("jobs/util")
+local co_command = working_villages.require("job_coroutines").commands
 local pathfinder = working_villages.require("pathfinder")
 
 --TODO: add variable precision
-function working_villages.villager:go_to(pos, can_fall)
 
+function working_villages.villager:go_on_the_path(mydest, isrunning)
+		
+
+		local mypos = self.object:get_pos()
+	--	local mypos = vector.round(self.object:get_pos())
+	--	local mypos = self.object:get_pos()
+		local adjdst = {
+			x = mydest.x,
+			y = mypos.y,
+			z = mydest.z
+		}
+
+--		local thedist = vector.distance(mypos,adjdst)	
+		local thedist = vector.distance(mypos,mydest)	
+		--print("JUST GO ON THE PATH = ", thedist)
+
+		if thedist > 0.6 then 
+
+			if isrunning then
+				self:change_direction(mydest,self.run_speed)
+			else
+				self:change_direction(mydest,self.walk_speed)
+			end
+
+
+
+			local tempmv = self.object:get_velocity()
+
+
+			local tempv = {x = 0, y = tempmv.y, z = 0}
+			if math.round(mypos.y) > mydest.y then
+				tempv.y = -5
+			elseif  math.round(mypos.y) < mydest.y then
+				tempv.y = 6.5
+			end
+--
+--			local checkv = {x = adjdst.x, y = mypos.y -0.5, z = adjdst.z}
+
+
+
+
+--			local checkd = vector.distance(mypos,checkv)
+--			local tempmv = self.object:get_velocity()
+			self.object:set_velocity{x = tempmv.x, y = tempv.y, z = tempmv.z}
+
+			-- TODO bit of a dirty fix for slabs screwing with y
+--			if func.get_goto_distance_check(self.object:get_pos(),mydest) then
+--				thedist = 0
+--			end	
+			return nil
+		else
+			return true
+		end
+
+--	self.object:set_velocity{x = 0, y = 0, z = 0}
+--	self:set_animation(working_villages.animation_frames.STAND)
+--	return true
+
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+function working_villages.villager:go_to_the(inpath)
+
+--print(self.object:get_luaentity().nametag, " GOTOTHE:")
+
+	if inpath == nil or inpath == false then
+		-- TODO should indicate who cannot find a path
+		print(self.object:get_luaentity().nametag, " No InPath location Found [go_to_the(inpath)]")
+		return nil
+	end
+
+
+
+
+	local curr_step = 1
+	self:set_animation(working_villages.animation_frames.WALK)
+	while inpath[curr_step] ~= nil do
+		
+		local mypos = self.object:get_pos()
+		local mydest = inpath[curr_step]
+--print("Going (", curr_step, ") to ", mydest)
+		local thedist = vector.distance(mypos,mydest)
+
+-- TODO check if i am already there needs be done on planning
+		
+
+		local timeoutcount = 100
+
+
+		while thedist > 1 do
+--print("JUST GOING TO THEDIST = ", thedist)
+
+			self:handle_goto_obstacles(true)
+			self:handle_doors()
+			mypos = self.object:get_pos()
+			local tempmv = self.object:get_velocity()
+			timeoutcount = timeoutcount - 1
+			if timeoutcount < 0 then 
+--print(self.object:get_luaentity().nametag, " GOTO_TIMEOUT", inpath[curr_step])
+				return false
+			end
+			local tempv = {x = 0, y = tempmv.y, z = 0}
+			if math.round(mypos.y) > mydest.y then
+				tempv.y = -6
+			elseif  math.round(mypos.y) < mydest.y then
+				tempv.y = 6.5
+			end
+
+			local checkv = {x = mydest.x, y = mypos.y -0.5, z = mydest.z}
+			local checkd = vector.distance(mypos,checkv)
+			self:change_direction(inpath[curr_step])
+			local tempmv = self.object:get_velocity()
+			self.object:set_velocity{x = tempmv.x, y = tempv.y, z = tempmv.z}
+
+			-- TODO bit of a dirty fix for slabs screwing with y
+			if func.get_goto_distance_check(self.object:get_pos(),inpath[curr_step]) then
+				thedist = 0
+			end	
+--			end
+			thedist = vector.distance(self.object:get_pos(),inpath[curr_step]) -- checkd
+			coroutine.yield()
+
+		end
+		curr_step = curr_step + 1;
+	end				
+
+	self.object:set_velocity{x = 0, y = 0, z = 0}
+	self:set_animation(working_villages.animation_frames.STAND)
+	return true
+
+end
+
+
+
+
+
+
+
+
+
+
+
+--TODO: add variable precision
+function working_villages.villager:go_to(pos, can_fall)
 
 	local canfall = false
 	if can_fall ~= nil then
 		canfall = can_fall
 	end
 
-
+			--self:set_state_info("I'm working out a route.")
+			--self:set_displayed_action("Working out a route")
+			--self:set_animation(working_villages.animation_frames.STAND)
+			--self.object:set_velocity{x = 0, y = 0, z = 0}
 
 	local my_pos = self.object:get_pos()
 --	print("GO_TO FUNCTION MY_POS ", my_pos)
-	local my_pos_v = func.validate_pos(my_pos)
+	--local my_pos_v = func.validate_pos(my_pos)
 --	print("GO_TO FUNCTION MY_POS_V ", my_pos)
 
 	if pos == nil then
-		print("No GOTO Pos Found")
-		return false
+		print(self.object:get_luaentity().nametag, " No GOTO Pos Found = ", pos )
+		return nil
 	end
 
 	local to_pos = vector.new(pos.x,pos.y,pos.z)
 --	print("GO_TO FUNCTION TO_POS ", to_pos)
-	local to_pos_v = func.validate_pos(to_pos)
+	--local to_pos_v = func.validate_pos(to_pos)
 --	print("GO_TO FUNCTION TO_POS_V ", pos)
 
 	--print("DEBUG:SELF.OBJECT:", dump(self.object))
 	--print("DEBUG:PATHFINDER:", dump(pathfinder))
 	
 
-	local path_data = pathfinder.plot_movement_to_pos(my_pos, to_pos, canfall)
+	local path_data = nil
 
-	--print("PATH_DATA_DUMP:", dump(path_data))
+	path_data = pathfinder.plot_movement_to_pos(my_pos, to_pos, canfall)
 
 	if path_data == nil then
-		print("No Path Found")
-		return false
-	else
---		print("The first waypoint on the path:", func.plot_movement_get_step(1))
+		-- TODO should indicate who cannot find a path
+		print(self.object:get_luaentity().nametag, " No Path Found to ", to_pos)
+		return nil
+	end
 
-		local curr_step = 1
-		self:set_animation(working_villages.animation_frames.WALK)
-		while path_data[curr_step] ~= nil do
-			
---			print("Change Direction : Step ", curr_step, " to ", func.plot_movement_get_step(curr_step))
-			--self:change_direction(func.plot_movement_get_step(curr_step))
+
+
+
+	-- TODO do i yeald here or do I return false and Yeald elsewhere
+	if path_data == false then
+		print(self.object:get_luaentity().nametag, " IT SEEMS PATHFINDER IS BUSY-- I WILL HAVE TO WAIT MY TURN")
+		return false 
+	end
+
+	local curr_step = 1
+	self:set_animation(working_villages.animation_frames.WALK)
+	while path_data[curr_step] ~= nil do
 		
+		local mypos = self.object:get_pos()
+		local mydest = path_data[curr_step]
+--print("Going (", curr_step, ") to ", mydest)
+		local thedist = vector.distance(mypos,mydest)
+		local timeoutcount = 200
+
+
+		while thedist > 0.6 do
+--print("JUST GOING TO THEDIST = ", thedist)
+
+		self:handle_doors()							-- TODO ADD TO THE REST OF THE BOTS
+
+
+			mypos = self.object:get_pos()
+			local tempmv = self.object:get_velocity()
+			timeoutcount = timeoutcount - 1
+			if timeoutcount < 0 then 
+print(self.object:get_luaentity().nametag, " GOTO_TIMEOUT", path_data[curr_step])
+				return -1
+			end
+
+			local tempv = {x = 0, y = tempmv.y, z = 0}
+		
+			--if math.abs(mypos.x - mydest.x) < 0.1 and math.abs(mypos.z - mydest.z) < 0.1 and math.round(mypos.y) > mydest.y then
 			
-			local thedist = vector.distance(self.object:get_pos(),path_data[curr_step])
--- 			TODO needs to be stricter on X and Z and less with Y
+--print("myposY:",mypos.y, " mydestY:", mydest.y)			
+			if math.round(mypos.y) > mydest.y then
+--print(self.object:get_luaentity().nametag, " : WHILE I NEED TO GO DOWN NOW")
+				tempv.y = -6
+				--self:delay(2)
+			--if math.abs(mypos.x - mydest.x) < 0.1 and math.abs(mypos.z - mydest.z) < 0.1 and math.round(mypos.y) < mydest.y then
+			elseif  math.round(mypos.y) < mydest.y then
+
+--print(self.object:get_luaentity().nametag, " : WHILE I NEED TO GO UP NOW")
+				tempv.y = 6.5
+				--self:delay(2)
+			end
 
 
+			local checkv = {x = mydest.x, y = mypos.y -0.5, z = mydest.z}
+			local checkd = vector.distance(mypos,checkv)
+--print("JUST GOING TO POINT : CHECKD = ", checkd)
 
-			local timeoutcount = 100
+--			if checkd < 1 then
+--				print("JUST GOING UPDOWN")
+--				self.object:set_velocity(tempv)
+--			else
 
-
-			while thedist > 0.6 do
-				timeoutcount = timeoutcount - 1
-				if timeoutcount < 0 then 
-					print("GOTO_TIMEOUT")
-					return false
-				end
---				print("looping")
 				self:change_direction(path_data[curr_step])
-		--		TODO Needs a JustJump handler
-		--		self:handle_obstacles(true)
-				self:handle_goto_obstacles(true)
 
-				thedist = vector.distance(self.object:get_pos(),path_data[curr_step])
-				--print("StepDist", thedist)
 				
+
+				local tempmv = self.object:get_velocity()
+				self.object:set_velocity{x = tempmv.x, y = tempv.y, z = tempmv.z}
+
 				-- TODO bit of a dirty fix for slabs screwing with y
 				if func.get_goto_distance_check(self.object:get_pos(),path_data[curr_step]) then
 					thedist = 0
 				end	
+--			end
+			thedist = vector.distance(self.object:get_pos(),path_data[curr_step]) -- checkd
+			coroutine.yield()
+		
+		end
+		curr_step = curr_step + 1;
+	end				
 
-				coroutine.yield()
-			end
+	self.object:set_velocity{x = 0, y = 0, z = 0}
+	self:set_animation(working_villages.animation_frames.STAND)
+	return true
 
-			curr_step = curr_step + 1;
-		end				
 
-		self.object:set_velocity{x = 0, y = 0, z = 0}
-		self:set_animation(working_villages.animation_frames.STAND)
-		return true
-
-	end
 
 		
 --	end	
@@ -109,7 +305,7 @@ function working_villages.villager:go_to(pos, can_fall)
 		--return false, fail.no_path
 --		self.path = {self.destination}
 --	end
---	print("the first waypiont on his path:" .. minetest.pos_to_string(self.path[1]))
+--i	print("the first waypiont on his path:" .. minetest.pos_to_string(self.path[1]))
 --	self:change_direction(self.path[1])
 --	self:set_animation(working_villages.animation_frames.WALK)
 
@@ -176,8 +372,22 @@ function working_villages.villager:collect_nearest_item_by_condition(cond, searc
 	--print("collecting item at:".. minetest.pos_to_string(pos))
 	local inv=self:get_inventory()
 	if inv:room_for_item("main", ItemStack(item:get_luaentity().itemstring)) then
-		self:go_to(pos)
+
+		--print("Sapling y = ", pos.y)
+		
+		--if pos.y < self.object:get_pos() + searching_range.y then
+
+			local gotores = self:go_to(pos) ---------------------------------------------------------------------------------------------------------------------TODO
+			while gotores == false do  
+				--print("WAITINGFORPATHFINDER")
+				coroutine.yield()
+				gotores = self:go_to(pos)
+			end
+			if gotores == nil then print("NOPATHFOUND") end
+
+
 		self:pickup_item()
+		--end
 	end
 end
 
@@ -346,8 +556,8 @@ function working_villages.villager:place(item,pos)
 
 
 		elseif itemdef.type=="node" then
---			print("Off Place (in space?)")
 			stack = minetest.item_place_node(stack, self, pointed_thing)
+			
 		end
 --		print("After Place")
 		local after_node = minetest.get_node(pos)
@@ -393,12 +603,32 @@ function working_villages.villager:manipulate_chest(chest_pos, take_func, put_fu
 			local size = vil_inv:get_size("main");
 			for index = 1,size do
 				local stack = vil_inv:get_stack("main", index);
-				if (not stack:is_empty()) and (put_func(self, stack, data)) then
-					local chest_meta = minetest.get_meta(chest_pos);
-					local chest_inv = chest_meta:get_inventory();
-					local leftover = chest_inv:add_item("main", stack);
-					vil_inv:set_stack("main", index, leftover);
-					for _=0,10 do coroutine.yield() end --wait 10 steps
+				if (not stack:is_empty()) then
+
+					if (put_func(self, stack, data)) then
+--						print("PUT_FUNC OK")
+						local chest_meta = minetest.get_meta(chest_pos);
+						local chest_inv = chest_meta:get_inventory();
+						local leftover = chest_inv:add_item("main", stack);
+
+						if leftover:is_empty() then 
+--						print("LEFTOVER IS EMPTY")
+						else
+--						print("LEFTOVER TO CHEST = ", dump(leftover))
+						coroutine.yield(co_command.pause,"Seems I no room for produce in my chest")
+						end
+						
+--						print("LEFTOVER TO CHEST = ", dump(leftover))
+
+						vil_inv:set_stack("main", index, leftover);
+						for _=0,10 do coroutine.yield() end --wait 10 steps
+						
+					else
+--						print("PUT_FUNC NOT OK")
+					end
+
+				else
+--					print("FARMER : STACK IS EMPTY")
 				end
 			end
 		end
@@ -482,6 +712,8 @@ end
 function working_villages.villager:goto_bed()
 	local pos=self.object:get_pos()
 
+
+
 	if self.pos_data.home_pos==nil then
 		if self.nametag ~= nil then
 			log.info("%s don't know where Home is !",self.nametag)
@@ -507,7 +739,18 @@ function working_villages.villager:goto_bed()
 		end
 		self:set_state_info("I'm going home, it's late.")
 		self:set_displayed_action("going home")
-		if self:go_to(h_pos,true) then
+
+
+		local gotores = self:go_to(h_pos,true) ---------------------------------------------------------------------------------------------------------------------TODO
+		while gotores == false do  
+			print("WAITINGFORPATHFINDER TO GO TO HOME")
+			coroutine.yield()
+			gotores = self:go_to(pos)
+		end
+		if gotores == nil then print("NOPATHFOUND") end
+
+
+		if gotores then ---------------------------------------------------------------------------------------------------------------------TODO
 --			print("GOTO RETURNED HOME TRUE")
 			if self.nametag ~= nil then
 				log.info("%s going to bed",self.nametag)
@@ -518,8 +761,20 @@ function working_villages.villager:goto_bed()
 
 			local bed_pos = self.pos_data.bed_pos
 			local b_pos = vector.new(bed_pos.x,bed_pos.y,bed_pos.z)
-			local my_dest = func.get_closest_clear_spot(pos,b_pos)
-			if not self:go_to(my_dest) then
+
+			local my_pos=self.object:get_pos()
+--			print("MY_POS = ", my_pos) 
+			local my_dest = func.get_closest_clear_spot(my_pos,b_pos)
+--			print("I think my bed is at ", my_dest)
+
+			local gotores = self:go_to(my_dest) ---------------------------------------------------------------------------------------------------------------------TODO
+			while gotores == false do  
+				print("WAITINGFORPATHFINDER TO GO TO BED")
+				coroutine.yield()
+				gotores = self:go_to(my_dest)
+			end
+
+			if not gotores then ---------------------------------------------------------------------------------------------------------------------TODO
 				if self.nametag ~= nil then
 					log.info("%s Could not get to the BED",self.nametag)
 				else
@@ -534,63 +789,31 @@ function working_villages.villager:goto_bed()
 				tod = minetest.get_timeofday()
 			end
 			self:sleep()
-			self:go_to(self.pos_data.home_pos)
-			
 
-
+			local gotores = self:go_to(self.pos_data.home_pos) ---------------------------------------------------------------------------------------------------------------------TODO
+			while gotores == false do  
+				print("WAITINGFORPATHFINDER TO GOTO HOME POS")
+				coroutine.yield()
+				gotores = self:go_to(pos)
+			end
+			if gotores == nil then print("NOPATHFOUND") end
+				--self:go_to(self.pos_data.home_pos) ---------------------------------------------------------------------------------------------------------------------TODO
+		
 		else
-			--print("GOTO RETURNED HOME FALSE")
+			print("GOTO RETURNED HOME FALSE")
 		end
 
-
---		if vector.distance(pos,self.pos_data.home_pos) < 0.6 then
-
-
-
---		coroutine.yield()
-	end
-
-	--	if (self.pos_data.bed_pos==nil) then
-	--		print("I Don't know what Bed is !");
-	--		log.warning("villager %s couldn't find his bed",self.inventory_name)
-	--		--TODO: go home anyway
-	--		self:set_state_info("I am going to rest soon.\nI would love to have a bed in my home though.")
-	--		self:set_displayed_action("waiting for dusk")
-	--		local tod = minetest.get_timeofday()
---	--		while (tod > 0.2 and tod < 0.805) do
---	--			coroutine.yield()
---	--			tod = minetest.get_timeofday()
---	--		end
-	--		self:set_state_info("I'm waiting for dawn to come.")
-	--		self:set_displayed_action("waiting until dawn")
-	--		self:set_animation(working_villages.animation_frames.SIT)
-	--		self.object:set_velocity{x = 0, y = 0, z = 0}
-	--		self.wait_until_dawn()
-	--	else
-	--		print("I am going to Bed !");
-	--		print("villager %s bed is at: %s", self.inventory_name, minetest.pos_to_string(self.pos_data.bed_pos))
-	--		--log.info("villager %s bed is at: %s", self.inventory_name, minetest.pos_to_string(self.pos_data.bed_pos))
-	--		self:set_state_info("I'm going to bed, it's late.")
-	--		self:set_displayed_action("going to bed")
-
-	--		if self:go_to(self.pos_data.bed_pos) then
-	--			print("Got to the BED")
-	--		else
-	--			print("Could not get to the BED")
-	--		end
-	--		self:set_state_info("I am going to sleep soon.")
-	--		self:set_displayed_action("waiting for dusk")
-	--		local tod = minetest.get_timeofday()
-	--		while (tod > 0.2 and tod < 0.805) do
-	--			coroutine.yield()
-	--			tod = minetest.get_timeofday()
-	--		end
-	--		self:sleep()
-	--		self:go_to(self.pos_data.home_pos)
-	--	end
-	--end
-	--return true
+	end 
 end
+
+
+
+
+
+
+
+
+
 
 function working_villages.villager:handle_night()
 	local tod = minetest.get_timeofday()
@@ -624,8 +847,19 @@ function working_villages.villager:goto_job()
 		end
 		self:set_state_info("I am going to my job position.")
 		self:set_displayed_action("going to job")
-		--print("GOINGTOJOB:", vector.new(self.pos_data.job_pos.x,self.pos_data.job_pos.y,self.pos_data.job_pos.z))
-		self:go_to(vector.new(self.pos_data.job_pos.x,self.pos_data.job_pos.y,self.pos_data.job_pos.z))
+		print(self.nametag, " GOINGTOJOB:", vector.new(self.pos_data.job_pos.x,self.pos_data.job_pos.y,self.pos_data.job_pos.z))
+
+		local gotores = self:go_to(vector.new(self.pos_data.job_pos.x,self.pos_data.job_pos.y,self.pos_data.job_pos.z))
+		while gotores == false do  
+			print(self.nametag, " WAITINGFORPATHFINDER GOTO MY JOB")
+			coroutine.yield()  -- TODO should i return false here then yeald ???
+			gotores = self:go_to(vector.new(self.pos_data.job_pos.x,self.pos_data.job_pos.y,self.pos_data.job_pos.z))
+		end
+		if gotores == nil then 
+			print(self.nametag, " NOPATHFOUNDTOJOB ", vector.new(self.pos_data.job_pos.x,self.pos_data.job_pos.y,self.pos_data.job_pos.z))
+			return false
+		end
+
 		self.job_data.in_work = true;
 	end
 	self:set_state_info("I'm working.")
@@ -633,13 +867,33 @@ function working_villages.villager:goto_job()
 	return true
 end
 
+
+
+
+
+
+
 function working_villages.villager:handle_chest(take_func, put_func, data)
 	local pos = self.object:get_pos()
 	if (not self.job_data.manipulated_chest) then
+		self.job_data.manipulated_chest = true;
+
 		if (self.pos_data.chest_pos~=nil) then
-			local c_pos = vector.new(self.pos_data.chest_pos.x,self.pos_data.chest_pos.y,self.pos_data.chest_pos.z)			
-			--func.find_adjacent_clear(chest_pos)			
-			local my_dest = func.get_closest_clear_spot(pos,c_pos)
+
+
+
+
+			local c_pos = self.pos_data.chest_pos
+			print("DUMP CHEST_POS ", dump(c_pos))
+
+			
+
+
+		
+			local my_dest = func.get_closest_clear_spot(self.object:get_pos(),c_pos)
+			print("DUMP MY_DEST ", dump(my_dest))
+--			print("THE CLOSEST I CAN GET TO MY CHEST IS ", my_dest)
+
 			if self.nametag ~= nil then
 				log.info("%s is handling a chest", self.nametag)
 			else
@@ -647,15 +901,21 @@ function working_villages.villager:handle_chest(take_func, put_func, data)
 			end
 			self:set_state_info("I am taking and puting items from/to my chest.")
 			self:set_displayed_action("active")
-			--print("Finding Closest Clear Spot")
 
---			local chest = minetest.get_node(chest_pos);
---			local dir = minetest.facedir_to_dir(chest.param2);
---			local destination = vector.subtract(chest_pos, dir);
-			self:go_to(my_dest)
-			self:manipulate_chest(c_pos, take_func, put_func, data);
+			local gotores = self:go_to(my_dest) ---------------------------------------------------------------------------------------------------------------------TODO
+			while gotores == false do  
+--				print(self.nametag, " WAITING FOR PATHFINDER TO FIND MY CHEST")
+				coroutine.yield()
+				gotores = self:go_to(pos)
+			end
+			if gotores == nil then 
+				print(self.nametag, " NO PATH FOUND TO MY CHEST") 
+			else
+				--self:go_to(my_dest) ---------------------------------------------------------------------------------------------------------------------TODO
+				self:manipulate_chest(c_pos, take_func, put_func, data);
+			end
+			return true
 		end
-		self.job_data.manipulated_chest = true;
 	end
 end
 

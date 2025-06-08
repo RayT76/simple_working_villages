@@ -1,5 +1,13 @@
 --TODO: replace with building_sign mod
-local SCHEMS = {"simple_hut.we", "fancy_hut.we", "simple_house.we", "[custom house]"}
+local SCHEMS = {"simple_hut.we","fancy_hut.we","simple_house.we",
+		"building_wood_1.we","building_wood_2.we","building_wood_3.we","building_wood_4.we",
+		"gravel_road (EtoW).we","building_pitmine_1.we",
+		"gravel_road (NtoS).we","building_wood_start.we","building_field_1.we","building_well_1.we",
+		"simple_animal_enclosure(N).we","orchard_a.we","orchard_b.we","orchard_c.we",
+		"simple_fountain.we","building_workshop_1.we","building_workshop_2.we","building_center_1.we",
+		"buildingplot_sml_wood_house1_N(15x20).we","building_wood_1.we",
+		"simple_library.we","simple_policestation.we","simple_pool.we","simple_small_field.we","simple_stone_2NPC_house(N).we",
+		"simple_stone_NPC_house(N).we","simple_stone_NPC_house(S).we","simple_wood_NPC_house(S).we","simple_fire_station.we","simple_single_house(N).we","town_center_1.we","[custom house]"}
 local DEFAULT_NODE = {name="air"}
 local use_we = minetest.get_modpath("worldedit")
 local use_hs = minetest.get_modpath("handle_schematics")
@@ -110,9 +118,14 @@ function working_villages.buildings.load_schematic(filename,pos)
 	print("FILENAME:", filename)
 	print("POS:", pos)
 
-	local wpath = core.get_worldpath()
-	local spath = "/schems/simple_house.we"
-	local tpath = wpath .. spath
+	local wv_loc = minetest.get_modpath("working_villages")
+--/home/ray/.minetest/mods/working_villages/working_villagers/schems/
+
+--	local wpath = core.get_worldpath()
+--	local spath = "/schems/simple_house.we"
+--	local tpath = wpath .. filename
+	local tpath = wv_loc .. "/schems/" .. filename
+	print ("WV LOC = ", tpath)
 
 	local input = io.open(tpath, "r")
 	if not(input) then
@@ -159,10 +172,10 @@ function working_villages.buildings.load_schematic(filename,pos)
 
 	local repdata = {}
 	for var=firstdef,lastdef,1 do
-      		print("DEFA",var, " = ", test1[var])
+--    		print("DEFA",var, " = ", test1[var])
 		local def = string.split(test1[var], "=", -1, false)
-		print("DEF", def[1])
-		print("ITEM", def[2])
+--		print("DEF", def[1])
+--		print("ITEM", def[2])
 		repdata[def[1]] = def[2]
     	end
 
@@ -185,17 +198,23 @@ function working_villages.buildings.load_schematic(filename,pos)
 		end
 		snodetext[svar] = ntext
     	end
-
+	local max_y = nil
+	local min_y = nil
+	local max_x = nil
+	local min_x = nil
+	local max_z = nil
+	local min_z = nil
 	local thenodes = {}
 	for svar=1,slinecount,1 do
 		local tempnode = string.split(snodetext[svar], ",", -1, false)
-		local anode = { ["x"] = nil,
-				["y"] = nil,
-				["z"] = nil,
-				["name"] = nil,
-				["param1"] = nil,
-				["param2"] = nil,
-	}
+		local anode = { }
+--				["x"] = nil,
+--				["y"] = nil,
+--				["z"] = nil,
+--				["name"] = nil,
+--				["param1"] = nil,
+--				["param2"] = nil,
+--	}
 		
 		local ncount = 1
 		while tempnode[ncount] ~= nil do
@@ -204,12 +223,45 @@ function working_villages.buildings.load_schematic(filename,pos)
 
 			if tempval[1] == "x" then
 				anode["x"] = tempval[2]	
+				if min_x == nil then min_x = tonumber(tempval[2]) end	
+				if max_x == nil then max_x = tonumber(tempval[2]) end	
+				if tonumber(tempval[2]) < min_x then 
+					--print("NEW MINX = ", min_x)
+					min_x = tonumber(tempval[2]) 
+				end
+				if tonumber(tempval[2]) > max_x then 
+					--print("NEW MAXX = ", max_x)
+					max_x = tonumber(tempval[2]) 
+				end
+
 			end		
 			if tempval[1] == "y" then
-				anode["y"] = tempval[2]	
+				anode["y"] = tempval[2]
+				if min_y == nil then min_y = tonumber(tempval[2]) end	
+				if max_y == nil then max_y = tonumber(tempval[2]) end	
+				if tonumber(tempval[2]) < min_y then 
+					---print("NEW MINY = ", min_y)
+					min_y = tonumber(tempval[2]) 
+				end
+				if tonumber(tempval[2]) > max_y then 
+					--print("NEW MAXY = ", max_y)
+					max_y = tonumber(tempval[2]) 
+				end
+
 			end
 			if tempval[1] == "z" then
 				anode["z"] = tempval[2]	
+				if min_z == nil then min_z = tonumber(tempval[2]) end	
+				if max_z == nil then max_z = tonumber(tempval[2]) end	
+				if tonumber(tempval[2]) < min_z then 
+					--print("NEW MINZ = ", min_z)
+					min_z = tonumber(tempval[2]) 
+				end
+				if tonumber(tempval[2]) > max_z then 
+					--print("NEW MAXZ = ", max_z)
+					max_z = tonumber(tempval[2]) 
+				end
+
 			end
 			if tempval[1] == "name" then
 			local tname = string.gsub(tempval[2], "}", "")
@@ -225,39 +277,66 @@ function working_villages.buildings.load_schematic(filename,pos)
 			ncount = ncount + 1
 		end
 		thenodes[svar] = anode
-		print("ANODE", svar, dump(anode))
+--		print("ANODE", svar, dump(anode))
 	end
 
 	print(slinecount, "SCHEMATIC NODES LOADED !!")
-	table.sort(thenodes, function(a,b)
-		if a.y == b.y then
-			if a.z == b.z then
-				return a.x < b.x
-			end
-			return a.z < b.z
-		end
-		return a.y < b.y
-	end)
+--	print(min_y, "MIN_Y !!")
+--	print(max_y, "MAX_Y !!")
+--	print(min_x, "MIN_Y !!")
+--	print(max_x, "MAX_Y !!")
+--	print(min_z, "MIN_Y !!")
+--	print(max_z, "MAX_Y !!")
+
+
+	local node_count = 1
 	local nodedata = {}
-	for i,v in ipairs(thenodes) do --this is actually not nessecary
-		if v.name and v.x and v.y and v.z then
-			local node = {name=v.name, param1=v.param1, param2=v.param2}
-			local npos = vector.add(working_villages.buildings.get_build_pos(meta), {x=v.x, y=v.y, z=v.z})
-			local name = working_villages.buildings.get_registered_nodename(v.name)
-			--local name = v.name
-			if minetest.registered_items[name]==nil then
-				print("NODE NAME UNREGISTERED")
-				print("NODENN=", name)
-				print("NODEVN=", v.name)
-				print("NODEDN=", DEFAULT_NODE)
-				node = DEFAULT_NODE
+	for i= min_y, max_y do 
+
+		for ind,val in ipairs(thenodes) do 
+			
+			--print("DUMPVAL:", node_count, "=", dump(val))			
+			if tonumber(val.y) == i then
+
+				local node = {name=val.name, param1=val.param1, param2=val.param2}
+				local npos = vector.add(working_villages.buildings.get_build_pos(meta), {x=val.x, y=val.y, z=val.z})
+				local name = working_villages.buildings.get_registered_nodename(val.name)
+				--local name = v.name
+				if minetest.registered_items[name]==nil then
+					print("NODE NAME UNREGISTERED")
+					print("NODENN=", name)
+					print("NODEVN=", v.name)
+					print("NODEDN=", DEFAULT_NODE)
+					node = DEFAULT_NODE
+				end
+				nodedata[node_count] = {pos=npos, node=node}
+				node_count = node_count + 1
+				--print("DUMPVAL:", node_count, "=", dump(val))
+
 			end
-			nodedata[i] = {pos=npos, node=node}
 		end
 	end
+
+
 	local buildpos = working_villages.buildings.get_build_pos(meta)
 	local building = working_villages.buildings.get(buildpos)
+--	building.minx = min_x
+--	building.maxx = max_x
+--	building.minz = min_z
+--	building.maxz = max_z
+--	building.miny = min_y
+--	building.maxy = max_y
 	building.nodedata = nodedata
+
+local tempxyz = {
+		x = max_x,
+		y = max_y,
+		z = max_z
+		}
+
+return tempxyz
+
+
 end
 
 function working_villages.buildings.get_materials(nodelist)
@@ -340,7 +419,16 @@ working_villages.buildings.get_formspec = function(meta)
 end
 
 local on_receive_fields = function(pos, _, fields, sender)
+--	print("HERES JACK !!")
+--	print("JACKPOS:", pos)
+--	print("JACKFIELDS:", dump(fields))
+--	print("JACKSENDER:", dump(sender))
+
+
+
 	local meta = minetest.get_meta(pos)
+--	print("JACKMETA:", dump(meta))
+
 	local sender_name = sender:get_player_name()
 	if minetest.is_protected(pos, sender_name) then
 		minetest.record_protection_violation(pos, sender_name)
@@ -364,7 +452,16 @@ local on_receive_fields = function(pos, _, fields, sender)
 						z=math.ceil(pos.z) + 2
 					}
 					meta:set_string("build_pos",minetest.pos_to_string(bpos))
+					--meta:set_int("minx",building.maxx)
+					--meta:set_int("miny",building.maxy)
+					--meta:set_int("minz",building.maxz)
+
+
+
+
+
 					working_villages.buildings.load_schematic(meta:get_string("schematic"),pos)
+					print("JACKSCHEM:", meta:get_string("schematic"))
 					meta:set_int("index",0)
 					meta:set_string("state","planned")
 				end

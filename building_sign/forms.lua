@@ -5,7 +5,11 @@ local schems = building_sign.registered_schematics
 --TODO: translations
 
 function forms.build_form(meta)
+		print("HERES JOHNY1")
 	local title = meta:get_string("schematic"):gsub("%.we","")
+
+	print("DUMPFORMMETA:",dump(meta))
+
 	local button_build
 	if meta:get_string("state") == "planned" then
 		button_build = "button_exit[5.0,1.0;3.0,0.5;build_start;Begin Build]"
@@ -31,8 +35,11 @@ function forms.build_form(meta)
 end
 
 function forms.make_formspec(meta)
+		print("HERES JOHNY2")
 	local state = meta:get_string("state")
 	if state == "unplanned" then
+
+
 		local schemslist = {}
 		for _,el in pairs(schems) do
 			table.insert(schemslist,minetest.formspec_escape(el))
@@ -55,6 +62,13 @@ function forms.make_formspec(meta)
 end
 
 function forms.on_receive_fields(pos, _, fields, sender)
+		print("HERES JOHNY3")
+
+--	print("DUMPFIELDS:",dump(fields))
+--	print("DUMPSENDER:",dump(sender))
+
+
+
 	local meta = minetest.get_meta(pos)
 	local sender_name = sender:get_player_name()
 	if minetest.is_protected(pos, sender_name) then

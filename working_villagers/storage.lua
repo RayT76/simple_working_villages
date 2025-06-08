@@ -19,13 +19,14 @@ function working_villages.get_stored_table(key)
   end
   return {};
 end
+
 function working_villages.set_stored_table(key, data)
   storage:set_string(key, minetest.serialize(data));
 end
+
 function working_villages.clear_cached_table(key)
   cache[key] = nil;
 end
-
 
 function working_villages.get_stored_villager_table(self)
   local data = cache[self.inventory_name];
@@ -42,9 +43,11 @@ function working_villages.get_stored_villager_table(self)
   end
   return {};
 end
+
 function working_villages.set_stored_villager_table(self, data)
   storage:set_string(self.inventory_name, minetest.serialize(data));
 end
+
 function working_villages.clear_cached_villager_table(self)
   cache[self.inventory_name] = nil;
 end

@@ -6,8 +6,12 @@ working_villages={
 }
 
 if not minetest.get_modpath("modutil") then
-    dofile(working_villages.modpath.."/modutil/portable.lua")
+	print("INIT: LOADING LOCAL MODUTIL")
+	dofile(working_villages.modpath.."/modutil/portable.lua")
+else
+	print("INIT: LOADING MODUTIL")
 end
+
 
 modutil.require("local_require")(working_villages)
 local log = working_villages.require("log")
@@ -33,22 +37,34 @@ working_villages.require("building")
 working_villages.require("storage")
 
 --base
+
 working_villages.require("api")
 working_villages.require("register")
 working_villages.require("commanding_sceptre")
-
 working_villages.require("deprecated")
 
 --job helpers
 working_villages.require("jobs/util")
 working_villages.require("jobs/empty")
+
 --base jobs
 working_villages.require("jobs/builder")
+working_villages.require("jobs/builder_a")
+
+
+working_villages.require("jobs/lumberjack_a")
+working_villages.require("jobs/miner_a")
+working_villages.require("jobs/mayor_a")
+working_villages.require("jobs/farmer_a")
+
 working_villages.require("jobs/follow_player")
 working_villages.require("jobs/guard")
 working_villages.require("jobs/plant_collector")
 working_villages.require("jobs/farmer")
 working_villages.require("jobs/woodcutter")
+working_villages.require("jobs/gardener_a")
+
+
 --testing jobs
 working_villages.require("jobs/torcher")
 working_villages.require("jobs/snowclearer")
@@ -56,9 +72,26 @@ working_villages.require("jobs/snowclearer")
 
 working_villages.require("jobs/fireman")
 working_villages.require("jobs/grass_cutter")
+
 working_villages.require("jobs/medic")
 working_villages.require("jobs/vet")
 
+print("SIMPLE_WORKING_VILLAGES_INIT:")
+
+
+--local pname = user:get_player_name()
+--print("Player name : ", pname)
+--local inv = minetest.get_inventory({type="player", name=pname})
+--print("Player inventory = ", dump(inv))
+
+--local startnode = core.get_node(vector.new{ x = 0, y = 0, z = 0 })
+--local startnode = minetest.get_node(vector.new{ x = 0, y = 0, z = 0 })
+--if startnode ~= nil then 
+--	print(dump(startnode)) --> { name=.., param1=.., param2=.. }
+--else
+--	print("START NODE = NIL") --> { name=.., param1=.., param2=.. }
+--end
+--print("END:SIMPLE_WORKING_VILLAGES_INIT:")
 
 
 if working_villages.setting_enabled("spawn",false) then

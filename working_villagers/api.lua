@@ -3,6 +3,30 @@
 local log = working_villages.require("log")
 local cmnp = modutil.require("check_prefix","venus")
 
+local func = working_villages.require("jobs/util")
+
+-- TODO :: Animations wanted for characters
+
+-- Stand = 
+-- Lay = 
+-- Walk =
+-- Mine =
+-- Walk-Mine =
+-- Sit =
+-- 
+-- Swim
+-- Swim-Attack
+-- Fly
+-- Fly-Attack
+-- Fall
+-- Fall-Attack
+-- Duck Standard
+-- Duck
+-- Climb
+-- 
+-- 
+
+
 working_villages.animation_frames = {
   STAND     = { x=  0, y= 79, },
   LAY       = { x=162, y=166, },
@@ -12,19 +36,35 @@ working_villages.animation_frames = {
   SIT       = { x= 81, y=160, },
 }
 
+--	|Animation| Start | End | FPS |
+--	|---------|-------|-----|-----|
+--	|Swim     |  246  | 279 |  30 |
+--	|Swim Atk |  285  | 318 |  30 |
+--	|Fly      |  325  | 334 |  30 |
+--	|Fly Atk  |  340  | 349 |  30 |
+--	|Fall     |  355  | 364 |  30 |
+--	|Fall Atk |  365  | 374 |  30 |
+--	|Duck Std |  380  | 380 |  30 |
+--	|Duck     |  381  | 399 |  30 |
+--	|Climb    |  410  | 429 |  30 |
+
 working_villages.registered_villagers = {}
-
 working_villages.registered_jobs = {}
-
 working_villages.registered_eggs = {}
+local have_i_been_hit = false
+local been_hit_by = nil
+local curr_animation = nil
 
 -- records failed node place attempts to prevent repeating mistakes
 -- key=minetest.pos_to_string(pos) val=(os.clock()+180)
 local failed_pos_data = {}
 local failed_pos_time = 0
 
+local top_velocity = 1.6
+
 -- remove old positions
 local function failed_pos_cleanup()
+--print("API:REGISTER_VILLAGER [", product_name, "]")
 	-- build a list of all items to discard
 	local discard_tab = {}
 	local now = os.clock()
@@ -41,6 +81,7 @@ end
 
 -- add a failed place position
 function working_villages.failed_pos_record(pos)
+--print("API:REGISTER_VILLAGER [", product_name, "]")
 	local key = minetest.hash_node_position(pos)
 	failed_pos_data[key] = os.clock() + 180 -- mark for 3 minutes
 
@@ -60,10 +101,10 @@ end
 
 -- working_villages.is_job reports whether a item is a job item by the name.
 function working_villages.is_job(item_name)
-  if working_villages.registered_jobs[item_name] then
-    return true
-  end
-  return false
+	if working_villages.registered_jobs[item_name] then
+		return true
+	end
+	return false
 end
 
 -- working_villages.is_villager reports whether a name is villager's name.
@@ -94,7 +135,6 @@ end
 -- working_villages.villager.get_job_name returns a name of a villager's current job.
 function working_villages.villager:get_job_name()
   local inv = self:get_inventory()
-
   local new_job = self.object:get_luaentity().new_job
   if new_job ~= "" then
     self.object:get_luaentity().new_job = ""
@@ -102,7 +142,6 @@ function working_villages.villager:get_job_name()
     inv:set_stack("job", 1, job_stack)
     return new_job
   end
-
   return inv:get_stack("job", 1):get_name()
 end
 
@@ -128,13 +167,11 @@ function working_villages.villager:get_nearest_player(range_distance,pos)
   local min_distance = range_distance
   local player,ppos
   local position = pos or self.object:get_pos()
-
   local all_objects = minetest.get_objects_inside_radius(position, range_distance)
   for _, object in pairs(all_objects) do
     if object:is_player() then
       local player_position = object:get_pos()
       local distance = vector.distance(position, player_position)
-
       if distance < min_distance then
         min_distance = distance
         player = object
@@ -150,13 +187,11 @@ function working_villages.villager:get_nearest_enemy(range_distance)
   local enemy
   local min_distance = range_distance
   local position = self.object:get_pos()
-
   local all_objects = minetest.get_objects_inside_radius(position, range_distance)
   for _, object in pairs(all_objects) do
     if self:is_enemy(object) then
       local object_position = object:get_pos()
       local distance = vector.distance(position, object_position)
-
       if distance < min_distance then
         min_distance = distance
         enemy = object
@@ -175,9 +210,11 @@ function working_villages.villager:get_nearest_item_by_condition(cond, range_dis
   local item = nil
   local min_distance = max_distance
   local position = self.object:get_pos()
-
   local all_objects = minetest.get_objects_inside_radius(position, max_distance)
   for _, object in pairs(all_objects) do
+	local opos = object:get_pos()
+--	print("OBJECT POS = ", opos)
+	if opos.y < position.y + range_distance.y then
     if not object:is_player() and object:get_luaentity() and object:get_luaentity().name == "__builtin:item" then
       local found_item = ItemStack(object:get_luaentity().itemstring):to_table()
       if found_item then
@@ -192,6 +229,9 @@ function working_villages.villager:get_nearest_item_by_condition(cond, range_dis
         end
       end
     end
+
+	end
+
   end
   return item;
 end
@@ -211,9 +251,7 @@ function working_villages.villager:get_nearest_wounded_animal(distance)
 	local myposition = self.object:get_pos() -- should round this function for pathing error prevention
 	local all_objects = minetest.get_objects_inside_radius(myposition, distance)
 	for _, object in pairs(all_objects) do
-
 		if object:get_luaentity() then
-
 			local my_oname = object:get_luaentity().name
 
 			if string.find(my_oname,"working_villages:villager_male") then
@@ -274,30 +312,7 @@ function working_villages.villager:get_nearest_wounded_animal(distance)
 			else
 				print("WHAT IS A : ",my_oname)
 			end
-
-
-
-		
-
-		--print("Found LUAOBJ: ", object:get_luaentity().name);
 		end
-
-
-
-	    --if not object:is_player() and object:get_luaentity() and object:get_luaentity().name == "__builtin:item" then
-	    --  local found_item = ItemStack(object:get_luaentity().itemstring):to_table()
-	    --  if found_item then
-	    --    if cond(found_item) then
-	    --      local item_position = object:get_pos()
-	    --      local distance = vector.distance(position, item_position)
-	    --
-	    --      if distance < min_distance then
-	    --        min_distance = distance
-	    --        item = object
-	    --      end
-	    --    end
-	    --  end
-	    --end
 	end
 	return nil;
 end
@@ -314,38 +329,37 @@ end
 function working_villages.villager:get_nearest_wounded_npc(distance)
 	local animal = nil
 	local myposition = self.object:get_pos() -- should round this function for pathing error prevention
---	print("get wounded npc started")
-
 	local ohp = nil
 	local olhp = nil
 	local all_objects = minetest.get_objects_inside_radius(myposition, distance)
---	print("got all objects")
-	for _, object in pairs(all_objects) do
-
-		if object:get_luaentity() then
-
-			local luae = object:get_luaentity()
+	for _, fobject in pairs(all_objects) do
+		if fobject:get_luaentity() then
+			local luae = fobject:get_luaentity()
 			local my_oname = luae.name
 
-			if string.find(my_oname,"working_villages:villager_male") then
-				if luae.health < object:get_hp() then return object end
+            
+            if string.find(my_oname,"working_villages:villager") then
+                --print("Medic found ", my_oname, luae.health, fobject:get_hp(), fobject:get_properties().hp_max) 
+                local props = fobject:get_properties()
+                --print("DUMPLUEA:", dump(props.hp_max) )
+				if luae.health < props.hp_max then return fobject end
+
+			elseif string.find(my_oname,"working_villages:villager_male") then
+				if luae.health < fobject:get_hp() then return fobject end
 			elseif string.find(my_oname,"working_villages:villager_female") then
-				if luae.health < object:get_hp() then return object end
+				if luae.health < fobject:get_hp() then return fobject end
 			elseif my_oname == "mobs_npc:npc" then  
-				if luae.health < object:get_hp() then return object end
+				if luae.health < fobject:get_hp() then return fobject end
 			elseif my_oname == "mobs_npc:igor" then
-				--if object:get_luaentity().health < object:get_hp() then return object end
+
 			elseif my_oname == "mobs_npc:trader" then
-				if luae.health < object:get_hp() then return object end
-
-
+				if luae.health < fobject:get_hp() then return fobject end
 			-- WITCHES
-
 			elseif string.find(my_oname,"witches:witch_") then
 
 				if luae.health ~= nil then
-					if object:get_hp() ~= nil then
-						if luae.health < object:get_hp() then return object end
+					if fobject:get_hp() ~= nil then
+						if luae.health < fobject:get_hp() then return fobject end
 					else
 						print("Object:get_hp() returned NIL")
 					end
@@ -353,15 +367,10 @@ function working_villages.villager:get_nearest_wounded_npc(distance)
 					print("LUAE.health returned NIL")
 				end
 
-
 			elseif my_oname == "leads:lead" then
 			elseif my_oname == "visual_harm_1ndicators:hpbar" then
 			elseif my_oname == "working_villages:dummy_item" then
 			elseif my_oname == "__builtin:item" then
-
-
-
-
 
 			elseif my_oname == "mobs_monster:dirt_monster" then
 			elseif my_oname == "mobs_monster:fire_spirit" then
@@ -387,89 +396,24 @@ function working_villages.villager:get_nearest_wounded_npc(distance)
 			elseif my_oname == "mobs_monster:dirt_monster" then
 
 			elseif string.find(my_oname,"mobs_animal:sheep_") then
---				if object:get_luaentity().health < object:get_hp() then
---					return object
---				end
-
 			elseif my_oname == "mobs_animal:pumba" then
---				if object:get_luaentity().health < object:get_hp() then
---					return object
---				end
 			elseif my_oname == "mobs_animal:chicken" then
---				if object:get_luaentity().health < object:get_hp() then
---					return object
---				end
 			elseif my_oname == "mobs_animal:panda" then
---				if object:get_luaentity().health < object:get_hp() then
---					return object
---				end
 			elseif my_oname == "mobs_animal:penguin" then
---				if object:get_luaentity().health < object:get_hp() then
---					item = object
---					return item;
---				end
 			elseif my_oname == "mobs_animal:bunny" then
---				if object:get_luaentity().health < object:get_hp() then
---					item = object
---					return item;
---				end
 			elseif my_oname == "mobs_animal:bee" then
---				if object:get_luaentity().health < object:get_hp() then
---					item = object
---					return item;
---				end
 			elseif my_oname == "mobs_animal:cow" then
---				if object:get_luaentity().health < object:get_hp() then
---					item = object
---					return item;
---				end
 			elseif my_oname == "mobs_animal:kitten" then
---				if object:get_luaentity().health < object:get_hp() then
---					item = object
---					return item;
---				end
 			elseif my_oname == "mobs_animal:rat" then
---				if object:get_luaentity().health < object:get_hp() then
---					item = object
---					return item;
 --				end   nativevillages:toad
 			else
 				print("WHAT IS A : ",my_oname)
-				print("DUMP : ", object:get_luaentity())
-					
+				--print("DUMP : ", fobject:get_luaentity())
 			end
-
-
-
-		
-
-		--print("Found LUAOBJ: ", object:get_luaentity().name);
 		end
-
-
-
-	    --if not object:is_player() and object:get_luaentity() and object:get_luaentity().name == "__builtin:item" then
-	    --  local found_item = ItemStack(object:get_luaentity().itemstring):to_table()
-	    --  if found_item then
-	    --    if cond(found_item) then
-	    --      local item_position = object:get_pos()
-	    --      local distance = vector.distance(position, item_position)
-	    --
-	    --      if distance < min_distance then
-	    --        min_distance = distance
-	    --        item = object
-	    --      end
-	    --    end
-	    --  end
-	    --end
 	end
 	return nil;
 end
-
-
-
-
-
 
 
 
@@ -490,9 +434,6 @@ function working_villages.villager:get_front()
   else
     direction.z = 0
   end
-
-  --direction.y = direction.y - 1
-
   return vector.add(vector.round(self.object:get_pos()), direction)
 end
 
@@ -540,6 +481,8 @@ end
 -- working_villages.villager.set_animation sets the villager's animation.
 -- this method is wrapper for self.object:set_animation.
 function working_villages.villager:set_animation(frame)
+	self.curr_animation = frame
+
   self.object:set_animation(frame, 15, 0)
   if frame == working_villages.animation_frames.LAY then
     local dir = self:get_look_direction()
@@ -550,6 +493,63 @@ function working_villages.villager:set_animation(frame)
     self.object:set_properties({collisionbox={-0.25, 0, -0.25, 0.25, 1.75, 0.25}})
   end
 end
+
+
+
+
+--function working_villages.villager:get_animation()
+--	if self.curr_animation == nil then 
+--		return nil
+--	end
+--	if self.curr_animation.x == 0 and self.curr_animation.y == 79 then 
+--		return "STAND"
+--	elseif self.curr_animation.x == 162 and self.curr_animation.y == 166 then
+--		return "LAY"
+--	elseif self.curr_animation.x == 168 and self.curr_animation.y == 187 then
+--		return "WALK"
+--	elseif self.curr_animation.x == 189 and self.curr_animation.y == 198 then
+--		return "MINE"
+--	elseif self.curr_animation.x == 200 and self.curr_animation.y == 219 then
+--		return "WALK_MINE"
+--	elseif self.curr_animation.x == 81 and self.curr_animation.y == 160 then
+--		return "SIT"
+--	else
+--		return nil
+--	end
+--end
+
+
+
+
+
+
+
+
+
+
+
+function working_villages.villager:get_animation()
+	if self.curr_animation == nil then 
+		return nil
+	end
+	if self.curr_animation.x == 0 and self.curr_animation.y == 79 then 
+		return "STAND"
+	elseif self.curr_animation.x == 162 and self.curr_animation.y == 166 then
+		return "LAY"
+	elseif self.curr_animation.x == 168 and self.curr_animation.y == 187 then
+		return "WALK"
+	elseif self.curr_animation.x == 189 and self.curr_animation.y == 198 then
+		return "MINE"
+	elseif self.curr_animation.x == 200 and self.curr_animation.y == 219 then
+		return "WALK_MINE"
+	elseif self.curr_animation.x == 81 and self.curr_animation.y == 160 then
+		return "SIT"
+	else
+		return nil
+	end
+end
+
+
 
 -- working_villages.villager.set_yaw_by_direction sets the villager's yaw
 -- by a direction vector.
@@ -603,6 +603,7 @@ end
 
 -- working_villages.villager.is_named reports the villager is still named.
 function working_villages.villager:is_named()
+--print("API: IS_NAMED")
   return self.nametag ~= ""
 end
 
@@ -620,17 +621,18 @@ function working_villages.villager:has_item_in_main(pred)
 end
 
 -- working_villages.villager.change_direction change direction to destination and velocity vector.
-function working_villages.villager:change_direction(destination)
+function working_villages.villager:change_direction(destination,velocity)
+
+	local thevelocity = top_velocity
+
+	if velocity ~= nil then 
+		thevelocity = velocity
+	end 
   local position = self.object:get_pos()
-
---print("DUMP : ", dump(self.object))
-
   local tempvelocity = self.object:get_velocity()
-
   local direction = vector.subtract(destination, position)
   direction.y = 0
-  local velocity = vector.multiply(vector.normalize(direction), 2)
-
+  local velocity = vector.multiply(vector.normalize(direction), thevelocity)
   velocity.y = tempvelocity.y
   self.object:set_velocity(velocity)
   self:set_yaw_by_direction(direction)
@@ -643,7 +645,7 @@ function working_villages.villager:change_direction_randomly()
     y = 0,
     z = math.random(0, 5) * 2 - 5,
   }
-  local velocity = vector.multiply(vector.normalize(direction), 2)
+  local velocity = vector.multiply(vector.normalize(direction), top_velocity)
   self.object:set_velocity(velocity)
   self:set_yaw_by_direction(direction)
   self:set_animation(working_villages.animation_frames.WALK)
@@ -695,6 +697,8 @@ end
 
 -- working_villages.villager.update_infotext updates the infotext of the villager.
 function working_villages.villager:update_infotext()
+--print("API: UPDATE_INFOTEXT")
+
   local infotext = ""
   local job_name = self:get_job()
 
@@ -737,27 +741,23 @@ function working_villages.villager:handle_liquids()
   end
 end
 
-
-
-
-
+-- FIXME Hacked to get working -- needs work
 
 function working_villages.villager:jump()
   local ctrl = self.object
   local below_node = minetest.get_node(vector.subtract(ctrl:get_pos(),{x=0,y=1,z=0}))
   local velocity = ctrl:get_velocity()
   if below_node.name == "air" then return false end
-  local jump_force = math.sqrt(self.initial_properties.weight) * 1.5
-  if minetest.get_item_group(below_node.name,"liquid") > 0 then
-    local viscosity = minetest.registered_nodes[below_node.name].liquid_viscosity
-    jump_force = jump_force/(viscosity*100)
-  end
-  ctrl:set_velocity{x = velocity.x, y = jump_force, z = velocity.z}
+--  local jump_force = math.sqrt(self.initial_properties.weight) * 1.5
+--  if minetest.get_item_group(below_node.name,"liquid") > 0 then
+--    local viscosity = minetest.registered_nodes[below_node.name].liquid_viscosity
+--    jump_force = jump_force/(viscosity*100)
+--  end
+--  ctrl:set_velocity{x = velocity.x, y = jump_force, z = velocity.z}
+  ctrl:set_velocity{x = velocity.x, y = 6.5, z = velocity.z}
 end
 
-
-
-
+-- FIXME Hacked to get working -- needs work
 
 function working_villages.villager:down()
   local ctrl = self.object
@@ -769,25 +769,63 @@ function working_villages.villager:down()
 --    local viscosity = minetest.registered_nodes[below_node.name].liquid_viscosity
 --    jump_force = jump_force/(viscosity*100)
 --  end
-  ctrl:set_velocity{x = 0, y = -1, z = 0}
+  ctrl:set_velocity{x = 0, y = -6, z = 0}
 end
 
 
 
+-- FIXME Hacked to get working -- not sure if needed ???
+
+function working_villages.villager:buried_check()
+
+	--print("Buried Check")
+	local mylegs = vector.round(self.object:get_pos())
+	local myhead = vector.add(mylegs, vector.new(0,1,0))
+	local legnode = minetest.get_node(mylegs)
+	local headnode = minetest.get_node(myhead)
+	if minetest.registered_nodes[headnode.name].walkable and minetest.registered_nodes[legnode.name].walkable then
+		--print("I seem to have buried myself in the ground?")
+		local currpos = vector.add(myhead, vector.new(0,1,0))
+		local currnode = minetest.get_node(currpos)
+		while currnode.walkable do
+			currpos = vector.add(currnode, vector.new(0,1,0))
+			currnode = minetest.get_node(currpos)
+		end
+		--("Open ground seems to be at location ", currpos)
+		self.object:set_pos(currpos)
+	elseif minetest.registered_nodes[legnode.name].walkable then
+		self.object:set_pos(myhead)
+	end
+end
 
 
-
-
-
-
-
-
-
-
-
-
-
-
+function working_villages.villager:handle_doors()
+	local my_pos = vector.round(self.object:get_pos())
+	local my_dir = self:get_look_direction()
+	local my_fwd = vector.add(my_pos, vector.round(my_dir))
+	local back_pos = self:get_back()
+	local legnode = minetest.get_node(my_pos)
+	local my_fwd_c = vector.new(0,0,0) -- legs level
+	my_fwd_c = vector.add(my_fwd_c, my_fwd);
+	local front_node_c = minetest.get_node(my_fwd_c)
+		if doors.registered_doors[front_node_c.name] then
+		local door = doors.get(my_fwd_c)
+			if door ~= nil then 
+				door:open() 
+			end
+		end
+		if doors.registered_doors[legnode.name] then
+			
+		local door = doors.get(my_pos)
+			if door ~= nil then 
+				door:open()
+			end
+		end
+		if doors.registered_doors[minetest.get_node(back_pos).name] then
+			local door = doors.get(back_pos)
+			if door ~= nil then door:close() end
+		end
+end
 
 
 
@@ -802,223 +840,131 @@ end
 --if ignore_fence is false the villager will not jump over fences
 --if ignore_doors is false and the villager hits a door he opens it
 function working_villages.villager:handle_obstacles(ignore_fence,ignore_doors)
-
 	local my_debug = false; 
-
-
 	local my_pos = vector.round(self.object:get_pos())
 	local my_vel = self.object:get_velocity()
-	local my_dir = self:get_look_direction()
-	local my_fwd = vector.add(my_pos, vector.round(my_dir));
-	local my_abv = vector.add(my_pos, vector.new(0,2,0)); -- directly above head
-	local my_blw = vector.add(my_pos, vector.new(0,-1,0)); -- directly below feet
-	local above_node = minetest.get_node(my_abv)
-	local below_node = minetest.get_node(my_blw)
-	local my_fwd_a = vector.new(0,-2,0) -- below by two
-	local my_fwd_b = vector.new(0,-1,0) -- below by one
-	local my_fwd_c = vector.new(0,0,0) -- legs level
-	local my_fwd_d = vector.new(0,1,0) -- head level
-	local my_fwd_e = vector.new(0,2,0) -- directly above head
-	my_fwd_a = vector.add(my_fwd_a, my_fwd);
-	my_fwd_b = vector.add(my_fwd_b, my_fwd);
-	my_fwd_c = vector.add(my_fwd_c, my_fwd);
-	my_fwd_d = vector.add(my_fwd_d, my_fwd);
-	my_fwd_e = vector.add(my_fwd_e, my_fwd);
-	local front_node_a = minetest.get_node(my_fwd_a)
-	local front_node_b = minetest.get_node(my_fwd_b)
-	local front_node_c = minetest.get_node(my_fwd_c)
-	local front_node_d = minetest.get_node(my_fwd_d)
-	local front_node_e = minetest.get_node(my_fwd_e)
-
-	local is_above_solid = minetest.registered_nodes[above_node.name].walkable;
-	local is_below_solid = minetest.registered_nodes[below_node.name].walkable;
-	local is_forwarda_solid = minetest.registered_nodes[front_node_a.name].walkable;
-	local is_forwardb_solid = minetest.registered_nodes[front_node_b.name].walkable;
-	local is_forwardc_solid = minetest.registered_nodes[front_node_c.name].walkable; -- legs level
-	local is_forwardd_solid = minetest.registered_nodes[front_node_d.name].walkable;
-	local is_forwarde_solid = minetest.registered_nodes[front_node_e.name].walkable;
-	local back_pos = self:get_back()
-
-
-	if my_debug then
-		print("");
-		print("MYPOSITION  :",my_pos);
-	--	print("MYVELOCITY:",my_vel);
-		print("MYDIRECTION  :",my_dir);
-		print("MYFORWARD  :",my_fwd);
-	end
-	
--- TODO RT : have to implement the ignore doors and fences functionality
--- TODO RT : have to change get node "doors:door" to group door function here and elsewhere in the mod
--- TODO RT : have to check for water and act accordingly
-
-
---	local my_entity = object:get_luaentity().name
---	local my_entity = obj:get_luaentity()
---	if my_entity ~= nil then 
---		print("Entity = ", my_entity.name);
---		local name_split = string.split(obj:get_luaentity().name, ':')
---	end
-
-
-
---    if pointedobject:get_luaentity() then
---mods/mob_core/api.lua:                    pointedobject = pointedobject:get_luaentity()
-
-
-
-
-	--if minetest.get_item_group(item_name, key) > 0 then
-
-
-	if string.find(front_node_c.name,"default:river_water_") then
-		--print("Found a River.");
-		if string.find(front_node_b.name,"default:river_water_") then
-			--print("Too deep for me");
-			self:change_direction_randomly()
-			return true
-		end
-	end
-	if string.find(front_node_c.name,"default:water_") then
-		--print("Found some Water.");
-
-		if string.find(front_node_b.name,"default:water_") then
-			--print("Too deep for me");
-			self:change_direction_randomly()
-			return true
-		end
-	end
-
-
-
-
-	if doors.registered_doors[minetest.get_node(back_pos).name] then
-		local door = doors.get(back_pos)
-		if door ~= nil then door:close() end
-	end
-
-
-	if not is_below_solid then
-		-- allow to fall to get new location
-		-- stops getting on stuck of pyramids
-	elseif doors.registered_doors[front_node_c.name] then
-		
-		local door = doors.get(my_fwd_c)
-		local door_dir = vector.apply(minetest.facedir_to_dir(front_node_c.param2),math.abs)
-
-		local door_dest = vector.new(0,my_pos.y,0);
-		door_dest.x = my_pos.x + math.round(my_dir.x);
-		door_dest.z = my_pos.z + math.round(my_dir.z);
-
-		local villager_dir = vector.round(vector.apply(my_dir,math.abs))
-		--if vector.equals(door_dir,villager_dir) then
-		--	if door:state() then
-				--door:close()
-		--	else
-				door:open()
-		--	end
-		--end
-		--self.object:set_pos(vector.round(door_dest))
-				--dwddoor:close()
+	if my_vel.x ~= 0 and my_vel.z ~= 0 then
+		local my_dir = self:get_look_direction()
+		local my_fwd = vector.add(my_pos, vector.round(my_dir))
+		local my_abv = vector.add(my_pos, vector.new(0,2,0)) -- directly above head
+		local my_blw = vector.add(my_pos, vector.new(0,-1,0)) -- directly below feet
+		local above_node = minetest.get_node(my_abv)
+		local below_node = minetest.get_node(my_blw)
+		local my_fwd_a = vector.new(0,-2,0) -- below by two
+		local my_fwd_b = vector.new(0,-1,0) -- below by one
+		local my_fwd_c = vector.new(0,0,0) -- legs level
+		local my_fwd_d = vector.new(0,1,0) -- head level
+		local my_fwd_e = vector.new(0,2,0) -- directly above head
+		my_fwd_a = vector.add(my_fwd_a, my_fwd);
+		my_fwd_b = vector.add(my_fwd_b, my_fwd);
+		my_fwd_c = vector.add(my_fwd_c, my_fwd);
+		my_fwd_d = vector.add(my_fwd_d, my_fwd);
+		my_fwd_e = vector.add(my_fwd_e, my_fwd);
+		local front_node_a = minetest.get_node(my_fwd_a)
+		local front_node_b = minetest.get_node(my_fwd_b)
+		local front_node_c = minetest.get_node(my_fwd_c)
+		local front_node_d = minetest.get_node(my_fwd_d)
+		local front_node_e = minetest.get_node(my_fwd_e)
+		local is_above_solid = minetest.registered_nodes[above_node.name].walkable;
+		local is_below_solid = minetest.registered_nodes[below_node.name].walkable;
+		local is_forwarda_solid = minetest.registered_nodes[front_node_a.name].walkable;
+		local is_forwardb_solid = minetest.registered_nodes[front_node_b.name].walkable;
+		local is_forwardc_solid = minetest.registered_nodes[front_node_c.name].walkable; -- legs level
+		local is_forwardd_solid = minetest.registered_nodes[front_node_d.name].walkable;
+		local is_forwarde_solid = minetest.registered_nodes[front_node_e.name].walkable;
+		local back_pos = self:get_back()
 		if my_debug then
-			print("DOOR FOUND =", front_node_c.name);
-			print("DOORDIR=", door_dir);
-			print("DOORDEST=", door_dest);
-			print("VillagerDIR=", villager_dir);
+			print("");
+			print("MYPOSITION  :",my_pos);
+			print("MYVELOCITY:",my_vel);
+			print("MYDIRECTION  :",my_dir);
+			print("MYFORWARD  :",my_fwd);
 		end
-
-	elseif not is_forwarda_solid and not is_forwardb_solid then
---		print("HAVE TO WATCH MY STEP - CHANGE DIR");
-		self:change_direction_randomly()
-
-	elseif is_above_solid then
-		-- CANNOT JUMP !
---		print("Something Above");
-		if is_forwardd_solid then 
---			print("In my face - ", front_node_d.name, " - change dir");
-			self:change_direction_randomly()
-		elseif is_forwardc_solid or is_forwardd_solid then 
---			print("Above and nowhere to go - change dir");
-			self:change_direction_randomly()
-		else
---			print("Not sure what to do");
-		end
-
-	 else 
-		-- CAN JUMP ?
---		print("Nothing Above");
-		if is_forwardd_solid then 
---			print("In my face - ", front_node_d.name, " - change dir");
-			self:change_direction_randomly()
-		else
---			print("Not in my face");
-			if is_forwardc_solid then 
---				print("Step found - looking for room");
-				if is_forwarde_solid then 
---					print("No room to jump up - change dir");
-					self:change_direction_randomly()
-				else
---					print("Is room to jump up - Try Jumping");
-					self:jump()
-				end
+		if string.find(front_node_c.name,"default:river_water_") then
+			--print("Found a River.");
+			if string.find(front_node_b.name,"default:river_water_") then
+				--print("Too deep for me");
+				self:change_direction_randomly()
+				return true
 			end
 		end
+		if string.find(front_node_c.name,"default:water_") then
+			--print("Found some Water.");
+
+			if string.find(front_node_b.name,"default:water_") then
+				--print("Too deep for me");
+				self:change_direction_randomly()
+				return true
+			end
+		end
+		if doors.registered_doors[minetest.get_node(back_pos).name] then
+			local door = doors.get(back_pos)
+			if door ~= nil then door:close() end
+		end
+		if doors.registered_doors[front_node_c.name] then
+			local door = doors.get(my_fwd_c)
+			local door_dir = vector.apply(minetest.facedir_to_dir(front_node_c.param2),math.abs)
+			local door_dest = vector.new(0,self.object:get_pos().y,0);
+			door_dest.x = my_pos.x + math.round(my_dir.x);
+			door_dest.z = my_pos.z + math.round(my_dir.z);
+			local villager_dir = vector.round(vector.apply(my_dir,math.abs))
+			--if vector.equals(door_dir,villager_dir) then
+			--	if door:state() then
+					--door:close()
+			--	else
+					door:open()
+			--	end
+			--end
+			--self.object:set_pos(vector.round(door_dest))
+					--dwddoor:close()
+			if my_debug then
+				--print("DOOR FOUND =", front_node_c.name);
+				--print("DOORDIR=", door_dir);
+				--print("DOORDEST=", door_dest);
+				--print("VillagerDIR=", villager_dir);
+			end
+
+		elseif not is_forwarda_solid and not is_forwardb_solid then
+	--		print("HAVE TO WATCH MY STEP - CHANGE DIR");
+			self:change_direction_randomly()
+
+		elseif is_above_solid then
+			-- CANNOT JUMP !
+	--		print("Something Above");
+			if is_forwardd_solid then 
+	--			print("In my face - ", front_node_d.name, " - change dir");
+				self:change_direction_randomly()
+			elseif is_forwardc_solid or is_forwardd_solid then 
+	--			print("Above and nowhere to go - change dir");
+				self:change_direction_randomly()
+			else
+	--			print("Not sure what to do");
+			end
+
+		 else 
+			-- CAN JUMP ?
+	--		print("Nothing Above");
+			if is_forwardd_solid then 
+	--			print("In my face - ", front_node_d.name, " - change dir");
+				self:change_direction_randomly()
+			else
+	--			print("Not in my face");
+				if is_forwardc_solid then 
+	--				print("Step found - looking for room");
+					if is_forwarde_solid then 
+	--					print("No room to jump up - change dir");
+						self:change_direction_randomly()
+					else
+	--					print("Is room to jump up - Try Jumping");
+						self:jump()
+					end
+				end
+			end
 
 
 
+		end
 	end
-
-	
-
-
-
-
---				    if minetest.get_item_group(front_node.name, "fence") > 0 and not(ignore_fence) then
---				--	print("HandleObstacles:Not Ignore Fences?");
---				      self:change_direction_randomly()
---				    elseif string.find(front_node.name,"doors:door") and not(ignore_doors) then
---				--	print("HandleObstacles:Not Ignore Doors?");
---				      local door = doors.get(front_pos)
---				      local door_dir = vector.apply(minetest.facedir_to_dir(front_node.param2),math.abs)
---				      local villager_dir = vector.round(vector.apply(front_diff,math.abs))
---				      if vector.equals(door_dir,villager_dir) then
---					if door:state() then
---					  door:close()
---					else
---					  door:open()
----					end
---				      end
---
---
---				-- TODO RT : have to do some more checks for blocks above head when jumpingid
---				    elseif minetest.registered_nodes[front_node.name].walkable and not(minetest.registered_nodes[above_node.name].walkable) then
---					print("Something to Jump over");
---				      if velocity.y == 0 then
---					local nBox = minetest.registered_nodes[front_node.name].node_box
---					if (nBox == nil) then
---					  nBox = {-0.5,-0.5,-0.5,0.5,0.5,0.5}
---					else
---					  nBox = nBox.fixed
---					end
---					if type(nBox[1])=="number" then
---					  nBox = {nBox}
---					end
---					for _,box in pairs(nBox) do --TODO: check rotation of the nodebox
---					  local nHeight = (box[5] - box[2]) + front_pos.y
---					  if nHeight > self.object:get_pos().y + .5 then
---					    self:jump()
---					  end
---					end
---				      end
---				    end
---				  end
---				  if not ignore_doors then
---				    local back_pos = self:get_back()
---				    if string.find(minetest.get_node(back_pos).name,"doors:door") then
---				      local door = doors.get(back_pos)
---				      door:close()
---				    end
---				  end
 end
 
 
@@ -1033,7 +979,9 @@ end
 
 
 
-function working_villages.villager:handle_goto_obstacles(ignore_fence,ignore_doors)
+function working_villages.villager:handle_goto_obstacles(can_drop)
+
+	if can_drop == nil then can_drop = true end
 
 	local my_debug = false
 	if my_debug then print("DEBUG HANDLE GOTO OBSTACLES") end
@@ -1077,10 +1025,11 @@ function working_villages.villager:handle_goto_obstacles(ignore_fence,ignore_doo
 
 
 	if my_debug then
-		print("MYPOSITION  :",my_pos);
-		print("MYVELOCITY:",my_vel);
-		print("MYDIRECTION  :",my_dir);
-		print("MYFORWARD  :",my_fwd);
+		print("MYPOSITION  :",my_pos)
+		print("MYVELOCITY:",my_vel)
+		print("MYDIRECTION  :",my_dir)
+		print("MYFORWARD  :",my_fwd)
+		print("POS NODE = ", pos_node.name)
 	end
 	
 -- TODO RT : have to implement the ignore doors and fences functionality
@@ -1107,12 +1056,25 @@ function working_villages.villager:handle_goto_obstacles(ignore_fence,ignore_doo
 
 	if is_legs_solid then 
 		if my_debug then print("I AM STANDING IN SOMETHING") end
-		if string.find(pos_node.name,"stairs:slab") or doors.registered_doors[pos_node.name] then
+		if string.find(pos_node.name,"stairs:slab") or string.find(pos_node.name,"beds:") or string.find(pos_node.name,"stairs:") or doors.registered_doors[pos_node.name] then
 			if my_debug then print("TESTED GOTO JUMP POS") end
 		else 
 			if my_debug then print("TESTED GOTO JUMP NEG = JUMP") end
-			self:jump()
+			
+
+			self.object:set_pos(vector.add(self.object:get_pos(), vector.new{x=0,y=1,z=0}))
+
+
+--			self:jump()
 		end
+	end
+
+--	print("FRONT B NODE = ", front_node_b.name)
+--	print("FRONT C NODE = ", front_node_c.name)
+	if string.find(front_node_b.name,"doors:") then
+		if my_debug then print("FOUND A DOOR") end
+		self:jump()
+		return true
 	end
 
 	if string.find(front_node_c.name,"default:river_water_") then
@@ -1123,6 +1085,7 @@ function working_villages.villager:handle_goto_obstacles(ignore_fence,ignore_doo
 			return true
 		end
 	end
+
 	if string.find(front_node_c.name,"default:water_") then
 		if my_debug then print("Found some Water.") end
 
@@ -1146,6 +1109,7 @@ function working_villages.villager:handle_goto_obstacles(ignore_fence,ignore_doo
 	if not is_below_solid then
 		if my_debug then print("Allow to fall to get new location") end
 		-- stops getting on stuck of pyramids ??
+		return nil
 	end 
 
 	if doors.registered_doors[front_node_c.name] then
@@ -1153,7 +1117,7 @@ function working_villages.villager:handle_goto_obstacles(ignore_fence,ignore_doo
 		local door = doors.get(my_fwd_c)
 		local door_dir = vector.apply(minetest.facedir_to_dir(front_node_c.param2),math.abs)
 
-		local door_dest = vector.new(0,my_pos.y,0);
+		local door_dest = vector.new(0,self.object:get_pos().y,0);
 		door_dest.x = my_pos.x + math.round(my_dir.x);
 		door_dest.z = my_pos.z + math.round(my_dir.z);
 
@@ -1173,16 +1137,21 @@ function working_villages.villager:handle_goto_obstacles(ignore_fence,ignore_doo
 			print("DOORDEST=", door_dest);
 			print("VillagerDIR=", villager_dir);
 		end
+	end
 
---	elseif not(is_forwarda_solid) and not(is_forwardb_solid) then
---		if my_debug then 
---			print("IS_FORWARDA_SOLID=",is_forwarda_solid) 
---			print("IS_FORWARDB_SOLID=",is_forwardb_solid) 
---		end
+	if can_drop == false then	
+		if not(is_forwarda_solid) and not(is_forwardb_solid) then
+			if my_debug then 
+				print("IS_FORWARDA_SOLID=",is_forwarda_solid) 
+				print("IS_FORWARDB_SOLID=",is_forwardb_solid) 
+			end
+			--self:change_direction_randomly()
+		end
+--		return nil
+	end
 
-		--self:change_direction_randomly()
 
-	elseif is_above_solid then
+	if is_above_solid then
 		-- CANNOT JUMP !
 		if my_debug then print("Something Above") end
 		if is_forwardd_solid then 
@@ -1224,6 +1193,9 @@ function working_villages.villager:handle_goto_obstacles(ignore_fence,ignore_doo
 					--self:change_direction_randomly()
 				else
 					if my_debug then print("Is room to jump up - Try Jumping") end
+
+	
+
 					self:jump()
 				end
 			end
@@ -1355,7 +1327,6 @@ working_villages.require("villager_state")
 -- deprecated check self.pause instesad
 function working_villages.villager:is_active()
   print("self:is_active is deprecated: check self.pause directly it's a boolean value")
-  --return self.pause == "active"
   return self.pause
 end
 
@@ -1363,11 +1334,6 @@ end
 --deprecated use set_pause
 function working_villages.villager:set_paused(reason)
   print("self:set_paused() is deprecated use self:set_pause() and self:set_displayed_action() instead")
-  --[[
-  self.pause = "resting"
-  self.object:set_velocity{x = 0, y = 0, z = 0}
-  self:set_animation(working_villages.animation_frames.STAND)
-  ]]
   self:set_pause(true)
   self:set_displayed_action(reason or "resting")
 end
@@ -1382,13 +1348,11 @@ end
 
 
 -- TODO TEST true from false
-
 function working_villages.villager:is_player()
   return false
 end
 
 -- TODO TEST true from false
-
 function working_villages.villager:get_wield_index()
   return 1
 end
@@ -1419,13 +1383,11 @@ end
 -- that has been already manufactured.
 working_villages.manufacturing_data = (function()
   local file_name = minetest.get_worldpath() .. "/working_villages_data"
-
   minetest.register_on_shutdown(function()
     local file = io.open(file_name, "w")
     file:write(minetest.serialize(working_villages.manufacturing_data))
     file:close()
   end)
-
   local file = io.open(file_name, "r")
   if file ~= nil then
     local data = file:read("*a")
@@ -1694,6 +1656,7 @@ function working_villages.register_villager(product_name, def)
 
   -- on_activate is a callback function that is called when the object is created or recreated.
   local function on_activate(self, staticdata)
+	print("WARNING: ON_ACTIVATE!!!")
     -- parse the staticdata, and compose a inventory.
     if staticdata == "" then
       self.product_name = name
@@ -1725,11 +1688,9 @@ function working_villages.register_villager(product_name, def)
     end
 
     self:set_displayed_action("active")
-
     self.object:set_nametag_attributes{
       text = self.nametag
     }
-
     self.object:set_velocity{x = 0, y = 0, z = 0}
     self.object:set_acceleration{x = 0, y = -self.initial_properties.weight, z = 0}
 
@@ -1816,9 +1777,96 @@ function working_villages.register_villager(product_name, def)
   end
 
   -- on_punch is a callback function that is called when a player punches a villager.
-  local function on_punch()--self, puncher, time_from_last_punch, tool_capabilities, dir
-  --TODO: aggression (add player ratings table)
+  --local function on_punch(self, puncher, tool_capabilities, dir)
+
+
+  local function on_punch(self, puncher, time_from_last_punch, tool_capabilities, direction, damage)
+	print("ON PUNCH EVENT")
+	local myohp = self.health
+
+
+	if puncher:is_player() then 
+		print("Hit by Player ", puncher:get_player_name())
+	end
+
+	local myluae = puncher:get_luaentity()
+	if myluae ~= nil then 
+		print("Hit by LUAE Entity ")
+	end
+
+
+	print("Puncher = ", puncher:get_player_name())
+
+
+--	print("ONPUNCH:HEALTH", myohp)
+--	print("ONPUNCH:DAMAGE", damage)
+	self.health = myohp-damage
+	myohp = self.health
+--	print("ONPUNCH:", myohp)
+
+	have_i_been_hit = true
+	been_hit_by = puncher
+
+	if self.health <= 0 then 
+		print(" I THINK I HAVE DIED !!")
+		-- TODO PLACE BONES  ??
+	
+		local pos = self.object:get_pos() 
+--		core.set_node(pos, { name = "default:mese" })
+		core.set_node(pos, { name = "bones:bones" })
+
+
+
+
+	else
+		print(" I AM STILL ALIVE !!")
+	end
+
+
+--	print("IS HIT = ", have_i_been_hit)
+--	print("HIT BY = ", been_hit_by)
+
+--	local beenpunched_job = {
+--		["name"] = "beenpunched",
+--		["status"] = 0,
+--		["puncher"] = puncher,
+--		["damage"] = damage
+--	}
+--	add_to_joblist(beenpunched_job)
+--	print("ONPUNCH:PUNCHER", dump(puncher))
+--	print("ONPUNCH:TFLP", dump(time_from_last_punch))
+	--print("ONPUNCH:DIR", dump(dir))
+--	print("ONPUNCH:TOOL", dump(tool_capabilities))
+  	--TODO: aggression (add player ratings table)
+	return false
+
   end
+
+function working_villages.villager:have_i_been_attacked()
+
+--	print("IS HIT = ", have_i_been_hit)
+--	print("HIT BY = ", been_hit_by)
+
+	if have_i_been_hit == true then
+		have_i_been_hit = false
+		return been_hit_by
+	else
+		been_hit_by = nil 
+		return nil
+	end
+
+end
+
+
+
+
+
+
+
+
+
+
+
 
   -- register a definition of a new villager.
 
@@ -1838,6 +1886,8 @@ function working_villages.register_villager(product_name, def)
       stepheight                  = 0.6,
       is_visible                  = true,
       makes_footstep_sound        = true,
+	--      automatic_face_movement_dir = false,  TODO RT Not sure why this is false, let try setting to true
+	-- interestingly when set to true the NPC's walk sideways 
       automatic_face_movement_dir = false,
       infotext                    = "",
       nametag                     = "",
@@ -1847,6 +1897,12 @@ function working_villages.register_villager(product_name, def)
 
   -- extra initial properties
   villager_def.pause                       = false
+
+
+
+
+
+
   villager_def.disp_action                 = "inactive\nNo job"
   villager_def.state                       = "job"
   villager_def.state_info                  = "I am doing nothing particular."
@@ -1859,13 +1915,126 @@ function working_villages.register_villager(product_name, def)
   villager_def.destination                 = vector.new(0,0,0)
   villager_def.job_data                    = {}
   villager_def.pos_data                    = {}
-  villager_def.new_job                     = ""
+ 
+--	wakeup_time = 0.2
+--	work_time = 0.24
+--	stop_time = 0.76
+--	bed_time = 0.805
+--	size_x = 0.8,
+--	size_y = 1.3,
+
+
+	if def.name ~= nil then 
+		villager_def.initial_properties.nametag = def.name
+	else
+		villager_def.initial_properties.nametag = ""
+	end
+
+
+
+
+	if def.size_x ~= nil then 
+		villager_def.initial_properties.visual_size["x"] = def.size_x
+	else
+		villager_def.initial_properties.visual_size["x"] = 1
+	end
+
+	if def.size_y ~= nil then 
+		villager_def.initial_properties.visual_size["y"] = def.size_y
+	else
+		villager_def.initial_properties.visual_size["y"] = 1
+	end
+
+
+
+
+	if def.wakeup_time ~= nil then 
+		villager_def.wakeup_time = def.wakeup_time
+	else
+		villager_def.wakeup_time = 0.2
+	end
+
+	if def.work_time ~= nil then 
+		villager_def.work_time = def.work_time
+	else
+		villager_def.work_time = 0.24
+	end
+
+	if def.stop_time ~= nil then 
+		villager_def.stop_time = def.stop_time
+	else
+		villager_def.stop_time = 0.76
+	end
+
+	if def.bed_time ~= nil then 
+		villager_def.bed_time = def.bed_time
+	else
+		villager_def.bed_time = 0.805
+	end
+
+
+
+
+	if def.walk_speed ~= nil then 
+		villager_def.walk_speed = def.walk_speed
+	else
+		villager_def.walk_speed = 1.6
+	end
+
+	if def.walk_speed ~= nil then 
+		villager_def.dig_delay = def.dig_delay
+	else
+		villager_def.dig_delay = 100
+	end
+
+	if def.build_delay ~= nil then 
+		villager_def.build_delay = def.build_delay
+	else
+		villager_def.build_delay = 100
+	end
+
+	if def.run_speed ~= nil then 
+		villager_def.run_speed = def.run_speed
+	else
+		villager_def.run_speed = 1.6
+	end
+
+	if def.start_job == nil then 
+--	print("INITIATION: NO START JOB")
+		villager_def.new_job                     = ""
+	else
+--	print("INITIATION: START JOB")
+		villager_def.new_job = def.start_job
+	end
+
+--villager_def:update_infotext()
+
+
+				--		local obj = core.add_entity(myps, worker_marker, nil)
+				--		local ent = obj:get_luaentity()
+
+				--		ent.new_job
+				--		ent.owner_name = self.owner_name
+				--		ent:update_infotext()
 
   -- callback methods
   villager_def.on_activate                 = on_activate
   villager_def.on_step                     = on_step
   villager_def.on_rightclick               = on_rightclick
   villager_def.on_punch                    = on_punch
+
+--  villager_def.on_punch = function(self, puncher, ...)
+--		if self.rider and puncher == self.rider then return end
+--		local name = puncher:is_player() and puncher:get_player_name()
+--		if name
+--		and name == self.owner
+--		and puncher:get_player_control().sneak then
+--			self:set_saddle(false)
+--			return
+--		end
+--		animalia.punch(self, puncher, ...)
+--	end,
+
   villager_def.get_staticdata              = get_staticdata
 
   -- storage methods
@@ -1882,11 +2051,15 @@ function working_villages.register_villager(product_name, def)
 
   minetest.register_entity(name, villager_def)
 
-  -- register villager egg.
-  working_villages.register_egg(name .. "_egg", {
-    description     = name .. " egg",
-    inventory_image = def.egg_image,
-    product_name    = name,
-  })
+
+
+  if def.visible == nil or def.visible ~= false then 
+  	-- register villager egg.
+		working_villages.register_egg(name .. "_egg", {
+		description     = name .. " egg",
+		inventory_image = def.egg_image,
+		product_name    = name,
+		})
+  end
 end
 

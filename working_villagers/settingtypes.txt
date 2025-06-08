@@ -8,7 +8,7 @@ working_villages_enable_debug_tools (debug tools) bool false
 #    Enables some extra asserts in the code that ensure everything runs as expected.
 #    This may have a small effect on the performance.
 #    It helps finding bugs within working villages and within mods using working villages.
-working_villages_enable_debug_checks (debug checks) bool true
+working_villages_enable_debug_checks (debug checks) bool false
 
 [protection]
 #    Controls activity in protected areas.

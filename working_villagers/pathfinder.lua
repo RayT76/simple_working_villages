@@ -1,11 +1,12 @@
 local pathfinder = {}
 
 
+-- TODO I do not think these are needed as the results are returned to the calling function on exit
+-- Another issue is the fact that these functions and memory are shared between the NPCS
+
 
 local proposed_path = {}
 local the_path = {}
-
-
 
 
 local function find_ground_below(position)
@@ -30,6 +31,8 @@ end
 
 function pathfinder.check_movement_to_pos(pos, can_fall)
 
+	local debug = false
+--	if (pos.x == 64) and (pos.y == 16) and (pos.z == 65) then debug = true end
 
 
 	local my_a = vector.add(pos,vector.new(0,-2,0)) -- below by two
@@ -45,53 +48,77 @@ function pathfinder.check_movement_to_pos(pos, can_fall)
 	local node_e = minetest.get_node(my_e)
 
 
+	if debug then print("DEBUG CHECKMOVEMENTTOPOS CHECKING POS = ", pos) end
 	-- TODO needs a better check for doors --  check edit
 	if doors.registered_doors[node_c.name] then
---	if string.find(node_c.name,"doors:") then
+		--	if string.find(node_c.name,"doors:") then
+		if debug then print("DOOR FOUND") end
 		return pos
 	end
 
 	-- check for block in the face
 	if minetest.registered_nodes[node_d.name].walkable then
+		if debug then print("IN THE FACE") end
 		return nil
 	end
+
 
 	-- check for steps
 	if minetest.registered_nodes[node_c.name].walkable then
 		-- but is there head room		
+		if debug then print("STEP FOUND") end
 		if minetest.registered_nodes[node_e.name].walkable then
 			-- no head room
+			if debug then print("NO ROOM TO STEP UP TO") end
 			return nil
 		else
+			if debug then print("I CAN STEP UP") end
 			return my_d
 
 		end
 	end
 
+
+
+	if debug then print("I CAN WALK HERE AT THIS POINT") end
 	-- I can walk here at this point
+
+
 	if minetest.registered_nodes[node_b.name].walkable or pathfinder.walkable(node_b) then
 		-- walk onto solid floor
+		if debug then print("WALK ONTO SOLID FLOOR") end
 		return pos
 	else
 		-- no solid floor but how far down
+		if debug then print("NO SOLID FLOOR, BUT") end
+
+		if string.find(node_b.name,"default:ladder") then
+			if debug then print("I HAVE FOUND A LADDER.") end
+			return pos
+		end
+
+
+
+
 		if minetest.registered_nodes[node_a.name].walkable then
 			-- little drop but no biggie
+			if debug then print("ONLY A STEP DOWN") end
 			return my_b
 		else
+			if debug then print("NOT JUST A STEP DOWN") end
 			-- nope, too far for me... i am scared of heights
 			if can_fall then 
 				-- TODO should get the ground-level below this point
-				
-				local tempr = find_ground_below(pos)
-				if tempr == false then 
-					return nil
-				else
-					return tempr
-				end
-
-
-
+				if debug then print("I AM ALLOWED TO FALL....  BUT") end
 			end
+
+--		if debug then print("GROUNDBELOW TEMPR = ", pos) end
+--		local tempr = find_ground_below(pos)
+--		if tempr == false then 
+--			return nil
+--		else
+			if debug then print("ELSE GO DOWN TO ???") end
+--			return my_a
 		end
 	end
 end
@@ -110,7 +137,11 @@ local function check_movement_from_pos(pos, can_fall)
 		cfall = can_fall
 	end 
 
-	local my_debug = false; 
+
+local debug = false
+--if (pos.x == 64) and (pos.y == 16) and (pos.z == 65) then debug = true end
+if debug then print("DEBUG CHECKMOVEMENTFROM ", pos) end
+
 	local my_movement = {
 				up = nil,
 				down = nil,
@@ -145,25 +176,25 @@ local function check_movement_from_pos(pos, can_fall)
 	-- UP AND DOWN string.find(node.name,"default:ladder")
 	if string.find(pos_leg_node.name,"default:ladder") then
 		-- standing on a ladder
+if debug then print("STANDING ON A LADDER") end
 
 		-- TODO inserted this to bugcheck 		
-
 		--if not(pos_above_node.walkable) then
 			my_movement.up = pos_head
 		--end
 
-
 --		if string.find(pos_head_node.name,"default:ladder") then
 --			-- I can climb as high as I jump
 --			if string.find(pos_above_node.name,"default:ladder") or not(pos_above_node.walkable) then
---				-- I could climb up higher
---				
+--				-- I could climb up higher				
 --			end
---
 --		end
+
+
 	end
 	if string.find(pos_below_node.name,"default:ladder") then
 		-- I could climb down
+if debug then print("I COULD CLIMB DOWN") end
 		my_movement.down = pos_below
 	end
 		
@@ -216,7 +247,7 @@ local function check_movement_from_pos(pos, can_fall)
 
 --		print("check diag's ")
 
-	-- check diag's
+	-- FIXME check diag's
 	if my_movement.north ~= nil then
 		if my_movement.east ~= nil then
 			my_movement.northeast = pathfinder.check_movement_to_pos(vector.add(pos_leg, vector.new(1,0,1)),cfall);
@@ -333,7 +364,6 @@ local function plot_movement_process_node(spos, step ,toendpos, can_fall)
 	proposed_path[node_hash].processed = true
 	
 
-	-- TODO UP AND DOWN LADDERS
 	if my_movement.up ~= nil then
 		local hash_index = minetest.hash_node_position(my_movement.up)
 		if proposed_path[hash_index] == nil then
@@ -834,14 +864,32 @@ function pathfinder.plot_movement_get_step(instep)
 end
 
 
+local pathfinder_in_use = false
+
+
 function pathfinder.plot_movement_to_pos(from_pos, to_pos, can_fall)
-	local startpos = vector.round(from_pos)
+
+	-- starting to believe this function is being called by all NPC's at the same time
+	-- this causes path errors as the position and destination will keep being overwritten
+	-- quick fix is to check if the function is being used first, and wait if it is
+
+	if pathfinder_in_use then 
+		return nil
+	end
+	pathfinder_in_use = true
+ 
+
+	-- TODO WORK out why i did the following ??
+	local startpos = vector.round(vector.add(from_pos, vector.new{x=0,y=1,z=0}))
 	startpos.y = startpos.y -1
+
 --	print("START PLOT MOVEMENT FROM ", startpos)
+
 	proposed_path = {}
 	the_path = {}
-	local startpos = vector.round(vector.add(from_pos,vector.new(0,0.1,0)))
-	local endpos = vector.round(vector.add(to_pos,vector.new(0,0.1,0)))
+
+--	local startpos = vector.round(vector.add(from_pos,vector.new(0,0.1,0)))
+	local endpos = vector.round(to_pos)
 --	print("TO ", endpos)
 	local start_index = minetest.hash_node_position(startpos)
 	local hash_index = nil
@@ -854,23 +902,25 @@ function pathfinder.plot_movement_to_pos(from_pos, to_pos, can_fall)
 
 --	print("START PLOT MOVEMENT WHILE")	
 	local max_loop_count = 1000
+	--local max_loop_yeald = 200
+
 	while (lindex ~= nil) and (lcost > 0) do
 	
-		max_loop_count = max_loop_count - 1
-		if max_loop_count < 0 then 
---			print("MAX_LOOP_COUNT REACHED - EXITING PATHFINDER")
-			return nil
-		end
 		curr_steps = curr_steps + 1
 		local node_data = proposed_path[lindex]
 --		print("CURRSTEP = ", curr_steps, "COST = ", lcost, " TOPOS = ", node_data.pos);
 		local tempr = plot_movement_process_node(node_data.pos, node_data.steps+1 , endpos, can_fall)
 		lindex = plot_movement_index_lowest_cost(start_cost)
 		lcost = plot_movement_lowest_cost(start_cost)
-		if lindex == nil then print("LOOP END with lindex = nil") end
+
+		max_loop_count = max_loop_count - 1
+		if max_loop_count < 0 then 
+			lindex = nil
+		end
+
 	end
 
-	if lcost == nil then 
+	if (lcost == nil) or (lindex == nil) then 
 		-- try to get as close as possible
 		-- will have to change destination
 		local costdata = plot_movement_lowest_cost_anyway(start_cost) 
@@ -893,6 +943,8 @@ function pathfinder.plot_movement_to_pos(from_pos, to_pos, can_fall)
 			end
 		end
 	end
+
+	pathfinder_in_use = false
 	return the_path
 
 end

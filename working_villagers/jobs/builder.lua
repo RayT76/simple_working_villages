@@ -2,6 +2,9 @@ local func = working_villages.require("jobs/util")
 local co_command = working_villages.require("job_coroutines").commands
 local use_vh1 = minetest.get_modpath("visual_harm_1ndicators")
 
+local is_building = false
+
+
 
 local function find_building(p)
 	if minetest.get_node(p).name ~= "working_villages:building_marker" then
@@ -22,6 +25,13 @@ local function find_building(p)
 end
 local searching_range = {x = 30, y = 20, z = 30}
 
+local builder_searching_range = {x = 20, y = 5, z = 20}
+local builder_searching_distance = 50
+local builder_found_plant_target = nil
+local builder_path_data = nil
+
+
+
 working_villages.register_job("working_villages:job_builder", {
 	description      = "builder (working_villages)",
 	long_description = "I look for the nearest building marker with a started building site. "..
@@ -35,23 +45,26 @@ If I have the materials of course. Also I'll look for building markers within a 
 		local my_pos = self.object:get_pos()
 		self:handle_night()
 		self:handle_job_pos()
-		self:handle_goto_obstacles(true)
+		self:handle_doors()							-- TODO ADD TO THE REST OF THE BOTS
+		if is_building == false then self:handle_goto_obstacles(true) end
+		self:buried_check()
+
 
 		self:count_timer("builder:search")
-		if self:timer_exceeded("builder:search",20) then
---			print("Searching for active building site")
+		if self:timer_exceeded("builder:search",50) then
+--print("Searching for active building site")
 
 			local marker = nil
-			local test_pos = func.find_building_marker(my_pos,50,20)
+			local test_pos = func.find_building_marker(self.pos_data.job_pos,300,20)
 			if test_pos ~= nil then
---				print("TEST Found building markers")
---				print("DUMP:", dump(test_pos))
+--print("TEST Found building markers")
+--print("DUMP:", dump(test_pos))
 
 				local is_index = nil
 				for index, ipos in pairs(test_pos) do
 	
 					if is_index == nil then
---					print("BINDEX:", index, " data:", ipos) --  should change list to pos or item
+--print("BINDEX:", index, " data:", ipos) --  should change list to pos or item
 						if find_building(ipos) then
 							is_index = index
 							marker = ipos
@@ -63,7 +76,7 @@ If I have the materials of course. Also I'll look for building markers within a 
 
 				--find_building(p)
 			else
---				print("TEST NOT Found building marker")
+				print("TEST NOT Found building marker")
 			end
 
 
@@ -78,6 +91,7 @@ If I have the materials of course. Also I'll look for building markers within a 
 
 
 				local meta = minetest.get_meta(marker)
+				--print("DUMP:META", dump(meta))
 				local build_pos = working_villages.buildings.get_build_pos(meta)
         			local building_on_pos = working_villages.buildings.get(build_pos)
 				if building_on_pos.nodedata and (meta:get_int("index") > #building_on_pos.nodedata) then
@@ -90,20 +104,41 @@ If I have the materials of course. Also I'll look for building markers within a 
 						print("failure: no adjacent walkable found")
 						destination = marker
 					end
+					
+
 					self:go_to(destination,true)
+
+
+
 					meta:set_string("state","built")
+					is_building = false
 					meta:set_string("house_label", "house " .. minetest.pos_to_string(marker))
 					--TODO: save beds
 					meta:set_string("formspec",working_villages.buildings.get_formspec(meta))
 					return
 				end
+
+
+
+
+
+				-- TODO RT looking for a nil node ?? not sure why though
 				self:set_state_info("I am currently working on a building.")
+				is_building = true
 				local nnode = working_villages.buildings.get(build_pos).nodedata[meta:get_int("index")]
 				if nnode == nil then
+					
 					meta:set_int("index",meta:get_int("index")+1)
 					return
 				end
+
+
+
+
+
 				local npos = nnode.pos
+
+
 				nnode = nnode.node
 				local nname = working_villages.buildings.get_registered_nodename(nnode.name)
 				if nname == "air" then
@@ -189,41 +224,113 @@ If I have the materials of course. Also I'll look for building markers within a 
 							else
 								print(msg)
 							end
-						-- should later be intelligent enough to use his own or any other chest
+						-- should later be intelligent enough to use his own chest
 							self:set_state_info("I am currently waiting to get some space in my inventory.")
 							return co_command.pause, "waiting for inventory space"
 						end
 					end
 				end
+
+
+				if nname=="default:glass" then
+					
+					nnode.param1 = 0
+					
+				end
+
 				if is_material(wield_stack:get_name()) or self:has_item_in_main(is_material) then
-					local destination = func.find_adjacent_clear(npos)
+
+
+			--local fpt = func.find_ground_below(found_plant_target)
+--			print("NPOS=", dump(npos))
+			local mydestination = func.get_closest_clear_spot(self.object:get_pos(),npos)	
+--			print("mydestination=", mydestination)
+			if mydestination == false or mydestination == nil then
+				print("Builder: No clostest clear spot found")
+				-- ? destination = target
+				--found_plant_target = nil
+				--mydestination = nil
+				mydestination = npos
+			end
+
+
+					--print("trying to get into place")
+					--local destination = func.find_adjacent_clear(npos)
 					--FIXME: check if the ground is actually below (get_reachable)
-					destination = func.find_ground_below(destination)
-					if destination==false then
-						print("failure: no adjacent walkable found")
-						destination = npos
-					end
+					--destination = func.find_ground_below(destination)
+					--if destination==false then
+					--	print("failure: no adjacent walkable found")
+						--mydestination = npos
+					--end
 					self:set_state_info("I am building.")
-					self:go_to(destination, true)
+
+
+				--print("NNODE:", dump(nnode))
+				--print("NPOS:", dump(npos))
+
+
+
+				local gotores = self:go_to(mydestination, true)
+				if gotores == false then
+					print("Builder: pathfinder in use, I will wait")
+
+										
+
+				elseif gotores == nil then
+		--			print("Builder: Could not get to the Place point at ", mydestination)
+					--found_plant_target = nil
+					--destination = nil
+				elseif gotores == -1 then
+		--			print("Builder: Got stuck i think need to recalculate ", mydestination)
+					 gotores = self:go_to(mydestination, true)
+
+					--found_plant_target = nil
+					--destination = nil
+				else
+					if self:place(nnode,npos) then
+		--				print("Builder: placed ok")
+						meta:set_int("index",meta:get_int("index")+1)
+						--found_plant_target = nil
+						--destination = nil
+					else
+						print("Builder: Could not place at ",mydestination)
+						--found_plant_target = nil
+						--destination = nil
+						--coroutine.yield(co_command.pause,"error in building")
+					end
+				end
+
+
+
+
+
+
+
+					--self:go_to(destination, true)
 
 
 					-- TODO check for dirt and remove if needed
 					--function working_villages.villager:dig(pos,collect_drops)
-					local n_n = minetest.get_node(npos).name
+--					local n_n = minetest.get_node(npos).name
 
 					--print("Replacing ", n_n, " with ", nnode.name)
 
 					--if (string.find(n_n,"air") then
 					--			default:dirt
 
-					if n_n ~= "air" then
-						self:dig(npos,true)
-					end
+--					if n_n ~= "air" then
+--						self:dig(npos,true)
+--					end
+--					print("trying to place an item")
+--					self:place(nnode,npos)
 
-					self:place(nnode,npos)
-					if minetest.get_node(npos).name==nnode.name then
-						meta:set_int("index",meta:get_int("index")+1)
-					end
+
+-- TODO Just ignore a non placed item ??
+--					if minetest.get_node(npos).name==nnode.name then
+						--meta:set_int("index",meta:get_int("index")+1)
+--					else
+--						print("Something went wrong with the place")
+--					end
 				else
 					local msg = "builder at " .. minetest.pos_to_string(self.object:get_pos()) .. " doesn't have " .. nname
 					if self.owner_name then

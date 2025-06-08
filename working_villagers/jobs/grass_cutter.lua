@@ -1,10 +1,12 @@
 local func = working_villages.require("jobs/util")
 local use_vh1 = minetest.get_modpath("visual_harm_1ndicators")
+local pathfinder = working_villages.require("pathfinder")
+
 
 local cutter = {
   -- more priority definitions
 	names = {
--- TODO pick up seeds for wheat oats barleyw
+-- TODO pick up seeds for wheat oats barley
 		["farming:weed"]={},
 		["default:grass"]={},
 		["default:grass_1"]={},
@@ -73,48 +75,86 @@ local function find_grass_node(pos)
   return true;
 end
 
-local searching_range = {x = 10, y = 5, z = 10}
 
 local function put_func()
   return true;
 end
 
+local cutter_searching_range = {x = 20, y = 5, z = 20}
+local cutter_searching_distance = 50
+local cutter_found_plant_target = nil
+local cutter_path_data = nil
+
 working_villages.register_job("working_villages:job_grass_cutter", {
-	description      = "Grass cutter (working_villages)",
+	description      = "Grass cutter A (working_villages)",
 	long_description = "I keep your lawns looking prim and proper.",
 	inventory_image  = "default_paper.png^working_villages_grass_collector.png",
 	jobfunc = function(self)
 		if use_vh1 then VH1.update_bar(self.object, self.health) end
-
-		--self:lists_nearest_item_by_condition(true,100)
 		self:handle_night()
 		self:handle_chest(nil, put_func)
 		self:handle_job_pos()
-
-		self:count_timer("grasscollector:search")
-		self:count_timer("grasscollector:change_dir")
 		self:handle_obstacles()
-		if self:timer_exceeded("grasscollector:search",100) then
-			self:collect_nearest_item_by_condition(cutter.is_grass, searching_range)
-			local target = func.search_surrounding(self.object:get_pos(), find_grass_node, searching_range)
-			if target ~= nil then
-				local destination = func.find_adjacent_clear(target)
-				if destination then
-				  destination = func.find_ground_below(destination)
+		self:buried_check() -- FIX FOR SELF BURIED ERROR -- jumps into the ground ?
+
+
+		if cutter_found_plant_target ~= nil then 
+			self:set_displayed_action("Cutting Grass")
+
+			--local fpt = func.find_ground_below(found_plant_target)
+			local destination = func.get_closest_clear_spot(self.object:get_pos(),cutter_found_plant_target)	
+			if destination == false or destination == nil then
+				--found_plant_target = nil
+				destination = cutter_found_plant_target
+			else
+
+				cutter_path_data = pathfinder.plot_movement_to_pos(self.object:get_pos(), destination, false)
+
+				if cutter_path_data == nil then
+					-- TODO should indicate who cannot find a path
+					print(self.object:get_luaentity().nametag, " No Path Found to ", destination)
+					--return nil
+				elseif cutter_path_data == false then
+					print(self.object:get_luaentity().nametag, " IT SEEMS PATHFINDER IS BUSY-- I WILL HAVE TO WAIT MY TURN")
+					--return false 
+				else
+					local gotores = self:go_to_the(cutter_path_data)
+--					if gotores == false then
+--						print("BUILDER: waiting for pathfinder")
+--						found_plant_target = nil
+--						destination = nil
+--					else
+						if self:dig(cutter_found_plant_target,true) then
+							cutter_found_plant_target = nil
+							destination = nil
+						else
+							cutter_found_plant_target = nil
+							destination = nil
+						end
+--					end
 				end
-				if destination==false then
-					print("failure: no adjacent walkable found")
-					destination = target
-				end
-				self:go_to(destination)
-        --local grass_data = cutter.get_grass(minetest.get_node(target).name);
-        cutter.get_grass(minetest.get_node(target).name);
-				self:dig(target,true)
 			end
-		elseif self:timer_exceeded("grasscollector:change_dir",400) then
-			self:change_direction_randomly()
+		else
+			self:set_displayed_action("Searching for Grass to cut")
+			self:count_timer("grasscollector:search")
+			--self:count_timer("grasscollector:change_dir")
+
+			if self:timer_exceeded("grasscollector:search",400) then
+--				found_plant_target = func.search_surrounding(self.object:get_pos(), find_grass_node, searching_range)--func.search_surrounding(self.object:get_pos(), find_herb_node, searching_range)
+				cutter_found_plant_target = func.search_surrounding(self.pos_data.job_pos, find_grass_node, cutter_searching_range)--func.search_surrounding(self.object:get_pos(), find_herb_node, searching_range)
+			end
+
+			if cutter_found_plant_target == nil then
+				self.object:set_velocity{x = 0, y = 0, z = 0}				
+				self:set_animation(working_villages.animation_frames.STAND)
+				cutter_searching_distance = cutter_searching_distance + 10000
+				--print("GRASSCUTTER: expanding search to ", searching_distance)
+				cutter_searching_range.x = cutter_searching_distance
+				cutter_searching_range.z = cutter_searching_distance
+			end
 		end
 	end,
+
 })
 
 working_villages.cutter = cutter

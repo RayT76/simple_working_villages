@@ -1,102 +1,305 @@
-# working_villages mod forked from theFox6
+# simple_working_villages mod by RayFT,
+<br> forked from working_villages by theFox6 (link to be added)
+
+MOSTLY WORKING, WORK IN PROGRESS..
+
+Not wanting fixes or updates, as this mod is currently experimental only.
+Comments and suggestions are most welcome, and may even be implemented.
+Planned later Refactoring will make almost all bugs here obsolete.
+
+<p>
+##Personal Objectives with this project:
+Having a little look into LUA programming.
+Having a little look into the workings of Minetest.
+Having a little play with 3d pathing.
+Having a little play in Simple Tasked based AI.  
+</p>
+
+<p>
+##Description
+The main purpose of this mod is to add the Mayor NPC Character to the Minetest Game. Once deployed the Mayor will start to build a small town and Hire other Villagers to help.
+These other Villagers will fulfill planned jobs in the town and aid in its development.
+</p>
+
+<p>
+##Code Status
+My Code in this mod is "Get it Working" and is as dirty as ya mom.
+Current build is experimental and concerned with information gathering.
+Be Warned ::: I have not used LUA before taking on this project, its all a learning curve.
+</p>
 
 
-Updating to a workable mod for adding extra people in the town you create.
-
-Added roles of
-
-NPC Medic<br>
-Animal Vet<br>
-Lawn Cutter<br>
-
-Fixed Plant gatherer to only pick up wild plants<br>
-Added Farming Redo Plants<br>
-Fixed Farmer to only pick up cultivated plants<br>
-
-
-Pathing is an Issue that will be shortly looked into, though with the better collision avoidance the NPC's are a less likely to become stuck.
-The NPC's are only allowed to paddle and not swim.
-The NPC's will only go down where they can get back up, no more dropping into caverns.
-Added Animaion for the Vet and Medic when healing something, though will need to add usage of materials.
-
-
-
-Current Roles:
-builder.lua		-- Not functional due to pathing ?
-empty.lua		-- Meant to do Nothing
-farmer.lua		-- Working
-follow_player.lua	-- Working
-grass_cutter.lua	-- Working
-guard.lua		-- Not Tested, but not sure if it's Attacking code is finished
-medic.lua		-- Working
-plant_collector.lua	-- Working
-snowclearer.lua		-- Working
-torcher.lua		-- Not Tested
-vet.lua			-- Working
-woodcutter.lua		-- Not Working Correctly yet
+#CURRENT MINETEST MODULES USED WITH THIS MOD.
+Basic Materials and items
+    mt-mods
+FakeLib
+    OgelGames
+Farming Redo
+    TenPlus1
+Mobs Redo
+    TenPlus1
+Mobs Animal
+    TenPlus1
+Mobs Monster
+    TenPlus1
+mod utilities
+    theFox
+Unified Inventory Plus
+    mt-mods
+Unified Dyes
+    mt-mod
+Visual Harm 1Ndicators
+    Mantar
+WorldEdit
+    sfan5
+Xcompat
+    mt-mods
+Charater Animations (planned implementation)
+    LMD
 
 
-To be added in the near future:
+##MINETEST ENGINE LIMITATIONS:<br>
 
-Rubbish Collector
-Sheep Shearer
-Cow Milker
-Roaming Hunter
-Body guard
-Landscaper
-egg collector
+Once you are a set distance from the NPC they are saved and unloaded from the world
 
-Would you want a butcher ? not for the kids Eh..
+As a workaround I use the following settings added to the minetest.conf file:
 
+active_block_range = 8
+active_object_send_range_blocks = 8
+max_block_send_distance = 12
+block_send_optimize_distance = 8
 
-Current problems are mostly related to pathfinding errors.
-On the first hand a temporary fix, like with the collision avoidance function, to get it working and see what is needed.
-Then to have a play with pathfinding algorithm.
+TBH I have not really looked into these settings in any depth.
+But it seems that the NPC's will stay in the world upto just over 100 Units away with them implemented.
 
-At the moment Entity recognisation is being written in:
-/home/ray/.minetest/mods/working_villages/working_villagers/jobs/entitys_def.lua
-
-Which will define characteristics used by the NPC to deal with the Entity's... Its all a playground.
-
-
-I have had a quick try with the "Building sign", but only got the map to crash.
-
-
-TO GET THE NPC's WORKING (AFAIAK)
-
-
-Build a 7x7 house with a standard wood door ( only one it currently recognise's : [is on the list])
-
-Place a Standard Simple Bed on the wall opposite the Door with the Standard Chest next to it
-Place the NPC in the center of the house
-With the control wand right click and select "change data" and change the following to
-
-Villager Name 		: Name your NPC
-House Door Position	: set to "near"
-Bed Position		: set to "near" 
-Chest Position		: set to "near" 
-Food Position		: set to "near" 
-Tools Position		: set to "near" 
-Storage Position	: set to "near"
-
-Press Set and the locations of the Above items should be found.
-If not move the NPC closer to the item he missed and rewrite "near" and do Set for that Item.
-
-Lastly I usually select the Job of follower to start with as I want the new NPC to follow me to where he will start work.
-On arriving to the work area ( he will roam about, but will always go here to start.) Press F5 to see your location on the top on the screen. this gives you the coordinates to enter in the last NPC data field "Job Position"
-
-Change the NPC to the Job you want and away he/she goes...
-
-
-There is yet unfound bug (minor) with corrupted start data with the NPC's setup. But the initial setup above overwrites this spurious data.
+If the NPC does unload, not all required data is saved or loaded, small bugs like forgetting what they are doing may happen.
+(Waiting for the Refactor to fix)
 
 
 
-There you Go working villagers going around doing jobs..  
+
+
+##SKINS:
+All skins used in this mod excluding the originals from working_villages are created by myself.
 
 
 
- 
+
+<p>CURRENT NPC STATUS</p>
+
+###Builder
+
+Working under management from the Mayor
+Builds buildings for the town under instructions from the Town Mayor
+###Empty
+
+Does nothing.
+
+###Farmer
+
+Working under management from the Mayor
+Farms and Replants crops - Thought the player has to plant the first crops to show the farmer what do grow.
+
+###Fireman
+
+Working Prototype
+Buggy AI movement, needs updating to current AI
+Looks for wild fires, if founds attempts to extinguish them
+
+###Follow_player
+
+Working
+
+###Gardener
+
+Working under management from the Mayor
+Clears plots ready for Builder (currently under development)
+Clears weeds and cuts grass on a plot
+
+###Lumberjack
+
+Working under management from the Mayor
+Chops down trees under orders from the Mayor
+Manages an Orchard for a wood supply
+
+###Mayor
+
+Working - Under continous Development
+Manages the Town development and NPC's
+
+###Medic
+
+Working Prototype
+Buggy AI movement, needs updating to current AI
+Searches for wounded friendly NPC's and heals them
+
+###Miner
+
+Working under management from the Mayor
+Complexity of the Mining will be updated in the future, this will enable "scanning" for wanted items.
+Currently digs a big hole and collects whats dug.
+
+###Plant_collector
+
+Working Prototype
+Buggy AI movement, needs updating to current AI
+Searches and collects wild farmable crops
+
+###Snowclearer
+
+Working Prototype
+Buggy AI movement, needs updating to current AI
+Looks for and removes snow
+
+###Torcher
+
+Untested
+
+###Vet
+
+Working Prototype
+Buggy AI movement, needs updating to current AI
+Same as medic but for friendly animals
+
+
+##FUTURE ROLE CONSIDERATIONS
+
+**Rubbish Collector**
+
+goes around looking for rubbish to collect
+
+**Sheep Shearer**
+
+Handles the shearing of sheep and collection of Wool
+
+**Cow Milker**
+
+Handles the  milking of Cows and collection of Milk
+
+**Roaming Hunter**
+
+Goes out and Hunts known enemys
+
+**Body guard**
+
+Follows a player and attacks known enemys within a distance
+
+**Policeman**
+
+Goes around the town looking for enemys
+
+**Security guard**
+
+Stands guard on a entrance to a building or Town
+
+**Roadlayer**
+
+Like the builder but only Builds roads and paths
+
+**egg collector**
+
+Collects Eggs from a chicken pen
+
+**Shepard**
+
+Looks after Sheep or Cows
+
+**Waterboy**
+
+Collects water for use by others
+
+**Foundry Worker**
+
+Handles all cooking of recipes 
+
+**Engineer**
+
+Handles Crafting of non-wood based items
+
+**Carpenter**
+
+Handles the crafting of Wood based items
+
+**Baker**
+
+Converts farmed goods into food
+
+**Butcher**
+
+Not sure if applicable ??
+
+**School teacher**
+
+stays with the children in a school enviroment for most of the day
+
+**Child NPC's**
+    
+    Water boy
+    rabbit feeder
+    chicken feeder
+    ect
+
+##CURRENT / FIXES / KNOWN BUGS
+
+Builder not finding Wall mounted torches in chest:
+Quick fix.. give the builder some standard torches and reload the map.
+He will then convert them to what is needed.
+quick Fix is planned.. 
+When he dumps his pack, grab some torches by default.(TODO)
+
+
+Miner going mining without ladders and digs himself in a large pit (TODO)
+
+
+Medic: Fixed problem when Medic is healing NPC's (will have to check Vet next) Healing the shown healthbar health but not the actual NPC object health.
+
+
+Builder forgetting to tell you what he wants. E.G when going back to the chest to look for a item. If left too long the builders speech text forgets the item.
+This can be annoying, Though I use the CLI to see what he is doing and what item he wants. Sadly the only other way is too reload the level and see the fresh speech before it goes.
+(Fix is in the works)
+
+
+The close range entity avoidance is very simple. currently I look at the bug as the NPC's having a arguement. Using the Lead mod I just pull one out of the way and they
+both continue as normal.. I have left this bug in as it helps with owner interaction with the NPC's. charactor 
+
+##CURRENTLY PLANNED UPDATES AND TODOS
+
+
+**Problem:** If a NPC dies its currently a pain to get them back.
+**Solution:** A rewrite of the Town structural plan to include Hiring and Moving In Jobs as placed markers.
+If you then lose a NPC, find the town marker for Hiring him and remove it. On the next Pass the Mayor will ReHire the NPC.
+To Movein the New NPC, find his house marker and remove it. The Builder will check the Building and then the Mayor will move in the NPC.
+
+**Problem:** Only one Town-plan is currently available
+**Solution:** Have the Town-Planning-Data Selectable and Loadable from a file. Either Different Mayors for Different Towns, or a selection menu for the Town-Plan.
+
+###Animation Updates
+Want to add Fly, Swim, Crouch and Climb animations from the "Charater Animations" MOD to the NPC's.
+
+
+###Animation Updates
+It is planned to look into the Wielded item display functions, which currently does not seem to work.
+
+
+Mayor AI Tasks. 
+
+
+
+
+
+
+##LASTLY
+
+One of the ideas for this mod is to start it in a non-creative mode, like a survival mode.
+
+Though I have not found the answer to the following question:
+
+Can a mod add a item to the single player inventory on game start (eg the Mayor NPC) ? 
+
+
+
+
+
 
 
 
@@ -105,13 +308,8 @@ Take what you want and leave the rest :)
 
 
 
-
-
-
-
-
 More information on this MOD can be found on the creators page that this is Forked from..
-https://github.com/theFox6/working_villages
+[working_villages](https://github.com/theFox6/working_villages)
 
-Thanks theFox6 for the creation 
+Thanks to the theFox6 for the work already invested in this mod.
 

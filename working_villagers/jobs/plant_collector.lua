@@ -1,4 +1,5 @@
 local func = working_villages.require("jobs/util")
+local co_command = working_villages.require("job_coroutines").commands
 local use_vh1 = minetest.get_modpath("visual_harm_1ndicators")
 
 local herbs = {
@@ -9,11 +10,11 @@ local herbs = {
 		["default:papyrus"]={param2=0,collect_only_top=true},
 		["flowers:mushroom_brown"]={param2=0},				-- TODO check param 2
 		["flowers:mushroom_red"]={param2=0},				-- TODO check param 2
-		["default:blueberry_bush_leaves_with_berries"]={},
+		["default:blueberry_bush_leaves_with_berries"]={param2=0},
 
 		["farming:artichoke_5"]={param2=0},
 		["farming:asparagus_5"]={param2=3},   -- TODO BREAKS THE RULES ON PARAM 2 = IS THE SAME FOR WILD AND CULTIVATED
-		["farming:barley_7"]={param2=0},
+		["farming:barley_8"]={param2=0},
 		["farming:beanpole_5"]={param2=0},
 		["farming:beetroot_5"]={param2=0},
 		["farming:blackberry_4"]={param2=0},
@@ -29,7 +30,7 @@ local herbs = {
 		["farming:eggplant_3"]={param2=3},
 		["farming:garlic_5"]={param2=0},
 		["farming:grapes_8"]={param2=0},
-		["farming:hemp_8"]={param2=0},
+		["farming:hemp_7"]={param2=0},
 		["farming:lettuce_5"]={param2=0},
 		["farming:melon_8"]={param2=0},
 		["farming:mint_4"]={param2=0},
@@ -53,11 +54,11 @@ local herbs = {
 		["farming:wheat_8"]={param2=0},
 
 	},
-  -- less priority definitions
-	groups = {
+--   less priority definitions
+--	groups = {
 --		["flora"]={},
 --		["farming"]={},
-	},
+--	},
 }
 
 function herbs.get_herb(item_name)
@@ -68,11 +69,11 @@ function herbs.get_herb(item_name)
 		end
 	end
   -- check less priority definitions
-	for key, value in pairs(herbs.groups) do
-		if minetest.get_item_group(item_name, key) > 0 then
-			return value;
-		end
-	end
+--	for key, value in pairs(herbs.groups) do
+--		if minetest.get_item_group(item_name, key) > 0 then
+--			return value;
+--		end
+--	end
 	return nil
 end
 
@@ -112,7 +113,12 @@ local function find_herb_node(pos)
 	return true;
 end
 
-local searching_range = {x = 10, y = 5, z = 10}
+local searching_range = {x = 20, y = 5, z = 20}
+local searching_distance = 50
+
+local found_plant_target = nil
+local is_searching = false
+
 
 local function put_func()
   return true;
@@ -124,50 +130,73 @@ working_villages.register_job("working_villages:job_plantcollector", {
 	inventory_image  = "default_paper.png^working_villages_herb_collector.png",
 	jobfunc = function(self)
 		if use_vh1 then VH1.update_bar(self.object, self.health) end
-		--print("Tick");
 		self:handle_night()
 		self:handle_chest(nil, put_func)
 		self:handle_job_pos()
-
-		--print("Starting Search");
-		self:count_timer("herbcollector:search")
-		self:count_timer("herbcollector:change_dir")
 		self:handle_obstacles()
+		self:buried_check() -- FIX FOR SELF BURIED ERROR -- jumps into the ground ?
 
-		if self:timer_exceeded("herbcollector:search",20) then
---			print("Looking for a Plant");
-			self:collect_nearest_item_by_condition(herbs.is_herb, searching_range)
-			local target = func.search_surrounding(self.object:get_pos(), find_herb_node, searching_range)
-			if target ~= nil then
---				print("Found a Plant");
-			
-				local destination = func.find_adjacent_clear(target)
-				if destination then
-				  destination = func.find_ground_below(destination)
-				end
-				if destination==false then
-					print("plant_collector: No adjacent walkable found")
-					destination = target
-				end
-	
-				if self:go_to(destination) then
---					print("Got to the Plant")
-				else
-					print("plant_collector: Could not get to the Plant")
-				end
+		if found_plant_target ~= nil and found_plant_target ~= false then 
+			self:set_displayed_action("Collecting a plant at ",found_plant_target)
+			is_searching = false
+			local fpt = func.find_ground_below(found_plant_target)
+			local destination = nil
 
-				if self:dig(target,true) then
---					print("I got the Plant")
-				else
-					print("plant_collector: Could not dig the Plant")
-				end
+			if fpt ~= nil then
+				destination = func.get_closest_clear_spot(self.object:get_pos(),fpt)	
 			else
---				print("Cant find a Plant");	
+				destination = func.get_closest_clear_spot(self.object:get_pos(),found_plant_target)
 			end
-			
-		elseif self:timer_exceeded("herbcollector:change_dir",400) then
---			print("Changed Direction");
-			self:change_direction_randomly()
+
+			if destination == false or destination == nil then
+				destination = found_plant_target
+			else
+				local gotores = self:go_to(destination)
+				if gotores == false then
+					print("PLANTCOLLECTOR: waiting for pathfinder")
+				else--if gotores == nil then
+				--	found_plant_target = nil
+				--	destination = nil
+				--else
+				-- TODO testing... trying to dig anyway even if not at destination
+					if self:dig(found_plant_target,true) then
+						found_plant_target = nil
+						destination = nil
+					else
+						found_plant_target = nil
+						destination = nil
+					end
+				end
+			end
+		else
+			self:set_displayed_action("Searching for Plants")
+			self:count_timer("herbcollector:search")
+			self:count_timer("herbcollector:change_dir")
+			if self:timer_exceeded("herbcollector:search",40) then
+				found_plant_target = func.search_surrounding(self.pos_data.job_pos, find_herb_node, searching_range)
+			end
+			if found_plant_target == nil then 
+				self.object:set_velocity{x = 0, y = 0, z = 0}				
+				self:set_animation(working_villages.animation_frames.STAND)
+				searching_distance = searching_distance + 1000
+				--print("PLANTCOLLECTOR: expanding search to ", searching_distance)
+				searching_range.x = searching_distance
+				searching_range.z = searching_distance
+
+
+--				if is_searching then 
+--					my_vel = self.object:get_velocity()
+--					if my_vel.x == 0 and my_vel.z == 0 and my_vel.y == 0 then
+--						self:change_direction_randomly()
+--					end
+--					if self:timer_exceeded("herbcollector:change_dir",500) then
+--						self:change_direction_randomly()
+--					end
+--				else
+--					is_searching = true
+--					self:change_direction_randomly()
+--				end
+			end
 		end
 	end,
 })

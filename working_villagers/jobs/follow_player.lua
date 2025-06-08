@@ -55,52 +55,28 @@ function follower.step(v)
 end
 
 working_villages.register_job("working_villages:job_folow_player", {
-  description      = "follower (working_villages)",
-  long_description = "I'll just follow you wherever you go.",
-  inventory_image  = "default_paper.png^memorandum_letters.png",
-  jobfunc = function(v)
---		print("TICK")
+	description      = "follower (working_villages)",
+	long_description = "I'll just follow you wherever you go.",
+	inventory_image  = "default_paper.png^memorandum_letters.png",
+	jobfunc = function(v)
 		if use_vh1 then VH1.update_bar(v.object, v.health) end
 		v:handle_goto_obstacles(true)
-
 		while (v.pause) do
 			coroutine.yield()
 		end
-
-		
 		local position = v.object:get_pos()
 		local player,player_position = v:get_nearest_player(40,position)
-
 		if player_position ~= nil then
 			if vector.distance(player_position,position) > 5 then
-	
 				local dest = func.get_closest_clear_spot(position, player_position)
 				if dest ~= nil then
 					v:go_to(dest)
 				else
 					print("NO DESTINATION FOUND")
-
 				end
-				--follower.stop()
-
 			end
 		end
-
---    follower.step(v)
-
-
-
-
-
-
-
-
-
-
-
-
-
-  end,
+	end,
 })
 
 return follower

@@ -2,6 +2,183 @@ local func = {}
 local pathfinder = working_villages.require("pathfinder")
 
 
+-- TODO this is a very quick inter NPC messaging service
+
+local builder_a_message = nil
+function func.set_builder_a_message(inmsg)
+	builder_a_message = inmsg
+	--print("DEBUG: SETMSG = ", dump(inmsg))
+end
+function func.get_builder_a_message()
+	return builder_a_message
+end
+
+
+local lumberjack_a_message = nil
+function func.set_lumberjack_a_message(inmsg)
+	lumberjack_a_message = inmsg
+	--print("DEBUG: SET LUMBERJACK MSG = ", dump(inmsg))
+end
+function func.get_lumberjack_a_message()
+	return lumberjack_a_message
+end
+
+
+local miner_a_message = nil
+function func.set_miner_a_message(inmsg)
+	miner_a_message = inmsg
+	--print("DEBUG: SET MINER MSG = ", dump(inmsg))
+end
+function func.get_miner_a_message()
+	return miner_a_message
+end
+
+local farmer_a_message = nil
+function func.set_farmer_a_message(inmsg)
+	farmer_a_message = inmsg
+	print("DEBUG: SET FARMER MSG = ", dump(inmsg))
+end
+function func.get_farmer_a_message()
+	return farmer_a_message
+end
+
+
+local gardener_a_message = nil
+function func.set_gardener_a_message(inmsg)
+	gardener_a_message = inmsg
+	print("DEBUG: SET GARDENER MSG = ", dump(inmsg))
+end
+function func.get_gardener_a_message()
+	return gardener_a_message
+end
+
+
+local medic_a_message = nil
+function func.set_medic_a_message(inmsg)
+	medic_a_message = inmsg
+	print("DEBUG: SET MEDIC MSG = ", dump(inmsg))
+end
+function func.get_medic_a_message()
+	return medic_a_message
+end
+
+
+
+local vet_a_message = nil
+function func.set_vet_a_message(inmsg)
+	vet_a_message = inmsg
+	print("DEBUG: SET VET MSG = ", dump(inmsg))
+end
+function func.get_vet_a_message()
+	return vet_a_message
+end
+
+
+
+
+local town_gravel_chest_loc = nil
+local town_dirt_chest_loc = nil
+local town_sand_chest_loc = nil
+local town_wood_chest_loc = nil
+function has_town_chest(intype)
+	if intype == "default:gravel" then
+		return town_gravel_chest_loc
+	elseif intype == "default:dirt" then
+		return town_dirt_chest_loc
+	elseif intype == "default:sand" then
+		return town_sand_chest_loc
+	elseif intype == "default:wood" then
+		return town_wood_chest_loc
+	end
+end
+
+
+
+
+
+
+local entitys = {
+	names = {
+
+		-- NOT REAL WORLD -- IGNORE
+		["visual_harm_1ndicators:hpbar"]={dummy=true},
+		["working_villages:dummy_item"]={dummy=true},
+		["__builtin:item"]={dummy=true},
+
+		-- WORKING VILLAGES NPCS
+		-- TODO add new working villages characters
+		["working_villages:villager_male"]={npc=true, block=true},
+		["working_villages:villager_female"]={npc=true, block=true},
+		["mobs_npc:npc"]={npc=true, block=true},
+		["mobs_npc:igor"]={npc=true, block=true},
+		["mobs_npc:trader"]={npc=true, block=true},
+
+		-- MOBS MONSTERS 
+		["mobs_monster:dirt_monster"]={monster=true, block=true},
+		["mobs_monster:fire_spirit"]={monster=true, block=true},
+		["mobs_monster:land_guard"]={monster=true, block=true},
+		["mobs_monster:lava_flan"]={monster=true, block=true},
+		["mobs_monster:mese_monster"]={monster=true, block=true},
+		["mobs_monster:obsidian_flan"]={monster=true, block=true},
+		["mobs_monster:oerkki"]={monster=true, block=true},
+		["mobs_monster:sand_monster"]={monster=true, block=true},
+		["mobs_monster:spider"]={monster=true, block=true},
+		["mobs_monster:stone_monster"]={monster=true, block=true},
+		["mobs_monster:tree_monster"]={monster=true, block=true},
+
+		-- MOBS SKELETONS
+		["mobs_skeletons:skeleton_archer"]={monster=true, block=true},
+		["mobs_skeletons:skeleton_archer_dark"]={monster=true, block=true},
+		["mobs_skeletons:skeleton"]={monster=true, block=true},
+
+		-- MOB ANIMALS
+		["mobs_animal:sheep_"]={animal=true, block=true},
+		["mobs_animal:pumba"]={animal=true, block=true},
+		["mobs_animal:chicken"]={animal=true, block=true},
+		["mobs_animal:panda"]={animal=true, block=true},
+		["mobs_animal:penguin"]={animal=true, block=true},
+		["mobs_animal:bunny"]={animal=true, block=true},
+		["mobs_animal:bee"]={animal=true, block=true},
+		["mobs_animal:cow"]={animal=true, block=true},
+		["mobs_animal:kitten"]={animal=true, block=true},
+		["mobs_animal:rat"]={animal=true, block=true},
+
+	},
+}
+
+
+
+function func.get_entity(entity_name)
+	for key, value in pairs(entitys.names) do
+		--if entity_name==key then
+--		print("looking for ", key, " in ", entity_name)	
+		--if string.find(key,entity_name) then
+		if string.find(entity_name,key) then
+--			print("found ", key, " in ", entity_name)	
+			return value
+		end
+	end
+	return nil
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 function func.get_goto_distance_check(pos,dest)
 	local tempx = 0
@@ -33,51 +210,77 @@ end
 
 
 
-function func.get_closest_clear_spot(frompos, topos)
+function func.get_closest_clear_spot(from_pos, topos)
 
-	
+
+-- TODO FIXME THIS HAS GOT TO BE REDONE !!
+-- DIAGANALS HAVE TO BE ADDED 
+
+	--local from_pos = vector.round(frompos)
+--	local from_pos = frompos
 --	print("GET CLOSEST SPOT TO ",topos)
 	local temppos = nil
---	print("FROM ",frompos)
+--	print("FROM ",from_pos)
+--	print("TEMPPOS=",temppos)
 	
 	local my_n = vector.add(topos,vector.new(0,0,1)) 
 	local my_e = vector.add(topos,vector.new(1,0,0)) 
 	local my_s = vector.add(topos,vector.new(0,0,-1))
 	local my_w = vector.add(topos,vector.new(-1,0,0))
 
-	local distance = 100 -- set high for now TODO correctly later
+	local distance = 1000 -- set high for now TODO correctly later
 	
 	if pathfinder.check_movement_to_pos(my_n) ~= nil then
---		print("north ok")
-		if vector.distance(frompos,my_n) < distance then 
-			distance = vector.distance(frompos,my_n)
+		local distance_from = vector.distance(from_pos,my_n)
+		if distance_from < distance then 
+			distance = distance_from
 			temppos = my_n
+--			print("north selected as best choice")
 		end
+--		print("north ok ", my_n, " DIST= ", distance_from)
 	end
+--	else print("north blocked", my_n) end
+
+--	print("TEMPPOS=",temppos)
 
 	if pathfinder.check_movement_to_pos(my_s) ~= nil then
---		print("south ok")
-		if vector.distance(frompos,my_s) < distance then 
-			distance = vector.distance(frompos,my_s)
+		local distance_from = vector.distance(from_pos,my_s)
+		if distance_from < distance then 
+			distance = distance_from
 			temppos = my_s
+--			print("south selected as best choice")
 		end
+--		print("south ok", my_s, " DIST= ", distance_from)
+--	else print("south blocked", my_s) end
 	end
+
+--	print("TEMPPOS=",temppos)
 
 	if pathfinder.check_movement_to_pos(my_e) ~= nil then
---		print("east ok")
-		if vector.distance(frompos,my_e) < distance then 
-			distance = vector.distance(frompos,my_e)
+		local distance_from = vector.distance(from_pos,my_e)
+		if distance_from < distance then 
+			distance = distance_from
 			temppos = my_e
+--			print("east selected as best choice")
 		end
+--		print("east ok", my_e, " DIST= ", distance_from)
+--	else print("east blocked", my_e) end
 	end
 
+--	print("TEMPPOS=",temppos)
+
 	if pathfinder.check_movement_to_pos(my_w) ~= nil then
---		print("west ok")
-		if vector.distance(frompos,my_w) < distance then 
-			distance = vector.distance(frompos,my_w)
+		local distance_from = vector.distance(from_pos,my_w)
+		if distance_from < distance then 
+			distance = distance_from
 			temppos = my_w
+--			print("west selected as best choice")
 		end
+--		print("west ok", my_w, " DIST= ", distance_from)
+--	else print("west blocked", my_w) end
 	end
+
+--	print("TEMPPOS=",temppos)
 
 	return temppos
 
@@ -160,16 +363,13 @@ end
 
 
 
-
-
-
-function func.find_building_marker(pos,dist_xy,dist_z)
+function func.find_building_marker(pos,dist_xz,dist_y)
 
 --minetest.registered_nodes[]
 local locresult = nil
 
-local pos1       = vector.subtract(pos, { x = dist_xy, y = dist_xy, z = dist_z })
-local pos2       = vector.add(pos, { x = dist_xy, y = dist_xy, z = dist_z })
+local pos1       = vector.subtract(pos, { x = dist_xz, z = dist_xz, y = dist_y })
+local pos2       = vector.add(pos, { x = dist_xz, z = dist_xz, y = dist_y })
 local pos_list   = core.find_nodes_in_area(pos1, pos2, { "working_villages:building_marker" })
 
 if pos_list == nil then return nil end
@@ -198,6 +398,10 @@ local find_adjacent_clear = func.find_adjacent_clear
 -- search in an expanding box around pos in the XZ plane
 -- first hit would be closest
 local function search_surrounding(pos, pred, searching_range)
+
+
+if pos ~= nil then 
+
 	pos = vector.round(pos)
 	local max_xz = math.max(searching_range.x, searching_range.z)
 	local mod_y
@@ -258,6 +462,8 @@ local function search_surrounding(pos, pred, searching_range)
 		end
 	end
 	return ret.pos
+end
+
 end
 
 func.search_surrounding = search_surrounding

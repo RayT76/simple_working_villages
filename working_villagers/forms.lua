@@ -390,6 +390,7 @@ forms.register_page("working_villages:data_change",{
 			.. "field[" .. wp.x+5 .. "," .. wp.y + 0.4 ..";2.5,1;storage_pos;storage position;" .. storage_pos .. "]"
       .. "tooltip[storage_pos;Use \"near\" to find nearest chest (from villager up to 5 nodes).]"
 			.. "field[" .. jp.x .. "," .. jp.y + 0.4 ..";2.5,1;job_pos;job position;" .. job_pos .. "]"
+      .. "tooltip[job_pos;Use \"here\" to select villagers current position.]"
 			.. "button[3,".. bp.y + 0.5 ..";1,1;set_data;set]"
 			.. "button[6,".. bp.y + 0.5 ..";1,1;back;back]"
 	end,
@@ -397,6 +398,7 @@ forms.register_page("working_villages:data_change",{
 	receiver = function(_, villager, sender, fields)
 		local sender_name = sender:get_player_name()
 		if fields.set_data then
+			print("Setting Data Fields")
 			local data = {}
 			local marker_pos = load_pos(fields.marker_pos, villager, "working_villages:building_marker")
 			--data.home_pos = load_pos(fields.home_pos, villager, "group:door")
@@ -406,9 +408,41 @@ forms.register_page("working_villages:data_change",{
 			data.food_pos = load_pos(fields.food_pos, villager, "group:villager_chest")
 			data.tools_pos = load_pos(fields.tools_pos, villager, "group:villager_chest")
 			data.storage_pos = load_pos(fields.storage_pos, villager, "group:villager_chest")
+			print("Setting Job Pos")
 			if fields.job_pos then
-				data.job_pos = minetest.string_to_pos(fields.job_pos)
+				print("Trying to set Job Location")
+				if (fields.job_pos=="here") then
+					print("Selecting villagers current location")
+					fields.job_pos = minetest.pos_to_string(villager.object:get_pos())
+					data.job_pos = vector.round(villager.object:get_pos()) or nil
+					print("villagers location set to ", data.job_pos)
+				elseif (fields.job_pos~="") then
+					--print("Setting Job Location")
+					--fields.job_pos = minetest.pos_to_string(fields.job_pos)
+					--print("")
+					data.job_pos = minetest.string_to_pos(fields.job_pos)
+					print("Trying to set Job Location")
+				end
 			end
+
+
+
+
+
+--			if fields.job_pos then
+--				print("Trying to set Job Location")
+--				if (fields.job_pos=="here") then
+--				print("Selecting villagers current location")
+--					fields.job_pos = villager.object:get_pos() or nil
+--				print("villagers location ")
+--				elseif (fields.job_pos~="") then
+--				print("Trying to set Job Location")
+--					fields.job_pos = minetest.string_to_pos(pos)
+--				print("Trying to set Job Location")
+--				data.job_pos = minetest.string_to_pos(fields.job_pos)
+--				print("Trying to set Job Location")
+--				end
+--			end
 
 			-- soft update have to be done here, do not break pointers
 			soft_table_update(villager.pos_data, data)
