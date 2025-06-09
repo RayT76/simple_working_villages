@@ -8,7 +8,7 @@ Comments and suggestions are most welcome, and may even be implemented.
 Planned later Refactoring will make almost all bugs here obsolete.
 
 <p>
-##Personal Objectives with this project:
+## Personal Objectives with this project:
 Having a little look into LUA programming.
 Having a little look into the workings of Minetest.
 Having a little play with 3d pathing.
@@ -16,49 +16,51 @@ Having a little play in Simple Tasked based AI.
 </p>
 
 <p>
-##Description
+## Description
 The main purpose of this mod is to add the Mayor NPC Character to the Minetest Game. Once deployed the Mayor will start to build a small town and Hire other Villagers to help.
 These other Villagers will fulfill planned jobs in the town and aid in its development.
 </p>
 
 <p>
-##Code Status
+## Code Status
 My Code in this mod is "Get it Working" and is as dirty as ya mom.
 Current build is experimental and concerned with information gathering.
 Be Warned ::: I have not used LUA before taking on this project, its all a learning curve.
 </p>
 
 
-#CURRENT MINETEST MODULES USED WITH THIS MOD.
-Basic Materials and items
-    mt-mods
-FakeLib
-    OgelGames
-Farming Redo
-    TenPlus1
-Mobs Redo
-    TenPlus1
-Mobs Animal
-    TenPlus1
-Mobs Monster
-    TenPlus1
-mod utilities
-    theFox
-Unified Inventory Plus
-    mt-mods
-Unified Dyes
-    mt-mod
-Visual Harm 1Ndicators
-    Mantar
-WorldEdit
-    sfan5
-Xcompat
-    mt-mods
-Charater Animations (planned implementation)
-    LMD
+# CURRENT MINETEST MODULES USED WITH THIS MOD.
+**Basic Materials and items**<br>
+    mt-mods<br>
+**FakeLib**<br>
+    OgelGames<br>
+**Farming Redo**<br>
+    TenPlus1<br>
+**Mobs Redo**<br>
+    TenPlus1<br>
+**Mobs Animal**<br>
+    TenPlus1<br>
+**Mobs Monster**<br>
+    TenPlus1<br>
+**mod utilities**<br>
+    theFox<br>
+**Unified Inventory Plus**<br>
+    mt-mods<br>
+**Unified Dyes**<br>
+    mt-mods<br>
+**Visual Harm 1Ndicators**<br>
+    Mantar<br>
+**WorldEdit**<br>
+    sfan5<br>
+**Xcompat**<br>
+    mt-mods<br>
+**Charater Animations (planned implementation)**<br>
+    LMD<br>
+**HomeDecor**<br>
+    mt-mods<br>
 
 
-##MINETEST ENGINE LIMITATIONS:<br>
+## MINETEST ENGINE LIMITATIONS:<br>
 
 Once you are a set distance from the NPC they are saved and unloaded from the world
 
@@ -79,7 +81,7 @@ If the NPC does unload, not all required data is saved or loaded, small bugs lik
 
 
 
-##SKINS:
+## SKINS:
 All skins used in this mod excluding the originals from working_villages are created by myself.
 
 
@@ -87,82 +89,82 @@ All skins used in this mod excluding the originals from working_villages are cre
 
 <p>CURRENT NPC STATUS</p>
 
-###Builder
+### Builder
 
 Working under management from the Mayor
 Builds buildings for the town under instructions from the Town Mayor
-###Empty
+### Empty
 
 Does nothing.
 
-###Farmer
+### Farmer
 
 Working under management from the Mayor
 Farms and Replants crops - Thought the player has to plant the first crops to show the farmer what do grow.
 
-###Fireman
+### Fireman
 
 Working Prototype
 Buggy AI movement, needs updating to current AI
 Looks for wild fires, if founds attempts to extinguish them
 
-###Follow_player
+### Follow_player
 
 Working
 
-###Gardener
+### Gardener
 
 Working under management from the Mayor
 Clears plots ready for Builder (currently under development)
 Clears weeds and cuts grass on a plot
 
-###Lumberjack
+### Lumberjack
 
 Working under management from the Mayor
 Chops down trees under orders from the Mayor
 Manages an Orchard for a wood supply
 
-###Mayor
+### Mayor
 
 Working - Under continous Development
 Manages the Town development and NPC's
 
-###Medic
+### Medic
 
 Working Prototype
 Buggy AI movement, needs updating to current AI
 Searches for wounded friendly NPC's and heals them
 
-###Miner
+### Miner
 
 Working under management from the Mayor
 Complexity of the Mining will be updated in the future, this will enable "scanning" for wanted items.
 Currently digs a big hole and collects whats dug.
 
-###Plant_collector
+### Plant_collector
 
 Working Prototype
 Buggy AI movement, needs updating to current AI
 Searches and collects wild farmable crops
 
-###Snowclearer
+### Snowclearer
 
 Working Prototype
 Buggy AI movement, needs updating to current AI
 Looks for and removes snow
 
-###Torcher
+### Torcher
 
 Untested
 
-###Vet
+### Vet
 
 Working Prototype
 Buggy AI movement, needs updating to current AI
 Same as medic but for friendly animals
 
 
-##FUTURE ROLE CONSIDERATIONS
+## FUTURE ROLE CONSIDERATIONS
 
 **Rubbish Collector**
 
@@ -239,7 +241,7 @@ stays with the children in a school enviroment for most of the day
     chicken feeder
     ect
 
-##CURRENT / FIXES / KNOWN BUGS
+## CURRENT / FIXES / KNOWN BUGS
 
 Builder not finding Wall mounted torches in chest:
 Quick fix.. give the builder some standard torches and reload the map.
@@ -262,7 +264,7 @@ This can be annoying, Though I use the CLI to see what he is doing and what item
 The close range entity avoidance is very simple. currently I look at the bug as the NPC's having a arguement. Using the Lead mod I just pull one out of the way and they
 both continue as normal.. I have left this bug in as it helps with owner interaction with the NPC's. charactor 
 
-##CURRENTLY PLANNED UPDATES AND TODOS
+## CURRENTLY PLANNED UPDATES AND TODOS
 
 
 **Problem:** If a NPC dies its currently a pain to get them back.
@@ -273,11 +275,11 @@ To Movein the New NPC, find his house marker and remove it. The Builder will che
 **Problem:** Only one Town-plan is currently available
 **Solution:** Have the Town-Planning-Data Selectable and Loadable from a file. Either Different Mayors for Different Towns, or a selection menu for the Town-Plan.
 
-###Animation Updates
+### Animation Updates
 Want to add Fly, Swim, Crouch and Climb animations from the "Charater Animations" MOD to the NPC's.
 
 
-###Animation Updates
+### Animation Updates
 It is planned to look into the Wielded item display functions, which currently does not seem to work.
 
 
@@ -288,7 +290,7 @@ Mayor AI Tasks.
 
 
 
-##LASTLY
+## LASTLY
 
 One of the ideas for this mod is to start it in a non-creative mode, like a survival mode.
 
