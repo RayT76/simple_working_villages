@@ -1,11 +1,11 @@
-local log = working_villages.require("log")
-local func = working_villages.require("jobs/util")
-local pathfinder = working_villages.require("pathfinder")
+local log = simple_working_villages.require("log")
+local func = simple_working_villages.require("jobs/util")
+local pathfinder = simple_working_villages.require("pathfinder")
 
-working_villages.func = func
-working_villages.pathfinder = pathfinder
-working_villages.failures = working_villages.require("failures")
-working_villages.forms = working_villages.require("forms")
+simple_working_villages.func = func
+simple_working_villages.pathfinder = pathfinder
+simple_working_villages.failures = simple_working_villages.require("failures")
+simple_working_villages.forms = simple_working_villages.require("forms")
 
 --func.search_surrounding = pathfinder.search_surrounding --TODO: remove from util.lua
 
@@ -127,7 +127,7 @@ function func.villager_state_machine_job(job_name,job_description,actions, sprop
 	local function to_walk_randomly(self)
 		self:set_timer(1,20)
 		self:set_timer(2,0)
-		self:set_animation(working_villages.animation_frames.WALK)
+		self:set_animation(simple_working_villages.animation_frames.WALK)
 	end
 
 	local function s_search_idle(self)
@@ -178,7 +178,7 @@ function func.villager_state_machine_job(job_name,job_description,actions, sprop
 		self:set_timer(1,0)
 		self:set_timer(2,0)
 		self.object:set_velocity{x = 0, y = 0, z = 0}
-		self:set_animation(working_villages.animation_frames.STAND)
+		self:set_animation(simple_working_villages.animation_frames.STAND)
 	end
 
 	--sleeping states
@@ -187,7 +187,7 @@ function func.villager_state_machine_job(job_name,job_description,actions, sprop
 			local pos=self.object:getpos()
 			self.object:setpos({x=pos.x,y=pos.y+0.5,z=pos.z})
 			log.action("villager %s gets up", self.inventory_name)
-			self:set_animation(working_villages.animation_frames.STAND)
+			self:set_animation(simple_working_villages.animation_frames.STAND)
 			self:set_displayed_action("active")
 			self:set_state_info("I'm running my stale job. (ask the dev to update it)")
 			return true
@@ -207,7 +207,7 @@ function func.villager_state_machine_job(job_name,job_description,actions, sprop
 		else
 			log.info("villager %s found no bed", self.inventory_name)
 		end
-		self:set_animation(working_villages.animation_frames.LAY)
+		self:set_animation(simple_working_villages.animation_frames.LAY)
 		self.object:setpos(vector.add(bed_pos,{x=0,y=1.5,z=0}))
 		self:set_displayed_action("sleeping")
 		self:set_state_info("Zzzzzzz...murmur...")
@@ -286,7 +286,7 @@ function func.villager_state_machine_job(job_name,job_description,actions, sprop
 		self.job_state = nil
 		self.time_counters = nil
 		self.path = nil
-		self:set_animation(working_villages.animation_frames.STAND)
+		self:set_animation(simple_working_villages.animation_frames.STAND)
 	end
 	local function on_resume(self)
 		local job = self:get_job()
@@ -298,7 +298,7 @@ function func.villager_state_machine_job(job_name,job_description,actions, sprop
 	local function on_pause(self)
 		self.object:set_velocity{x = 0, y = 0, z = 0}
 		self.job_state = nil
-		self:set_animation(working_villages.animation_frames.STAND)
+		self:set_animation(simple_working_villages.animation_frames.STAND)
 	end
 	local function on_step(self)
 		if self.job_state.next_state ~= nil then
@@ -314,8 +314,8 @@ function func.villager_state_machine_job(job_name,job_description,actions, sprop
 			end
 		end
 	end
-	working_villages.register_job("working_villages:"..job_name, {
-		description      = "working_villages job : "..job_description,
+	simple_working_villages.register_job("simple_working_villages:"..job_name, {
+		description      = "simple_working_villages job : "..job_description,
 		inventory_image  = "default_paper.png^memorandum_letters.png",
 		on_start         = on_start,
 		on_stop          = on_stop,

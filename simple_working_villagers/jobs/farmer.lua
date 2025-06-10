@@ -1,5 +1,5 @@
-local func = working_villages.require("jobs/util")
-local co_command = working_villages.require("job_coroutines").commands
+local func = simple_working_villages.require("jobs/util")
+local co_command = simple_working_villages.require("job_coroutines").commands
 local use_vh1 = minetest.get_modpath("visual_harm_1ndicators")
 
 -- limited support to two replant definitions
@@ -119,8 +119,8 @@ local function take_func(villager,stack)
 	return false
 end
 
-working_villages.register_job("working_villages:job_farmer", {
-	description			= "farmer (working_villages)",
+simple_working_villages.register_job("simple_working_villages:job_farmer", {
+	description			= "farmer (simple_working_villages)",
 	long_description = "I look for cultivated plants to harvest and replant.",
 	inventory_image	= "default_paper.png^working_villages_farmer.png",
 	jobfunc = function(self)
@@ -217,4 +217,4 @@ working_villages.register_job("working_villages:job_farmer", {
 	end,
 })
 
-working_villages.farming_plants = farming_plants
+simple_working_villages.farming_plants = farming_plants

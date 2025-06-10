@@ -1,6 +1,6 @@
 local forms = {}
 local registered_forms = {}
-local log = working_villages.require("log")
+local log = simple_working_villages.require("log")
 
 forms.villagers = {}
 function forms.get_villager(inv_name)
@@ -44,7 +44,7 @@ function forms.show_formspec(villager, formname, playername)
 	local page = registered_forms[formname]
 	if page == nil then
 		log.warning("page %s not registered", formname)
-		page = registered_forms["working_villages:talking_menu"]
+		page = registered_forms["simple_working_villages:talking_menu"]
 	end
 	minetest.show_formspec(playername, formname.."_"..villager.inventory_name, page:constructor(villager, playername))
 	forms.villagers[villager.inventory_name] = villager
@@ -207,7 +207,7 @@ function forms.register_text_page(pageid,text_constructor)
 	})
 end
 
-forms.register_page("working_villages:job_change",{
+forms.register_page("simple_working_villages:job_change",{
 	constructor = function(_, villager) --self, villager, playername
 		local cp = { x = 3.5, y = 0 }
 		local villager_name = ""
@@ -221,14 +221,14 @@ forms.register_page("working_villages:job_change",{
 			.. villager_name
 			.. "label[".. cp.x - 0.25 ..",".. cp.y ..";current job]"
 			.. "list[detached:".. villager.inventory_name ..";job;".. cp.x ..",".. cp.y + 0.5 ..";1,1;]"
-			.. "list[detached:working_villages:job_inv;main;0,2;8,4;]"
+			.. "list[detached:simple_working_villages:job_inv;main;0,2;8,4;]"
 			.. "listring[]"
 			.. "button[6,".. cp.y + 0.5 ..";1,1;back;back]"
 	end,
 	receiver = function(_, villager, sender, fields)
 		local sender_name = sender:get_player_name()
 		if fields.back then
-			forms.show_formspec(villager, "working_villages:inv_gui", sender_name)
+			forms.show_formspec(villager, "simple_working_villages:inv_gui", sender_name)
 			return
 		end
 	end
@@ -285,7 +285,7 @@ local function set_villager_home(sender_name, villager, marker_pos)
 			"do not exist in our coordinate system. Correct coordinates range from -30912 to 30927 in all axes.")
 		return
 	end
-	if minetest.get_node(marker_pos).name ~= "working_villages:building_marker" then
+	if minetest.get_node(marker_pos).name ~= "simple_working_villages:building_marker" then
 		minetest.chat_send_player(sender_name, 'No home marker could be found at the entered position.')
 		return
 	end
@@ -300,7 +300,7 @@ end
 
 local change_index = 0
 
-forms.register_page("working_villages:data_change",{
+forms.register_page("simple_working_villages:data_change",{
 	constructor = function(_, villager, player_name) --self, villager, playername
 		-- villager data
 		local data = villager.pos_data
@@ -400,7 +400,7 @@ forms.register_page("working_villages:data_change",{
 		if fields.set_data then
 			print("Setting Data Fields")
 			local data = {}
-			local marker_pos = load_pos(fields.marker_pos, villager, "working_villages:building_marker")
+			local marker_pos = load_pos(fields.marker_pos, villager, "simple_working_villages:building_marker")
 			--data.home_pos = load_pos(fields.home_pos, villager, "group:door")
 			data.home_pos = load_pos(fields.home_pos, villager, "group:villager_door")
 			data.bed_pos = load_pos(fields.bed_pos, villager, "group:villager_bed_bottom")
@@ -469,16 +469,16 @@ forms.register_page("working_villages:data_change",{
 				villager.village_name = fields.village_name
 				-- TODO: Add some connection data update function here?
 			end
-			forms.show_formspec(villager, "working_villages:data_change", sender_name)
+			forms.show_formspec(villager, "simple_working_villages:data_change", sender_name)
 		end
 		if fields.back then
-			forms.show_formspec(villager, "working_villages:inv_gui", sender_name)
+			forms.show_formspec(villager, "simple_working_villages:inv_gui", sender_name)
 			return
 		end
 	end
 })
 
-forms.register_page("working_villages:inv_gui", {
+forms.register_page("simple_working_villages:inv_gui", {
 	constructor = function(_, villager) --self, villager, playername
 		-- job name
 		local jobname = villager:get_job()
@@ -515,17 +515,17 @@ forms.register_page("working_villages:inv_gui", {
 	receiver = function(_, villager, sender, fields)
 		local sender_name = sender:get_player_name()
 		if fields.job then
-			forms.show_formspec(villager, "working_villages:job_change", sender_name)
+			forms.show_formspec(villager, "simple_working_villages:job_change", sender_name)
 			return
 		end
 		if fields.data then
-			forms.show_formspec(villager, "working_villages:data_change", sender_name)
+			forms.show_formspec(villager, "simple_working_villages:data_change", sender_name)
 			return
 		end
 	end,
 })
 
---TODO: see if working_villages.registered_forms should really be public
-working_villages.regisered_forms = registered_forms
+--TODO: see if simple_working_villages.registered_forms should really be public
+simple_working_villages.regisered_forms = registered_forms
 
 return forms

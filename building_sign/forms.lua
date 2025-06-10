@@ -21,14 +21,14 @@ function forms.build_form(meta)
 		button_build = "button_exit[5.0,2.0;3.0,0.5;build_update;Update Build]"
 	end
 	local index = meta:get_int("index")
-	local buildpos = working_villages.buildings.get_build_pos(meta)
-	local building = working_villages.buildings.get(buildpos)
+	local buildpos = simple_working_villages.buildings.get_build_pos(meta)
+	local building = simple_working_villages.buildings.get(buildpos)
 	local nodelist = building.nodedata
 	if not nodelist then nodelist = {} end
 	local formspec = "size[8,10]"
 		.."label[3.0,0.0;Project: "..title.."]"
 		.."label[3.0,1.0;"..math.ceil(((index-1)/#nodelist)*100).."% finished]"
-		.."textlist[0.0,2.0;4.0,3.5;inv_sel;"..working_villages.buildings.get_materials(nodelist)..";"..index..";]"
+		.."textlist[0.0,2.0;4.0,3.5;inv_sel;"..simple_working_villages.buildings.get_materials(nodelist)..";"..index..";]"
 		..button_build
 		.."button_exit[5.0,3.0;3.0,0.5;build_cancel;Cancel Build]"
 	return formspec
@@ -94,7 +94,7 @@ function forms.on_receive_fields(pos, _, fields, sender)
 						z=math.ceil(pos.z) + 2
 					}
 					meta:set_string("build_pos",minetest.pos_to_string(bpos))
-					working_villages.buildings.load_schematic(meta:get_string("schematic"),pos)
+					simple_working_villages.buildings.load_schematic(meta:get_string("schematic"),pos)
 					meta:set_int("index",0)
 					meta:set_string("state","planned")
 				end
@@ -102,7 +102,7 @@ function forms.on_receive_fields(pos, _, fields, sender)
 		end
 	elseif fields.build_cancel then
 		--reset_build()
-		working_villages.buildings.get(working_villages.buildings.get_build_pos(meta)).nodedata = nil
+		simple_working_villages.buildings.get(simple_working_villages.buildings.get_build_pos(meta)).nodedata = nil
 		meta:set_string("schematic","")
 		meta:set_int("index",0)
 		meta:set_string("valid","false")
@@ -156,9 +156,9 @@ function forms.on_receive_fields(pos, _, fields, sender)
 			meta:set_string("valid", "false")
 		end
 		meta:set_string("door", fields.door_pos)
-		for _,home in pairs(working_villages.homes) do
+		for _,home in pairs(simple_working_villages.homes) do
 			if vector.equals(home.marker, pos) then
-				for k, v in pairs(working_villages.home.update) do
+				for k, v in pairs(simple_working_villages.home.update) do
 					home.update[k] = v
 				end
 			end

@@ -1,8 +1,8 @@
-local func = working_villages.require("jobs/util")
-local build = working_villages.require("building")
-local co_command = working_villages.require("job_coroutines").commands
+local func = simple_working_villages.require("jobs/util")
+local build = simple_working_villages.require("building")
+local co_command = simple_working_villages.require("job_coroutines").commands
 local use_vh1 = minetest.get_modpath("visual_harm_1ndicators")
-local pathfinder = working_villages.require("pathfinder")
+local pathfinder = simple_working_villages.require("pathfinder")
 
 
 -- TODO JOB PLAN OF THE NEW TOWN
@@ -90,11 +90,11 @@ local minera_minera = nil		-- tells if there is a builder on hand
 
 
 local minera_marker = nil
---local minera_minera_job = "working_villages:job_builder_a"
---local minera_minera_npc = "working_villages:villager_male_builder_a"
+--local minera_minera_job = "simple_working_villages:job_builder_a"
+--local minera_minera_npc = "simple_working_villages:villager_male_builder_a"
 
 
---local minera_marker = "working_villages:building_marker"
+--local minera_marker = "simple_working_villages:building_marker"
 local minera_is_morning = true		-- tells if it is the start of the day
 local minera_minera = nil		-- tells if there is a builder on hand
 local minera_building_count = 0		-- current town building job number
@@ -340,13 +340,13 @@ local function auto_go(self, isrunning)
 		if pathres == true then
 --			print("PATH FOUND GOING ON ROUTE")
 --	print("DUMP_PATHDATA:", dump(self.job_data["pathdata"]))
-			self:set_animation(working_villages.animation_frames.WALK)
+			self:set_animation(simple_working_villages.animation_frames.WALK)
 			current_job["status"] = 1
 			current_job["currloc"] = vector.round(mypos)
 			current_job["count"] = 0
 			rem_from_joblist(self)
 			add_to_joblist(self,current_job)
-			self:set_animation(working_villages.animation_frames.WALK)
+			self:set_animation(simple_working_villages.animation_frames.WALK)
 			return nil
 		elseif pathres == false then
 			print("NO PATH FOUND")
@@ -364,7 +364,7 @@ local function auto_go(self, isrunning)
 		self:handle_goto_obstacles(true)
 		local cani = self:get_animation()
 		if cani ~= nil and cani ~= "WALK" then
-			self:set_animation(working_villages.animation_frames.WALK)
+			self:set_animation(simple_working_villages.animation_frames.WALK)
 		end
 
 		if current_job["currloc"] == nil then
@@ -407,7 +407,7 @@ local function auto_go(self, isrunning)
 --			print("AUTOGO GOT TO DESTINATION")
 			local tdist = vector.distance(mypos,mydest)
 			self.object:set_velocity{x = 0, y = 0, z = 0}
-			self:set_animation(working_villages.animation_frames.STAND)
+			self:set_animation(simple_working_villages.animation_frames.STAND)
 			rem_from_joblist(self)
 			return true
 		elseif goonres == false then
@@ -445,7 +445,7 @@ local function check_my_name(self)
 	local current_job = get_from_joblist(self,1)	
 	if self.nametag == nil or self.nametag == '' then
 		-- no name found
-		self:set_animation(working_villages.animation_frames.MINE)
+		self:set_animation(simple_working_villages.animation_frames.MINE)
 		local notify_job = {
 			["name"] = "notify",
 			["status"] = 0,
@@ -456,7 +456,7 @@ local function check_my_name(self)
 		-- found a name tag
 		rem_from_joblist(self)
 		print("I am called ", self.nametag)		
---		self:set_animation(working_villages.animation_frames.STAND)
+--		self:set_animation(simple_working_villages.animation_frames.STAND)
 	end
 end
 
@@ -467,7 +467,7 @@ end
 --	local current_job = get_from_joblist(self,1)
 --	if get_job_position(self) == nil  then
 --		-- no jobpos found
---		self:set_animation(working_villages.animation_frames.MINE)
+--		self:set_animation(simple_working_villages.animation_frames.MINE)
 --		local notify_job = {
 --			["name"] = "notify",
 --			["status"] = 0,
@@ -816,7 +816,7 @@ local function signoff_building(self)
 			minera_meta:set_string("state","built")
 			--local temps = 
 			minera_meta:set_string("house_label", minera_town_names[minera_building_count])
-			minera_meta:set_string("formspec",working_villages.buildings.get_formspec(minera_meta))
+			minera_meta:set_string("formspec",simple_working_villages.buildings.get_formspec(minera_meta))
 	minera_meta:set_string("owner", self.owner_name)
 	minera_meta:set_string("infotext", minera_town_names[minera_building_count])
 
@@ -1217,7 +1217,7 @@ local function start_building(self)
 
 	elseif current_job.status == 1 then
 		-- place marker down
-		print("MAYOR:found ", minetest.get_node(myml).name, " where my marker needs to go")
+		print("MINOR:found ", minetest.get_node(myml).name, " where my something needs to go")
 		if minetest.get_node(myml).name ~= "air" and minetest.get_node(myml).name ~= minera_marker then
 			self:dig(myml,false)
 			coroutine.yield()
@@ -1255,7 +1255,7 @@ local function start_building(self)
 
 		local minera_meta = minetest.get_meta(myml)
 		minera_meta:set_string("build_pos",minetest.pos_to_string(mybl))
-		local tempxyz = working_villages.buildings.load_schematic( bscheme   ,myml)
+		local tempxyz = simple_working_villages.buildings.load_schematic( bscheme   ,myml)
 		minera_meta:set_int("maxx",tempxyz.x)
 		minera_meta:set_int("maxy",tempxyz.y)
 		minera_meta:set_int("maxz",tempxyz.z)
@@ -1342,17 +1342,17 @@ local function start_building(self)
 
 
 --	elseif self.job_data["subaction"] == 5 then
---		if minetest.get_node(myml).name == "working_villages:building_marker" then
+--		if minetest.get_node(myml).name == "simple_working_villages:building_marker" then
 --			--self:set_displayed_action("I have placed a building marker ready")
 --			local minera_meta = minetest.get_meta(myml)
 --
 --			print("MAYORA: SETTING BUILD LOCATION = ", mybl) 
 --			minera_meta:set_string("build_pos",minetest.pos_to_string(mybl))
---			local tempxyz = working_villages.buildings.load_schematic(minera_town_schems[minera_building_count],myml)
+--			local tempxyz = simple_working_villages.buildings.load_schematic(minera_town_schems[minera_building_count],myml)
 --			-- TODO check for the correct way of setting the name string
 --
---			--local minera_nnode = working_villages.buildings.get(mybl).nodedata[minera_meta:get_int("index")]
-  --      		--local minera_building_on_pos = working_villages.buildings.get(minera_build_pos)
+--			--local minera_nnode = simple_working_villages.buildings.get(mybl).nodedata[minera_meta:get_int("index")]
+  --      		--local minera_building_on_pos = simple_working_villages.buildings.get(minera_build_pos)
 --			print("BUILDPOS = ", minera_meta:get_string("build_pos"))
 --			print("MAXx META = ", tempxyz.x)
 --			print("MAXy META = ", tempxyz.y)
@@ -1363,15 +1363,15 @@ local function start_building(self)
 --			minera_meta:set_string("thename",minera_town_names[minera_building_count])
 --			minera_meta:set_int("index",0)
 --			minera_meta:set_string("state","begun")
---			--minera_meta:set_string("formspec",working_villages.buildings.get_formspec(minera_meta))
+--			--minera_meta:set_string("formspec",simple_working_villages.buildings.get_formspec(minera_meta))
 --			if self.job_data["has_builder"] == nil then
 --				
 --
 --				hire a builder here ?
 --				print("MAYORA: TRYING TO HIRE A BUILDER")
 --
---local minera_minera_job = "working_villages:job_builder_a"
---local minera_minera_npc"working_villages:villager_male_builder_a"
+--local minera_minera_job = "simple_working_villages:job_builder_a"
+--local minera_minera_npc"simple_working_villages:villager_male_builder_a"
 --
 --				local myps = vector.add(self.pos_data.job_pos,{x = 3, y = 0, z = 10})
 --				while go_to_here(self.object:get_pos(),myps,self) ~= true do
@@ -1423,7 +1423,7 @@ local function hire_a_builder(self)
 	elseif current_job.status == 1 then
 		rem_from_joblist(self)
 		local hireloc = func.get_closest_clear_spot(self.object:get_pos(), get_home_position(self))	
-		local minera_minera_npc = "working_villages:villager_male_builder_a"
+		local minera_minera_npc = "simple_working_villages:villager_male_builder_a"
 
 		local obj = core.add_entity(hireloc, minera_minera_npc, nil)
 		local ent = obj:get_luaentity()
@@ -1448,7 +1448,7 @@ local function notify_me(self)
 		rem_from_joblist(self)
 		current_job.status = 1
 		add_to_joblist(self,current_job)
-		self:set_animation(working_villages.animation_frames.MINE)
+		self:set_animation(simple_working_villages.animation_frames.MINE)
 	elseif current_job.status == 1 then		
 		-- I want a JOBPOS from the boss
 		look_at_position(self,get_players_location(self.owner_name))
@@ -1539,18 +1539,18 @@ end
 
 
 local function find_building(p)
-	if minetest.get_node(p).name ~= "working_villages:building_marker" then
+	if minetest.get_node(p).name ~= "simple_working_villages:building_marker" then
 		return false
 	end
 	local minera_meta = minetest.get_meta(p)
 	if minera_meta:get_string("state") ~= "begun" then
 		return false
 	end
-	local minera_build_pos = working_villages.buildings.get_build_pos(minera_meta)
+	local minera_build_pos = simple_working_villages.buildings.get_build_pos(minera_meta)
 	if minera_build_pos == nil then
 		return false
 	end
-	if working_villages.buildings.get(minera_build_pos)==nil then
+	if simple_working_villages.buildings.get(minera_build_pos)==nil then
 		return false
 	end
 	return true
@@ -1693,7 +1693,7 @@ end
 local function is_sapling_spot(pos)
 	-- FIXME: need a player name if villagers can own a protected area
 	if minetest.is_protected(pos, "") then return false end
-	if working_villages.failed_pos_test(pos) then return false end
+	if simple_working_villages.failed_pos_test(pos) then return false end
 	local lpos = vector.add(pos, {x = 0, y = -1, z = 0})
 	local lnode = minetest.get_node(lpos)
 	if minetest.get_item_group(lnode.name, "soil") == 0 then return false end
@@ -1732,7 +1732,7 @@ local function find_tree(p)
 	if minetest.get_item_group(adj_node.name, "tree") > 0 then
 		-- FIXME: need a player name if villagers can own a protected area
 		if minetest.is_protected(p, "") then return false end
-		if working_villages.failed_pos_test(p) then return false end
+		if simple_working_villages.failed_pos_test(p) then return false end
 		return true
 	end
 	return false
@@ -1822,7 +1822,7 @@ local function mine_pitmine(self)
 	elseif current_job.status == 1 then
 
 --		print("MINER: Check Next position XZ is within mine E",  current_job["erow"],  current_job["nrow"])
-		if current_job["erow"] > 3 then --(current_job.x-2) then
+		if current_job["erow"] > 3 + current_job["depth"] then --(current_job.x-2) then
 			-- too far try next nrow 
 			current_job["erow"] = 1
 			current_job["nrow"] = current_job["nrow"] + 1
@@ -1830,7 +1830,7 @@ local function mine_pitmine(self)
 		rem_from_joblist(self)
 			add_to_joblist(self,current_job)
 		else
-			if current_job["nrow"] > 3 then --(current_job.x-2) then
+			if current_job["nrow"] > 3 + current_job["depth"] then --(current_job.x-2) then
 				-- we have finished the mine layer 
 				-- should go down
 				current_job["erow"] = 1
@@ -1935,8 +1935,70 @@ local function mine_pitmine(self)
 			if lnnode ~= lnode.name then
 				-- should place a ladder
 -- 				print("MINER PLACING A LADDER AT ", locp)
+
+				local function is_material(name)
+					return name == buildera_nname
+				end
+
+				local wield_stack = self:get_wield_item_stack()
+				if is_material(wield_stack:get_name()) or self:has_item_in_main(is_material) then
+					if minetest.get_node(placeloc).name == "air" then
+						self:place(lnode,placeloc)
+						coroutine.yield()
+--						print("Tying to place node")
+					else
+						print("MINER: DID NOT PLACE LADDER")
+					end
+
+				else
+
+
+
+
+					local msg = "MINER at " .. minetest.pos_to_string(vector.round(self.object:get_pos())) .. " is going home to look for " .. lnode.name
+					local smsg = "I am going home to look for a " .. lnode.name
+
+					if self.owner_name then
+						minetest.chat_send_player(self.owner_name,msg)
+					else
+						print(msg)
+					end
+						current_job.status = 0
+					self:set_state_info(smsg)
+						local checkforitem_job = {
+							["name"] = "checkforitem",
+							["status"] = 0,
+							["item"] = lnode.name
+						}
+						rem_from_joblist(self)
+						add_to_joblist(self,current_job)
+						add_to_joblist(self,checkforitem_job)
+--					coroutine.yield(co_command.pause,"waiting for materials")
+                    return
+
+
+                    -- TODO may need to reset the mining job to start from begining
+
+
+
+				end
+
+
+
+
+
+
 				self:place(lnode,locp)
 				delay = self.build_delay
+
+
+
+
+
+
+
+
+
 			end
 
 			-- TODO check layer and then scan area around
@@ -2303,6 +2365,124 @@ end
 
 
 
+local function check_for_item(self)
+
+	local current_job = get_from_joblist(self,1)
+
+	print("DUMPJOB:", dump(current_job))
+
+	if self.pos_data.chest_pos == nil then
+		-- first check I even have a chest
+				
+				local njob = {
+					name = "notify",
+					message = " in need of some " .. current_job["item"],
+					status = 0
+				}
+				rem_from_joblist(self)
+				add_to_joblist(self,njob)	
+				return nil
+
+
+
+	elseif current_job.status == 0 then
+		-- goto my chest
+
+
+        -- TODO FIXME : Dirty fix for wall torch
+
+            if current_job.item == "default:torch_wall" then
+                current_job.item = "default:torch"
+            end
+
+			print("Miner is going to his chest to look for ", current_job.item)
+
+
+
+
+			local dest = func.get_closest_clear_spot(self.object:get_pos(),self.pos_data.chest_pos)
+			local gotochest_job = {
+				["name"] = "gotohere",
+				["dest"] = dest,
+				["status"] = 0
+			}
+			current_job.status = 1
+			rem_from_joblist(self)
+				add_to_joblist(self,current_job)
+			add_to_joblist(self,gotochest_job)
+
+
+	elseif current_job.status == 1 then
+		--look for item
+		print("Miner is opening the chest to look for ", current_job.item)
+		local inv = core.get_inventory({ type="node", pos=self.pos_data.chest_pos })
+		if inv:is_empty("main") then
+
+			print("Miner: The chest is EMPTY ", current_job.item)
+			-- sit down and see if anyone notices ?? 	
+		else
+
+			local found = false
+			local stacks = inv:get_list("main")
+			for _, stack in ipairs(stacks) do
+
+				if found == false then
+					local itemname = stack:get_name()
+					local itemcount = stack:get_count()
+					print("STACK ITEM", _,": ",itemname, itemcount)
+
+					if itemname == current_job.item then
+						print("ITEM ", current_job.item, " FOUND !")
+						found = true
+						local myinv = self:get_inventory()
+						
+					
+						if not inv:room_for_item("main", stack) then
+							print("Not enough room!")
+							local njob = {
+								name = "notify",
+								message = "I dont seem to have enough room in my bag ??? \nI don't know why\n",
+								status = 0
+							}
+							--current_job.status = 1
+							--rem_from_joblist(self)
+							--add_to_joblist(self,current_job)
+							add_to_joblist(self,njob)
+
+
+
+
+						else
+
+							local taken = inv:remove_item("main", stack)
+							print("Took " .. taken:get_count())
+							local leftover = myinv:add_item("main", taken)
+							print("LEFTOVER=", leftover:get_count())
+							rem_from_joblist(self)
+						
+						end
+					end
+				end
+
+
+			end
+			if found == false then
+				local njob = {
+					name = "notify",
+					message = "I do not seem to have any ", current_job.item, " in my chest ??? \nCan you help me out ?\n",
+					status = 0
+				}
+				add_to_joblist(self,njob)	
+			end
+
+		end
+
+
+
+	end
+
+end
+
 
 
 
@@ -2313,17 +2493,17 @@ end
 
 local function stand_up(self)
 	rem_from_joblist(self)
-	self:set_animation(working_villages.animation_frames.STAND)
+	self:set_animation(simple_working_villages.animation_frames.STAND)
 end
 
 local function sit_down(self)
 	rem_from_joblist(self)
-	self:set_animation(working_villages.animation_frames.SIT)
+	self:set_animation(simple_working_villages.animation_frames.SIT)
 end
 
 local function lay_down(self)
 	rem_from_joblist(self)
-	self:set_animation(working_villages.animation_frames.LAY)
+	self:set_animation(simple_working_villages.animation_frames.LAY)
 end
 
 local function do_situps(self)
@@ -2734,7 +2914,7 @@ print("MINER: DO BEDTIME")
 		else
 			-- cannot find bed
 		end
-		self:set_animation(working_villages.animation_frames.LAY)
+		self:set_animation(simple_working_villages.animation_frames.LAY)
 		self.object:set_pos(bed_pos)
 		self:set_state_info("Zzzzzzz...")
 		self:set_displayed_action("sleeping")
@@ -2783,15 +2963,15 @@ local under_attack = false
 
 
 
-working_villages.register_job("working_villages:job_miner_a", {
-	description      = "Miner A (working_villages)",
+simple_working_villages.register_job("simple_working_villages:job_miner_a", {
+	description      = "Miner A (simple_working_villages)",
 	long_description = "I Dig holes and collect what i get.\
 I might also chop down a house. Don't get angry please I'm not the best at my job.\
 When I find a sappling I'll plant it on some soil near a bright place so a new tree can grow from it.",
 	inventory_image  = "default_paper.png^working_villages_woodcutter.png",
 	jobfunc = function(self)
 
-		if use_vh1 then VH1.update_bar(self.object, self.health) end
+		if use_vh1 then VH1.update_bar(self.object, self.object:get_hp()) end
 
 -- ONCE ONLY ON CREATE
 		if self.job_data["isstarted"] == nil then
@@ -3026,6 +3206,9 @@ When I find a sappling I'll plant it on some soil near a bright place so a new t
 
 		elseif current_job.name == "movein1" then
 			move_in_1(self)
+
+		elseif current_job.name == "checkforitem" then
+			check_for_item(self)
 
 		elseif current_job.name == "minepit" then 
 			mine_pitmine(self)

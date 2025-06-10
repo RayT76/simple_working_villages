@@ -21,12 +21,12 @@ local function out_of_limit(pos)
 	return false
 end
 
-working_villages.building = (function()
-	local file_name = minetest.get_worldpath() .. "/working_villages_building_sites"
+simple_working_villages.building = (function()
+	local file_name = minetest.get_worldpath() .. "/simple_working_villages_building_sites"
 
 	minetest.register_on_shutdown(function()
 		local file = io.open(file_name, "w")
-		file:write(minetest.serialize(working_villages.building))
+		file:write(minetest.serialize(simple_working_villages.building))
 		file:close()
 	end)
 
@@ -40,24 +40,24 @@ working_villages.building = (function()
 end) ()
 
 -- home is a prototype home object
-working_villages.home = {
+simple_working_villages.home = {
 	update = {door = true, bed = true}
 }
 
-function working_villages.home:new(o)
+function simple_working_villages.home:new(o)
 	local new = setmetatable(o or {}, {__index = self})
 	new.update = table.copy(self.update)
 	return new
 end
 
--- working_villages.homes represents a table that contains the villagers homes.
+-- simple_working_villages.homes represents a table that contains the villagers homes.
 -- This table's keys are inventory names, and values are home objects.
-working_villages.homes = (function()
-	local file_name = minetest.get_worldpath() .. "/working_villages_homes"
+simple_working_villages.homes = (function()
+	local file_name = minetest.get_worldpath() .. "/simple_working_villages_homes"
 
 	minetest.register_on_shutdown(function()
 		local save_data = {}
-		for k,v in pairs(working_villages.homes) do
+		for k,v in pairs(simple_working_villages.homes) do
 			save_data[k]={marker=v.marker}
 		end
 		local file = io.open(file_name, "w")
@@ -72,28 +72,28 @@ working_villages.homes = (function()
 		local load_data = minetest.deserialize(data)
 		local home_data = {}
 		for k,v in pairs(load_data) do
-			home_data[k] = working_villages.home:new(v)
+			home_data[k] = simple_working_villages.home:new(v)
 		end
 		return home_data
 	end
 	return {}
 end) ()
 
-working_villages.buildings = {}
+simple_working_villages.buildings = {}
 
-function working_villages.buildings.get(pos)
+function simple_working_villages.buildings.get(pos)
 	local poshash = minetest.hash_node_position(pos)
-	if working_villages.building[poshash] == nil then
-		working_villages.building[poshash] = {}
+	if simple_working_villages.building[poshash] == nil then
+		simple_working_villages.building[poshash] = {}
 	end
-	return working_villages.building[poshash]
+	return simple_working_villages.building[poshash]
 end
 
-function working_villages.buildings.get_build_pos(meta)
+function simple_working_villages.buildings.get_build_pos(meta)
 	return minetest.string_to_pos(meta:get_string("build_pos"))
 end
 
-function working_villages.buildings.get_registered_nodename(name)
+function simple_working_villages.buildings.get_registered_nodename(name)
 	if name:find("doors:") then
 		name = name:gsub("_[b]_[12]", "")
 		name = name:gsub("_[a]", "")
@@ -112,14 +112,14 @@ end
 
 
 
-function working_villages.buildings.load_schematic(filename,pos)
+function simple_working_villages.buildings.load_schematic(filename,pos)
 	local meta = minetest.get_meta(pos)
 
 	print("FILENAME:", filename)
 	print("POS:", pos)
 
-	local wv_loc = minetest.get_modpath("working_villages")
---/home/ray/.minetest/mods/working_villages/working_villagers/schems/
+	local wv_loc = minetest.get_modpath("simple_working_villages")
+--/home/ray/.minetest/mods/simple_working_villages/simple_working_villagers/schems/
 
 --	local wpath = core.get_worldpath()
 --	local spath = "/schems/simple_house.we"
@@ -299,8 +299,8 @@ function working_villages.buildings.load_schematic(filename,pos)
 			if tonumber(val.y) == i then
 
 				local node = {name=val.name, param1=val.param1, param2=val.param2}
-				local npos = vector.add(working_villages.buildings.get_build_pos(meta), {x=val.x, y=val.y, z=val.z})
-				local name = working_villages.buildings.get_registered_nodename(val.name)
+				local npos = vector.add(simple_working_villages.buildings.get_build_pos(meta), {x=val.x, y=val.y, z=val.z})
+				local name = simple_working_villages.buildings.get_registered_nodename(val.name)
 				--local name = v.name
 				if minetest.registered_items[name]==nil then
 					print("NODE NAME UNREGISTERED")
@@ -318,8 +318,8 @@ function working_villages.buildings.load_schematic(filename,pos)
 	end
 
 
-	local buildpos = working_villages.buildings.get_build_pos(meta)
-	local building = working_villages.buildings.get(buildpos)
+	local buildpos = simple_working_villages.buildings.get_build_pos(meta)
+	local building = simple_working_villages.buildings.get(buildpos)
 --	building.minx = min_x
 --	building.maxx = max_x
 --	building.minz = min_z
@@ -339,7 +339,7 @@ return tempxyz
 
 end
 
-function working_villages.buildings.get_materials(nodelist)
+function simple_working_villages.buildings.get_materials(nodelist)
 	local materials = ""
 	for _,el in pairs(nodelist) do
 		materials = materials .. el.node.name .. ","
@@ -347,7 +347,7 @@ function working_villages.buildings.get_materials(nodelist)
 	return materials:sub(1,#materials-1)
 end
 
-function working_villages.buildings.find_beds(nodedata) --TODO: save beds and use them
+function simple_working_villages.buildings.find_beds(nodedata) --TODO: save beds and use them
 	local toplist = {}
 	--local bottomlist = {}
 	for id,el in pairs(nodedata) do
@@ -381,20 +381,20 @@ local function show_build_form(meta)
 		button_build = "button_exit[5.0,2.0;3.0,0.5;build_update;Update Build]"
 	end
 	local index = meta:get_int("index")
-	local buildpos = working_villages.buildings.get_build_pos(meta)
-	local building = working_villages.buildings.get(buildpos)
+	local buildpos = simple_working_villages.buildings.get_build_pos(meta)
+	local building = simple_working_villages.buildings.get(buildpos)
 	local nodelist = building.nodedata
 	if not nodelist then nodelist = {} end
 	local formspec = "size[8,10]"
 		.."label[3.0,0.0;Project: "..title.."]"
 		.."label[3.0,1.0;"..math.ceil(((index-1)/#nodelist)*100).."% finished]"
-		.."textlist[0.0,2.0;4.0,3.5;inv_sel;"..working_villages.buildings.get_materials(nodelist)..";"..index..";]"
+		.."textlist[0.0,2.0;4.0,3.5;inv_sel;"..simple_working_villages.buildings.get_materials(nodelist)..";"..index..";]"
 		..button_build
 		.."button_exit[5.0,3.0;3.0,0.5;build_cancel;Cancel Build]"
 	return formspec
 end
 
-working_villages.buildings.get_formspec = function(meta)
+simple_working_villages.buildings.get_formspec = function(meta)
 	local state = meta:get_string("state")
 	if state == "unplanned" then
 		local schemslist = {}
@@ -460,7 +460,7 @@ local on_receive_fields = function(pos, _, fields, sender)
 
 
 
-					working_villages.buildings.load_schematic(meta:get_string("schematic"),pos)
+					simple_working_villages.buildings.load_schematic(meta:get_string("schematic"),pos)
 					print("JACKSCHEM:", meta:get_string("schematic"))
 					meta:set_int("index",0)
 					meta:set_string("state","planned")
@@ -469,13 +469,13 @@ local on_receive_fields = function(pos, _, fields, sender)
 		end
 	elseif fields.build_cancel then
 		--reset_build()
-		working_villages.buildings.get(working_villages.buildings.get_build_pos(meta)).nodedata = nil
+		simple_working_villages.buildings.get(simple_working_villages.buildings.get_build_pos(meta)).nodedata = nil
 		meta:set_string("schematic","")
 		meta:set_int("index",0)
 		meta:set_string("valid","false")
 		meta:set_string("state","unplanned")
 	elseif fields.build_start then
-		local nodelist = working_villages.buildings.get(working_villages.buildings.get_build_pos(meta)).nodedata
+		local nodelist = simple_working_villages.buildings.get(simple_working_villages.buildings.get_build_pos(meta)).nodedata
 		for _,v in ipairs(nodelist) do
 			minetest.remove_node(v.pos)
 			--FIXME: the villager ought to do this
@@ -528,9 +528,9 @@ local on_receive_fields = function(pos, _, fields, sender)
 			meta:set_string("valid", "false")
 		end
 		meta:set_string("door", fields.door_pos)
-		for _,home in pairs(working_villages.homes) do
+		for _,home in pairs(simple_working_villages.homes) do
 			if vector.equals(home.marker, pos) then
-				for k, v in pairs(working_villages.home.update) do
+				for k, v in pairs(simple_working_villages.home.update) do
 					home.update[k] = v
 				end
 				-- hard update of home object
@@ -539,11 +539,11 @@ local on_receive_fields = function(pos, _, fields, sender)
 			end
 		end
 	end
-	meta:set_string("formspec",working_villages.buildings.get_formspec(meta))
+	meta:set_string("formspec",simple_working_villages.buildings.get_formspec(meta))
 end
 
-minetest.register_node("working_villages:building_marker", {
-	description = "building marker for working_villages",
+minetest.register_node("simple_working_villages:building_marker", {
+	description = "building marker for simple_working_villages",
 	drawtype = "nodebox",
 	tiles = {"default_sign_wall_wood.png"},
 	inventory_image = "default_sign_wood.png",
@@ -570,7 +570,7 @@ minetest.register_node("working_villages:building_marker", {
 		local meta = minetest.get_meta(pos)
 		meta:set_string("valid","false")
 		meta:set_string("state","unplanned")
-		meta:set_string("formspec",working_villages.buildings.get_formspec(meta))
+		meta:set_string("formspec",simple_working_villages.buildings.get_formspec(meta))
 	end,
 	on_receive_fields = on_receive_fields,
 	can_dig = function(pos, player)
@@ -586,13 +586,13 @@ minetest.register_node("working_villages:building_marker", {
 })
 
 -- get the home of a villager
-function working_villages.get_home(self)
-	return working_villages.homes[self.inventory_name]
+function simple_working_villages.get_home(self)
+	return simple_working_villages.homes[self.inventory_name]
 end
 
 -- check whether a villager has a home
-function working_villages.is_valid_home(self)
-	local home = working_villages.get_home(self)
+function simple_working_villages.is_valid_home(self)
+	local home = simple_working_villages.get_home(self)
 	if home == nil then
 		return false
 	end
@@ -600,18 +600,18 @@ function working_villages.is_valid_home(self)
 end
 
 -- get the position of the home_marker
-function working_villages.home:get_marker()
+function simple_working_villages.home:get_marker()
 	return self.marker
 end
 
-function working_villages.home:get_marker_meta()
+function simple_working_villages.home:get_marker_meta()
 	local home_marker_pos = self:get_marker()
 	if minetest.get_node(home_marker_pos).name == "ignore" then
 		minetest.get_voxel_manip():read_from_map(home_marker_pos, home_marker_pos)
 		--minetest.emerge_area(home_marker_pos, home_marker_pos) --Doesn't work
 	end
-	if minetest.get_node(home_marker_pos).name ~= "working_villages:building_marker" then
-		if working_villages.debug_logging and not(vector.equals(home_marker_pos,{x=0,y=0,z=0})) then
+	if minetest.get_node(home_marker_pos).name ~= "simple_working_villages:building_marker" then
+		if simple_working_villages.debug_logging and not(vector.equals(home_marker_pos,{x=0,y=0,z=0})) then
 			minetest.log("warning", "The position of an non existant home was requested.")
 			minetest.log("warning", "Given home position:" .. minetest.pos_to_string(home_marker_pos))
 		end
@@ -633,7 +633,7 @@ function working_villages.home:get_marker_meta()
 end
 
 -- get the position that marks "outside"
-function working_villages.home:get_door()
+function simple_working_villages.home:get_door()
 	if self.door~=nil and self.update.door == false then
 		return self.door
 	end
@@ -643,7 +643,7 @@ function working_villages.home:get_door()
 	end
 	local door_pos = meta:get_string("door")
 	if not door_pos then
-		if working_villages.debug_logging then
+		if simple_working_villages.debug_logging then
 			local home_marker_pos = self:get_marker()
 			minetest.log("warning", "The position outside the house was not entered for the home at:" ..
 				minetest.pos_to_string(home_marker_pos))
@@ -664,7 +664,7 @@ function working_villages.home:get_door()
 end
 
 -- get the bed of a villager
-function working_villages.home:get_bed()
+function simple_working_villages.home:get_bed()
 	if self.bed~=nil and self.update.bed == false then
 		return self.bed
 	end
@@ -674,7 +674,7 @@ function working_villages.home:get_bed()
 	end
 	local bed_pos = meta:get_string("bed")
 	if not bed_pos then
-		if working_villages.debug_logging then
+		if simple_working_villages.debug_logging then
 			local home_marker_pos = self:get_marker()
 			minetest.log("warning", "The position of the bed was not entered for the home at:" ..
 				minetest.pos_to_string(home_marker_pos))
@@ -695,16 +695,16 @@ function working_villages.home:get_bed()
 end
 
 -- set the home of a villager
-function working_villages.set_home(self, marker_pos)
-	local home = working_villages.home:new{marker = marker_pos}
-	working_villages.homes[self.inventory_name] = home
+function simple_working_villages.set_home(self, marker_pos)
+	local home = simple_working_villages.home:new{marker = marker_pos}
+	simple_working_villages.homes[self.inventory_name] = home
 	-- connect to home
 	self.pos_data.bed_pos = home:get_bed()
 	self.pos_data.door_pos = home:get_door()
 end
 
 -- remove the home of villager
-function working_villages.remove_home(self)
-	working_villages.homes[self.inventory_name] = nil
+function simple_working_villages.remove_home(self)
+	simple_working_villages.homes[self.inventory_name] = nil
 end
 

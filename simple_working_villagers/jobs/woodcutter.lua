@@ -1,4 +1,4 @@
-local func = working_villages.require("jobs/util")
+local func = simple_working_villages.require("jobs/util")
 local use_vh1 = minetest.get_modpath("visual_harm_1ndicators")
 
 local function find_tree(p)
@@ -6,7 +6,7 @@ local function find_tree(p)
 	if minetest.get_item_group(adj_node.name, "tree") > 0 then
 		-- FIXME: need a player name if villagers can own a protected area
 		if minetest.is_protected(p, "") then return false end
-		if working_villages.failed_pos_test(p) then return false end
+		if simple_working_villages.failed_pos_test(p) then return false end
 		return true
 	end
 	return false
@@ -28,7 +28,7 @@ end
 local function is_sapling_spot(pos)
 	-- FIXME: need a player name if villagers can own a protected area
 	if minetest.is_protected(pos, "") then return false end
-	if working_villages.failed_pos_test(pos) then return false end
+	if simple_working_villages.failed_pos_test(pos) then return false end
 	local lpos = vector.add(pos, {x = 0, y = -1, z = 0})
 	local lnode = minetest.get_node(lpos)
 	if minetest.get_item_group(lnode.name, "soil") == 0 then return false end
@@ -61,8 +61,8 @@ end
 
 local searching_range = {x = 10, y = 10, z = 10, h = 5}
 
-working_villages.register_job("working_villages:job_woodcutter", {
-	description      = "woodcutter (working_villages)",
+simple_working_villages.register_job("simple_working_villages:job_woodcutter", {
+	description      = "woodcutter (simple_working_villages)",
 	long_description = "I look for any Tree trunks around and chop them down.\
 I might also chop down a house. Don't get angry please I'm not the best at my job.\
 When I find a sappling I'll plant it on some soil near a bright place so a new tree can grow from it.",
@@ -91,7 +91,7 @@ When I find a sappling I'll plant it on some soil near a bright place so a new t
 					self:go_to(destination)
 					local success, ret = self:place(is_sapling, target)
 					if not success then
-						working_villages.failed_pos_record(target)
+						simple_working_villages.failed_pos_record(target)
 						self:set_displayed_action("confused as to why planting failed")
 						self:delay(100)
 					end
@@ -109,13 +109,13 @@ When I find a sappling I'll plant it on some soil near a bright place so a new t
 				-- We may not be able to reach the log
 				local success, ret = self:go_to(destination)
 				if not success then
-					working_villages.failed_pos_record(target)
+					simple_working_villages.failed_pos_record(target)
 					self:set_displayed_action("looking at the unreachable log")
 					self:delay(100)
 				else
 					success, ret = self:dig(target,true)
 					if not success then
-						working_villages.failed_pos_record(target)
+						simple_working_villages.failed_pos_record(target)
 						self:set_displayed_action("confused as to why cutting failed")
 						self:delay(100)
 					end

@@ -1,15 +1,15 @@
-local log = working_villages.require("log")
-local co_command = working_villages.require("job_coroutines").commands
+local log = simple_working_villages.require("log")
+local co_command = simple_working_villages.require("job_coroutines").commands
 local use_vh1 = minetest.get_modpath("visual_harm_1ndicators")
 
 --modes: stationary,escort,patrol,wandering
 
-working_villages.register_job("working_villages:job_guard", {
-	description      = "guard (working_villages)",
+simple_working_villages.register_job("simple_working_villages:job_guard", {
+	description      = "guard (simple_working_villages)",
 	long_description = "I'm here on guard defending against all those whom I see as enemies.",
 	inventory_image  = "default_paper.png^memorandum_letters.png", --TODO: sword/bow/shield
 	jobfunc = function(self)
-		if use_vh1 then VH1.update_bar(self.object, self.health) end
+		if use_vh1 then VH1.update_bar(self.object, self.object:get_hp()) end
 
 
 -- ONCE ONLY ON CREATE
@@ -51,12 +51,12 @@ working_villages.register_job("working_villages:job_guard", {
 			local velocity = self.object:get_velocity()
 			if vector.length(distance) < 3 then
 				if velocity.x~=0 or velocity.y~=0 then
-					self:set_animation(working_villages.animation_frames.STAND)
+					self:set_animation(simple_working_villages.animation_frames.STAND)
 					self.object:set_velocity{x = 0, y = velocity.y, z = 0}
 				end
 			else
 				if velocity.x==0 and velocity.y==0 then
-					self:set_animation(working_villages.animation_frames.WALK)
+					self:set_animation(simple_working_villages.animation_frames.WALK)
 				end
 				--FIXME: don't run too fast, perhaps go_to
 				self.object:set_velocity{x = distance.x, y = velocity.y, z = distance.z}

@@ -6,7 +6,7 @@ for specific documentation look for the comments in the (api.lua)
 To register a new job use:
 ```lua
 
-working_villages.register_job("[itemstring for the job item]", {
+simple_working_villages.register_job("[itemstring for the job item]", {
 	description      = "[description for the job item]",
 	inventory_image  = "[texture for the job item]",
 	jobfunc = "[coroutine that is continued every step]",
@@ -20,7 +20,7 @@ examples: see testing jobs
 To register a new villager use:
 ```lua
 
-working_villages.register_villager([entity name for the villager], {
+simple_working_villages.register_villager([entity name for the villager], {
 	hp_max     = [maximum hp],
 	weight     = [falling speed of the villager],
 	mesh       = [3D mesh of the villager],

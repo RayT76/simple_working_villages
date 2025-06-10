@@ -1,23 +1,23 @@
 local init = os.clock()
 minetest.log("action", "["..minetest.get_current_modname().."] loading init")
 
-working_villages={
-	modpath = minetest.get_modpath("working_villages"),
+simple_working_villages={
+	modpath = minetest.get_modpath("simple_working_villages"),
 }
 
 if not minetest.get_modpath("modutil") then
 	print("INIT: LOADING LOCAL MODUTIL")
-	dofile(working_villages.modpath.."/modutil/portable.lua")
+	dofile(simple_working_villages.modpath.."/modutil/portable.lua")
 else
 	print("INIT: LOADING MODUTIL")
 end
 
 
-modutil.require("local_require")(working_villages)
-local log = working_villages.require("log")
+modutil.require("local_require")(simple_working_villages)
+local log = simple_working_villages.require("log")
 
-function working_villages.setting_enabled(name, default)
-  local b = minetest.settings:get_bool("working_villages_enable_"..name)
+function simple_working_villages.setting_enabled(name, default)
+  local b = minetest.settings:get_bool("simple_working_villages_enable_"..name)
   if b == nil then
     if default == nil then
       return false
@@ -27,56 +27,56 @@ function working_villages.setting_enabled(name, default)
   return b
 end
 
-working_villages.require("groups")
+simple_working_villages.require("groups")
 --TODO: check for which preloading is needed
 --content
-working_villages.require("forms")
-working_villages.require("talking")
+simple_working_villages.require("forms")
+simple_working_villages.require("talking")
 --TODO: instead use the building sign mod when it is ready
-working_villages.require("building")
-working_villages.require("storage")
+simple_working_villages.require("building")
+simple_working_villages.require("storage")
 
 --base
 
-working_villages.require("api")
-working_villages.require("register")
-working_villages.require("commanding_sceptre")
-working_villages.require("deprecated")
+simple_working_villages.require("api")
+simple_working_villages.require("register")
+simple_working_villages.require("commanding_sceptre")
+simple_working_villages.require("deprecated")
 
 --job helpers
-working_villages.require("jobs/util")
-working_villages.require("jobs/empty")
+simple_working_villages.require("jobs/util")
+simple_working_villages.require("jobs/empty")
 
 --base jobs
-working_villages.require("jobs/builder")
-working_villages.require("jobs/builder_a")
+simple_working_villages.require("jobs/builder")
+simple_working_villages.require("jobs/builder_a")
 
 
-working_villages.require("jobs/lumberjack_a")
-working_villages.require("jobs/miner_a")
-working_villages.require("jobs/mayor_a")
-working_villages.require("jobs/farmer_a")
+simple_working_villages.require("jobs/lumberjack_a")
+simple_working_villages.require("jobs/miner_a")
+simple_working_villages.require("jobs/mayor_a")
+simple_working_villages.require("jobs/farmer_a")
 
-working_villages.require("jobs/follow_player")
-working_villages.require("jobs/guard")
-working_villages.require("jobs/plant_collector")
-working_villages.require("jobs/farmer")
-working_villages.require("jobs/woodcutter")
-working_villages.require("jobs/gardener_a")
+simple_working_villages.require("jobs/follow_player")
+simple_working_villages.require("jobs/guard")
+simple_working_villages.require("jobs/plant_collector")
+simple_working_villages.require("jobs/farmer")
+simple_working_villages.require("jobs/woodcutter")
+simple_working_villages.require("jobs/gardener_a")
 
 
 --testing jobs
-working_villages.require("jobs/torcher")
-working_villages.require("jobs/snowclearer")
+simple_working_villages.require("jobs/torcher")
+simple_working_villages.require("jobs/snowclearer")
 
 
-working_villages.require("jobs/fireman")
-working_villages.require("jobs/grass_cutter")
+simple_working_villages.require("jobs/fireman")
+simple_working_villages.require("jobs/grass_cutter")
 
-working_villages.require("jobs/medic")
-working_villages.require("jobs/vet")
+simple_working_villages.require("jobs/medic")
+simple_working_villages.require("jobs/vet")
 
-print("SIMPLE_WORKING_VILLAGES_INIT:")
+print("SIMPLE_simple_working_villages_INIT:")
 
 
 --local pname = user:get_player_name()
@@ -91,15 +91,15 @@ print("SIMPLE_WORKING_VILLAGES_INIT:")
 --else
 --	print("START NODE = NIL") --> { name=.., param1=.., param2=.. }
 --end
---print("END:SIMPLE_WORKING_VILLAGES_INIT:")
+--print("END:SIMPLE_simple_working_villages_INIT:")
 
 
-if working_villages.setting_enabled("spawn",false) then
-  working_villages.require("spawn")
+if simple_working_villages.setting_enabled("spawn",false) then
+  simple_working_villages.require("spawn")
 end
 
-if working_villages.setting_enabled("debug_tools",false) then
-  working_villages.require("util_test")
+if simple_working_villages.setting_enabled("debug_tools",false) then
+  simple_working_villages.require("util_test")
 end
 
 --ready

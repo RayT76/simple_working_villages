@@ -1,4 +1,4 @@
--- add groups for some nodes to be managed by working_villagers
+-- add groups for some nodes to be managed by simple_working_villagers
 
 local list_of_doors = {
 	"doors:door_wood_a",

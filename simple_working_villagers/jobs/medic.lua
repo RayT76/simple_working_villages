@@ -1,5 +1,5 @@
-local func = working_villages.require("jobs/util")
-local co_command = working_villages.require("job_coroutines").commands
+local func = simple_working_villages.require("jobs/util")
+local co_command = simple_working_villages.require("job_coroutines").commands
 local use_vh1 = minetest.get_modpath("visual_harm_1ndicators")
 
 local found_npc_target = nil
@@ -12,8 +12,8 @@ end
 local dobj = nil
 
 
-working_villages.register_job("working_villages:job_medic", {
-	description      = "medic (working_villages)",
+simple_working_villages.register_job("simple_working_villages:job_medic", {
+	description      = "medic (simple_working_villages)",
 	long_description = "I fix people? and NPC's.\
 I love people.",
 	inventory_image  = "default_paper.png^working_villages_medic.png",
@@ -50,7 +50,7 @@ I love people.",
 				local distance = vector.distance(self.object:get_pos(), dobj:get_pos())
 				if distance < 2 then
 					-- TODO RT need to face target
-					self:set_animation(working_villages.animation_frames.MINE)
+					self:set_animation(simple_working_villages.animation_frames.MINE)
 
 					local tophp = dobj:get_properties().hp_max
 					local curhp = dobj:get_hp()
@@ -81,7 +81,7 @@ I love people.",
 							dobj = nil
 						end
 					end
-					self:set_animation(working_villages.animation_frames.STAND)
+					self:set_animation(simple_working_villages.animation_frames.STAND)
 				else
 					found_npc_target = dobj:get_pos()
 					if found_npc_target ~= nil then
@@ -184,7 +184,7 @@ I love people.",
 
 --					if distance < 2 then
 --						print("Got to the wounded NPC")
---						self:set_animation(working_villages.animation_frames.MINE)
+--						self:set_animation(simple_working_villages.animation_frames.MINE)
 --						local tophp = dobj:get_hp()
 
 --						if dobj:get_luaentity() then
@@ -206,7 +206,7 @@ I love people.",
 --							end
 							
 --						end
---						self:set_animation(working_villages.animation_frames.STAND)
+--						self:set_animation(simple_working_villages.animation_frames.STAND)
 --					end
 --				else
 			--		print("Medic cannot find the destination to goto")

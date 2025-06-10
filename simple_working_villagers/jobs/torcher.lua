@@ -1,7 +1,7 @@
-local fail = working_villages.require("failures")
-local log = working_villages.require("log")
-local co_command = working_villages.require("job_coroutines").commands
-local follower = working_villages.require("jobs/follow_player")
+local fail = simple_working_villages.require("failures")
+local log = simple_working_villages.require("log")
+local co_command = simple_working_villages.require("job_coroutines").commands
+local follower = simple_working_villages.require("jobs/follow_player")
 local use_vh1 = minetest.get_modpath("visual_harm_1ndicators")
 
 local torcher = {}
@@ -50,8 +50,8 @@ function torcher.place_torch_at(v,pos)
   end
 end
 
-working_villages.register_job("working_villages:job_torcher", {
-	description      = "torcher (working_villages)",
+simple_working_villages.register_job("simple_working_villages:job_torcher", {
+	description      = "torcher (simple_working_villages)",
 	long_description = "I'm following the nearest player enlightning his way by placing torches.",
 	inventory_image  = "default_paper.png^working_villages_torcher.png",
 	jobfunc = function(self)

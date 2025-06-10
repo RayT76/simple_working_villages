@@ -1,8 +1,8 @@
-local func = working_villages.require("jobs/util")
-local build = working_villages.require("building")
-local co_command = working_villages.require("job_coroutines").commands
+local func = simple_working_villages.require("jobs/util")
+local build = simple_working_villages.require("building")
+local co_command = simple_working_villages.require("job_coroutines").commands
 local use_vh1 = minetest.get_modpath("visual_harm_1ndicators")
-local pathfinder = working_villages.require("pathfinder")
+local pathfinder = simple_working_villages.require("pathfinder")
 
 
 -- TODO JOB PLAN OF THE NEW TOWN
@@ -99,11 +99,11 @@ local lumberjacka_lumberjacka = nil		-- tells if there is a builder on hand
 
 
 local lumberjacka_marker = nil
---local lumberjacka_lumberjacka_job = "working_villages:job_builder_a"
---local lumberjacka_lumberjacka_npc = "working_villages:villager_male_builder_a"
+--local lumberjacka_lumberjacka_job = "simple_working_villages:job_builder_a"
+--local lumberjacka_lumberjacka_npc = "simple_working_villages:villager_male_builder_a"
 
 
---local lumberjacka_marker = "working_villages:building_marker"
+--local lumberjacka_marker = "simple_working_villages:building_marker"
 local lumberjacka_is_morning = true		-- tells if it is the start of the day
 local lumberjacka_lumberjacka = nil		-- tells if there is a builder on hand
 local lumberjacka_building_count = 0		-- current town building job number
@@ -350,13 +350,13 @@ local function auto_go(self, isrunning)
 		if pathres == true then
 --			print("PATH FOUND GOING ON ROUTE")
 --	print("DUMP_PATHDATA:", dump(self.job_data["pathdata"]))
-			self:set_animation(working_villages.animation_frames.WALK)
+			self:set_animation(simple_working_villages.animation_frames.WALK)
 			current_job["status"] = 1
 			current_job["currloc"] = vector.round(mypos)
 			current_job["count"] = 0
 			rem_from_joblist(self)
 			add_to_joblist(self,current_job)
-			self:set_animation(working_villages.animation_frames.WALK)
+			self:set_animation(simple_working_villages.animation_frames.WALK)
 			return nil
 		elseif pathres == false then
 			print("NO PATH FOUND")
@@ -374,7 +374,7 @@ local function auto_go(self, isrunning)
 		self:handle_goto_obstacles(true)
 		local cani = self:get_animation()
 		if cani ~= nil and cani ~= "WALK" then
-			self:set_animation(working_villages.animation_frames.WALK)
+			self:set_animation(simple_working_villages.animation_frames.WALK)
 		end
 
 		if current_job["currloc"] == nil then
@@ -417,7 +417,7 @@ local function auto_go(self, isrunning)
 --			print("AUTOGO GOT TO DESTINATION")
 			local tdist = vector.distance(mypos,mydest)
 			self.object:set_velocity{x = 0, y = 0, z = 0}
-			self:set_animation(working_villages.animation_frames.STAND)
+			self:set_animation(simple_working_villages.animation_frames.STAND)
 			rem_from_joblist(self)
 			return true
 		elseif goonres == false then
@@ -455,7 +455,7 @@ local function check_my_name(self)
 	local current_job = get_from_joblist(self,1)	
 	if self.nametag == nil or self.nametag == '' then
 		-- no name found
-		self:set_animation(working_villages.animation_frames.MINE)
+		self:set_animation(simple_working_villages.animation_frames.MINE)
 		local notify_job = {
 			["name"] = "notify",
 			["status"] = 0,
@@ -466,7 +466,7 @@ local function check_my_name(self)
 		-- found a name tag
 		rem_from_joblist(self)
 		print("I am called ", self.nametag)		
---		self:set_animation(working_villages.animation_frames.STAND)
+--		self:set_animation(simple_working_villages.animation_frames.STAND)
 	end
 end
 
@@ -477,7 +477,7 @@ local function check_my_jobpos(self)
 	local current_job = get_from_joblist(self,1)
 	if get_job_position(self) == nil  then
 		-- no jobpos found
-		self:set_animation(working_villages.animation_frames.MINE)
+		self:set_animation(simple_working_villages.animation_frames.MINE)
 		local notify_job = {
 			["name"] = "notify",
 			["status"] = 0,
@@ -826,7 +826,7 @@ local function signoff_building(self)
 			lumberjacka_meta:set_string("state","built")
 			--local temps = 
 			lumberjacka_meta:set_string("house_label", lumberjacka_town_names[lumberjacka_building_count])
-			lumberjacka_meta:set_string("formspec",working_villages.buildings.get_formspec(lumberjacka_meta))
+			lumberjacka_meta:set_string("formspec",simple_working_villages.buildings.get_formspec(lumberjacka_meta))
 	lumberjacka_meta:set_string("owner", self.owner_name)
 	lumberjacka_meta:set_string("infotext", lumberjacka_town_names[lumberjacka_building_count])
 
@@ -1104,7 +1104,7 @@ local function notify_me(self)
 		rem_from_joblist(self)
 		current_job.status = 1
 		add_to_joblist(self,current_job)
-		self:set_animation(working_villages.animation_frames.MINE)
+		self:set_animation(simple_working_villages.animation_frames.MINE)
 	elseif current_job.status == 1 then		
 		-- I want a JOBPOS from the boss
 		look_at_position(self,get_players_location(self.owner_name))
@@ -1117,18 +1117,18 @@ end
 
 
 local function find_building(p)
-	if minetest.get_node(p).name ~= "working_villages:building_marker" then
+	if minetest.get_node(p).name ~= "simple_working_villages:building_marker" then
 		return false
 	end
 	local lumberjacka_meta = minetest.get_meta(p)
 	if lumberjacka_meta:get_string("state") ~= "begun" then
 		return false
 	end
-	local lumberjacka_build_pos = working_villages.buildings.get_build_pos(lumberjacka_meta)
+	local lumberjacka_build_pos = simple_working_villages.buildings.get_build_pos(lumberjacka_meta)
 	if lumberjacka_build_pos == nil then
 		return false
 	end
-	if working_villages.buildings.get(lumberjacka_build_pos)==nil then
+	if simple_working_villages.buildings.get(lumberjacka_build_pos)==nil then
 		return false
 	end
 	return true
@@ -1275,7 +1275,7 @@ local build_nodenode = nil
 local function is_sapling_spot(pos)
 	-- FIXME: need a player name if villagers can own a protected area
 	if minetest.is_protected(pos, "") then return false end
-	if working_villages.failed_pos_test(pos) then return false end
+	if simple_working_villages.failed_pos_test(pos) then return false end
 	local lpos = vector.add(pos, {x = 0, y = -1, z = 0})
 	local lnode = minetest.get_node(lpos)
 	if minetest.get_item_group(lnode.name, "soil") == 0 then return false end
@@ -1314,7 +1314,7 @@ local function find_tree(p)
 	if minetest.get_item_group(adj_node.name, "tree") > 0 then
 		-- FIXME: need a player name if villagers can own a protected area
 		if minetest.is_protected(p, "") then return false end
-		if working_villages.failed_pos_test(p) then return false end
+		if simple_working_villages.failed_pos_test(p) then return false end
 		return true
 	end
 	return false
@@ -1468,6 +1468,13 @@ local function chop_this(self)
 				local function is_material(name)
 					return name == lnode.name
 				end
+
+
+
+
+
+
+
 				local wield_stack = self:get_wield_item_stack()
 				if is_material(wield_stack:get_name()) or self:has_item_in_main(is_material) then
 					if minetest.get_node(placeloc).name == "air" then
@@ -1475,19 +1482,54 @@ local function chop_this(self)
 						coroutine.yield()
 --						print("Tying to place node")
 					else
-						print("LUMBERJACK: AIR NOT FOUND, DID NOT PLACE LADDER")
+						print("LUMBERJACK: THERE WAS A PROBLEM, DID NOT PLACE LADDER")
 					end
 
 				else
-					local msg = "lumberjacka at " .. minetest.pos_to_string(self.object:get_pos()) .. " doesn't have " .. lnode.name
+
+
+
+
+					local msg = "LUMBERJACK at " .. minetest.pos_to_string(vector.round(self.object:get_pos())) .. " is going home to look for " .. lnode.name
+					local smsg = "I am going home to look for a " .. lnode.name
 					if self.owner_name then
 						minetest.chat_send_player(self.owner_name,msg)
 					else
 						print(msg)
 					end
-					self:set_state_info(("I am currently waiting for somebody to give me some %s."):format(lnode.name))
-					coroutine.yield(co_command.pause,"waiting for materials")
+						current_job.status = 0
+					self:set_state_info(smsg)
+						local checkforitem_job = {
+							["name"] = "checkforitem",
+							["status"] = 0,
+							["item"] = lnode.name
+						}
+						rem_from_joblist(self)
+						add_to_joblist(self,current_job)
+						add_to_joblist(self,checkforitem_job)
+
+
+                    return
+--					coroutine.yield(co_command.pause,"waiting for materials")
+
+
+
+
+
+
 				end
+
+
+
+--					local msg = "lumberjacka at " .. minetest.pos_to_string(self.object:get_pos()) .. " doesn't have " .. lnode.name
+--					if self.owner_name then
+--						minetest.chat_send_player(self.owner_name,msg)
+--					else
+--						print(msg)
+--					end
+--					self:set_state_info(("I am currently waiting for somebody to give me some %s."):format(lnode.name))
+--					coroutine.yield(co_command.pause,"waiting for materials")
+--				end
 
 				-- should try to climb the tree to placeloc
 				current_job["lcount"] = current_job["lcount"] + 1
@@ -1688,15 +1730,8 @@ local function plant_orchard(self)
 
 		rem_from_joblist(self)
 		add_to_joblist(self,current_job)
---		print("LUMBERJACK: Going to Orchard")
---		print("DUMP CJOB:" , dump(current_job))
-		
---		local goto_joba = {
---			["name"] = "gotohere",
---			["dest"] = current_job.buildpos,
---			["status"] = 0
---		}
---		add_to_joblist(self,goto_joba)
+		print("LUMBERJACK: Going to Orchard")
+
 
 
 	elseif current_job.status == 1 then
@@ -1733,7 +1768,7 @@ local function plant_orchard(self)
 
 
 	elseif current_job.status == 2 then
---		print("LUMBERJACK: POSITION check it for Tree or Sapling")
+		print("LUMBERJACK: POSITION check it for Tree or Sapling")
 --		print("DUMP CJOB:" , dump(current_job))
 
 		local locx = (current_job["buildpos"].x + (current_job["erow"] * 8))-1
@@ -1771,7 +1806,7 @@ local function plant_orchard(self)
 
 	elseif current_job.status == 3 then
 
---		print("LUMBERJACK: Cutting down tree ")
+		print("LUMBERJACK: Cutting down tree ")
 --		print("DUMP CJOB:" , dump(current_job))
 		
 		local locx = (current_job["buildpos"].x + (current_job["erow"] * 8))-1
@@ -1800,7 +1835,7 @@ local function plant_orchard(self)
 		current_job.status = 5
 		rem_from_joblist(self)
 		add_to_joblist(self,current_job)
---		print("LUMBERJACK: MOVING TO POSITION")
+		print("LUMBERJACK: MOVING TO POSITION")
 --		print("DUMP CJOB:" , dump(current_job))
 		
 
@@ -1828,7 +1863,7 @@ local function plant_orchard(self)
 		local locy = current_job["buildpos"].y
 		local locp = vector.new{ x = locx, y= locy, z= locz}
 
---		print("LUMBERJACK: Planting Sapling and moving on")
+		print("LUMBERJACK: Planting Sapling and moving on")
 --		print("DUMP CJOB:" , dump(current_job))
 
 				local lnode = {
@@ -1843,6 +1878,22 @@ local function plant_orchard(self)
 				local function is_material(name)
 					return name == lnode.name
 				end
+
+
+
+
+
+
+
+                -- TODO UPDATE :: goto chest for item
+
+
+
+
+
+
+
+
 				local wield_stack = self:get_wield_item_stack()
 				if is_material(wield_stack:get_name()) or self:has_item_in_main(is_material) then
 					if minetest.get_node(locp).name == "air" then
@@ -1945,23 +1996,142 @@ end
 
 
 
+local function check_for_item(self)
+
+	local current_job = get_from_joblist(self,1)
+
+    print("Lumberjack: check_for_item")
+	print("DUMPJOB:", dump(current_job))
+
+	if self.pos_data.chest_pos == nil then
+		-- first check I even have a chest
+				
+				local njob = {
+					name = "notify",
+					message = " in need of some " .. current_job["item"],
+					status = 0
+				}
+				rem_from_joblist(self)
+				add_to_joblist(self,njob)	
+				return nil
+
+
+
+	elseif current_job.status == 0 then
+		-- goto my chest
+
+
+        -- TODO FIXME : Dirty fix for wall torch
+
+            if current_job.item == "default:torch_wall" then
+                current_job.item = "default:torch"
+            end
+
+			print("Lumberjack is going to his chest to look for a ", current_job.item)
+
+
+
+
+			local dest = func.get_closest_clear_spot(self.object:get_pos(),self.pos_data.chest_pos)
+			local gotochest_job = {
+				["name"] = "gotohere",
+				["dest"] = dest,
+				["status"] = 0
+			}
+			current_job.status = 1
+			rem_from_joblist(self)
+				add_to_joblist(self,current_job)
+			add_to_joblist(self,gotochest_job)
+
+
+	elseif current_job.status == 1 then
+		--look for item
+		print("Lumberjack is opening the chest to look for ", current_job.item)
+		local inv = core.get_inventory({ type="node", pos=self.pos_data.chest_pos })
+		if inv:is_empty("main") then
+
+			print("Lumberjack: The chest is EMPTY ", current_job.item)
+			-- sit down and see if anyone notices ?? 	
+		else
+
+			local found = false
+			local stacks = inv:get_list("main")
+			for _, stack in ipairs(stacks) do
+
+				if found == false then
+					local itemname = stack:get_name()
+					local itemcount = stack:get_count()
+					print("STACK ITEM", _,": ",itemname, itemcount)
+
+					if itemname == current_job.item then
+						print("ITEM ", current_job.item, " FOUND !")
+						found = true
+						local myinv = self:get_inventory()
+						
+					
+						if not inv:room_for_item("main", stack) then
+							print("Not enough room!")
+							local njob = {
+								name = "notify",
+								message = "I dont seem to have enough room in my bag ??? \nI don't know why\n",
+								status = 0
+							}
+							--current_job.status = 1
+							--rem_from_joblist(self)
+							--add_to_joblist(self,current_job)
+							add_to_joblist(self,njob)
+
+
+
+
+						else
+
+							local taken = inv:remove_item("main", stack)
+							print("Took " .. taken:get_count())
+							local leftover = myinv:add_item("main", taken)
+							print("LEFTOVER=", leftover:get_count())
+							rem_from_joblist(self)
+						
+						end
+					end
+				end
+
+
+			end
+			if found == false then
+				local njob = {
+					name = "notify",
+					message = "I do not seem to have any ", current_job.item, " in my chest ??? \nCan you help me out ?\n",
+					status = 0
+				}
+				add_to_joblist(self,njob)	
+			end
+
+		end
+
+
+
+	end
+
+end
+
 
 
 
 
 local function stand_up(self)
 	rem_from_joblist(self)
-	self:set_animation(working_villages.animation_frames.STAND)
+	self:set_animation(simple_working_villages.animation_frames.STAND)
 end
 
 local function sit_down(self)
 	rem_from_joblist(self)
-	self:set_animation(working_villages.animation_frames.SIT)
+	self:set_animation(simple_working_villages.animation_frames.SIT)
 end
 
 local function lay_down(self)
 	rem_from_joblist(self)
-	self:set_animation(working_villages.animation_frames.LAY)
+	self:set_animation(simple_working_villages.animation_frames.LAY)
 end
 
 local function do_situps(self)
@@ -2364,7 +2534,7 @@ print("LUMBERJACK: DO BEDTIME")
 		else
 			print("BUILDER:CANT FIND BED")
 		end
-		self:set_animation(working_villages.animation_frames.LAY)
+		self:set_animation(simple_working_villages.animation_frames.LAY)
 		self:set_state_info("Zzzzzzz...")
 		self:set_displayed_action("sleeping")
 		reset_joblist(self)
@@ -2401,15 +2571,15 @@ local under_attack = false
 
 
 
-working_villages.register_job("working_villages:job_lumberjack_a", {
-	description      = "LumberJack A (working_villages)",
+simple_working_villages.register_job("simple_working_villages:job_lumberjack_a", {
+	description      = "LumberJack A (simple_working_villages)",
 	long_description = "I look for any Tree trunks around and chop them down.\
 I might also chop down a house. Don't get angry please I'm not the best at my job.\
 When I find a sappling I'll plant it on some soil near a bright place so a new tree can grow from it.",
 	inventory_image  = "default_paper.png^working_villages_woodcutter.png",
 	jobfunc = function(self)
 
-	if use_vh1 then VH1.update_bar(self.object, self.health) end
+		if use_vh1 then VH1.update_bar(self.object, self.object:get_hp()) end
 
 
 
@@ -2524,6 +2694,9 @@ When I find a sappling I'll plant it on some soil near a bright place so a new t
 		
 		elseif current_job.name == "notify" then
 			notify_me(self)
+
+		elseif current_job.name == "checkforitem" then
+			check_for_item(self)
 
 --		elseif current_job.name == "checkmybed" then
 --			check_my_bed(self)

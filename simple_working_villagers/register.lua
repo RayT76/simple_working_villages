@@ -81,14 +81,14 @@
 
 
 
-local product_name = "working_villages:villager_male_mayor_a"
+local product_name = "simple_working_villages:villager_male_mayor_a"
 local texture_namea = {"villager_male_mayor_a.png","villager_male_mayor_a0.png"}
 --local texture_nameb = "villager_male_mayor_a0.png"
 local egg_img_name = "simple_villager_egg.png"
-working_villages.register_villager(product_name, {
+simple_working_villages.register_villager(product_name, {
 	name = "Mike Mayor",
 	visible = true,
-	start_job = "working_villages:job_mayor_a",
+	start_job = "simple_working_villages:job_mayor_a",
 	wakeup_time = 0.25,
 	work_time = 0.291,
 	stop_time = 0.79,
@@ -104,13 +104,13 @@ working_villages.register_villager(product_name, {
 	egg_image  = egg_img_name,
 })
 
-local product_name = "working_villages:villager_male_builder_a"
+local product_name = "simple_working_villages:villager_male_builder_a"
 local texture_name = "villager_male_builder_a.png"
 local egg_img_name = "simple_villager_egg.png"
-working_villages.register_villager(product_name, {
+simple_working_villages.register_villager(product_name, {
 	name = "Bob Builder",
 	visible = true,
-	start_job = "working_villages:job_builder_a",
+	start_job = "simple_working_villages:job_builder_a",
 	wakeup_time = 0.265,
 	work_time = 0.291,
 	stop_time = 0.78,
@@ -126,13 +126,13 @@ working_villages.register_villager(product_name, {
 	egg_image  = egg_img_name,
 })
 
-local product_name = "working_villages:villager_male_lumberjack_a"
+local product_name = "simple_working_villages:villager_male_lumberjack_a"
 local texture_name = "villager_male_lumberjack_a.png"
 local egg_img_name = "simple_villager_egg.png"
-working_villages.register_villager(product_name, {
+simple_working_villages.register_villager(product_name, {
 	name = "Larry Lumberjack",
 	visible = true,
-	start_job = "working_villages:job_lumberjack_a",
+	start_job = "simple_working_villages:job_lumberjack_a",
 	wakeup_time = 0.267,
 	work_time = 0.291,
 	stop_time = 0.69,
@@ -149,13 +149,13 @@ working_villages.register_villager(product_name, {
 })
 
 
-local product_name = "working_villages:villager_male_miner_a"
+local product_name = "simple_working_villages:villager_male_miner_a"
 local texture_name = "villager_male_miner_a.png"
 local egg_img_name = "simple_villager_egg.png"
-working_villages.register_villager(product_name, {
+simple_working_villages.register_villager(product_name, {
 	name = "Doug Digger",
 	visible = true,
-	start_job = "working_villages:job_miner_a",
+	start_job = "simple_working_villages:job_miner_a",
 	wakeup_time = 0.26,
 	work_time = 0.291,
 	stop_time = 0.75,
@@ -174,13 +174,13 @@ working_villages.register_villager(product_name, {
 })
 
 
-local product_name = "working_villages:villager_male_farmer_a"
+local product_name = "simple_working_villages:villager_male_farmer_a"
 local texture_name = "villager_male_farmer.png"
 local egg_img_name = "simple_villager_egg.png"
-working_villages.register_villager(product_name, {
+simple_working_villages.register_villager(product_name, {
 	name = "Fred Farmer",
 	visible = true,
-	start_job = "working_villages:job_farmer_a",
+	start_job = "simple_working_villages:job_farmer_a",
 	wakeup_time = 0.27,
 	work_time = 0.291,
 	stop_time = 0.78,
@@ -195,13 +195,13 @@ working_villages.register_villager(product_name, {
 })
 
 
-local product_name = "working_villages:villager_male_gardener_a"
+local product_name = "simple_working_villages:villager_male_gardener_a"
 local texture_name = "villager_male_lawnmower.png"
 local egg_img_name = "simple_villager_egg.png"
-working_villages.register_villager(product_name, {
+simple_working_villages.register_villager(product_name, {
 	name = "Garry Gardener",
 	visible = true,
-	start_job = "working_villages:job_grass_cutter",
+	start_job = "simple_working_villages:job_grass_cutter",
 	wakeup_time = 0.27,
 	work_time = 0.291,
 	stop_time = 0.78,
@@ -216,13 +216,13 @@ working_villages.register_villager(product_name, {
 
 
 
-local product_name = "working_villages:villager_male_medic"
+local product_name = "simple_working_villages:villager_male_medic"
 local texture_name = "villager_male_medic.png"
 local egg_img_name = "simple_villager_egg.png"
-working_villages.register_villager(product_name, {
+simple_working_villages.register_villager(product_name, {
 	name = "Marvin Medic",
 	visible = true,
-	start_job = "working_villages:job_medic",
+	start_job = "simple_working_villages:job_medic",
 	wakeup_time = 0.27,
 	work_time = 0.291,
 	stop_time = 0.78,
@@ -237,13 +237,13 @@ working_villages.register_villager(product_name, {
 })
 
 
-local product_name = "working_villages:villager_male_vet"
+local product_name = "simple_working_villages:villager_male_vet"
 local texture_name = "villager_male_vet.png"
 local egg_img_name = "simple_villager_egg.png"
-working_villages.register_villager(product_name, {
+simple_working_villages.register_villager(product_name, {
 	name = "Victor Vet",
 	visible = true,
-	start_job = "working_villages:job_vet",
+	start_job = "simple_working_villages:job_vet",
 	wakeup_time = 0.27,
 	work_time = 0.291,
 	stop_time = 0.78,
@@ -257,13 +257,13 @@ working_villages.register_villager(product_name, {
 	egg_image  = egg_img_name,
 })
 
-local product_name = "working_villages:villager_male_fireman"
+local product_name = "simple_working_villages:villager_male_fireman"
 local texture_name = "villager_male_fireman.png"
 local egg_img_name = "villager_male_egg.png"
-working_villages.register_villager(product_name, {
+simple_working_villages.register_villager(product_name, {
 	name = "Frank Fireman",
 	visible = true,
-	start_job = "working_villages:job_vet",
+	start_job = "simple_working_villages:job_vet",
 	wakeup_time = 0.27,
 	work_time = 0.291,
 	stop_time = 0.78,
@@ -279,13 +279,13 @@ working_villages.register_villager(product_name, {
 
 
 
-local product_name = "working_villages:villager_male_grasscutter"
+local product_name = "simple_working_villages:villager_male_grasscutter"
 local texture_name = "villager_male_lawnmower.png"
 local egg_img_name = "villager_male_egg.png"
-working_villages.register_villager(product_name, {
+simple_working_villages.register_villager(product_name, {
 	name = "Gene Grass",
 	visible = true,
-	start_job = "working_villages:job_grasscutter",
+	start_job = "simple_working_villages:job_grasscutter",
 	wakeup_time = 0.27,
 	work_time = 0.291,
 	stop_time = 0.78,
@@ -299,13 +299,13 @@ working_villages.register_villager(product_name, {
 	egg_image  = egg_img_name,
 })
 
-local product_name = "working_villages:villager_male_plantcollector"
+local product_name = "simple_working_villages:villager_male_plantcollector"
 local texture_name = "villager_male_plantcollector.png"
 local egg_img_name = "villager_male_egg.png"
-working_villages.register_villager(product_name, {
+simple_working_villages.register_villager(product_name, {
 	name = "Peter Plant",
 	visible = true,
-	start_job = "working_villages:job_plantcollector",
+	start_job = "simple_working_villages:job_plantcollector",
 	wakeup_time = 0.27,
 	work_time = 0.291,
 	stop_time = 0.78,
@@ -320,13 +320,13 @@ working_villages.register_villager(product_name, {
 })
 
 
-local product_name = "working_villages:villager_male_guard"
+local product_name = "simple_working_villages:villager_male_guard"
 local texture_name = "villager_male_police.png"
 local egg_img_name = "villager_male_egg.png"
-working_villages.register_villager(product_name, {
+simple_working_villages.register_villager(product_name, {
 	name = "Gerald Guard",
 	visible = true,
-	start_job = "working_villages:job_guard",
+	start_job = "simple_working_villages:job_guard",
 	wakeup_time = 0.27,
 	work_time = 0.291,
 	stop_time = 0.78,
@@ -344,10 +344,10 @@ working_villages.register_villager(product_name, {
 
 
 
-local product_name = "working_villages:villager_male_builder"
+local product_name = "simple_working_villages:villager_male_builder"
 local texture_name = "villager_male_builder.png"
 local egg_img_name = "villager_male_builder_egg.png"
-working_villages.register_villager(product_name, {
+simple_working_villages.register_villager(product_name, {
 	hp_max     = 30,
 	weight     = 20,
 	mesh       = "character.b3d",
@@ -356,10 +356,10 @@ working_villages.register_villager(product_name, {
 })
 
 
-local product_name = "working_villages:villager_male_farmer"
+local product_name = "simple_working_villages:villager_male_farmer"
 local texture_name = "villager_male_farmer.png"
 local egg_img_name = "villager_male_egg.png"
-working_villages.register_villager(product_name, {
+simple_working_villages.register_villager(product_name, {
 	hp_max     = 30,
 	weight     = 20,
 	mesh       = "character.b3d",
@@ -370,10 +370,10 @@ working_villages.register_villager(product_name, {
 
 
 
-local product_name = "working_villages:villager_male_snowcollector"
+local product_name = "simple_working_villages:villager_male_snowcollector"
 local texture_name = "villager_male_snowcollector.png"
 local egg_img_name = "villager_male_egg.png"
-working_villages.register_villager(product_name, {
+simple_working_villages.register_villager(product_name, {
 	hp_max     = 30,
 	weight     = 20,
 	mesh       = "character.b3d",
@@ -381,11 +381,11 @@ working_villages.register_villager(product_name, {
 	egg_image  = "villager_male_egg.png",
 })
 
-local product_name = "working_villages:villager_female"
+local product_name = "simple_working_villages:villager_female"
 --local texture_name = "villager_female.png"
 local texture_name = "villager_female_medic.png"
 local egg_img_name = "villager_female_egg.png"
-working_villages.register_villager(product_name, {
+simple_working_villages.register_villager(product_name, {
 	hp_max     = 30,
 	weight     = 18,
 	size_x = 0.85,
@@ -395,10 +395,10 @@ working_villages.register_villager(product_name, {
 	egg_image  = egg_img_name,
 })
 
-local product_name = "working_villages:villager_male"
+local product_name = "simple_working_villages:villager_male"
 local texture_name = "villager_male.png"
 local egg_img_name = "villager_male_egg.png"
-working_villages.register_villager(product_name, {
+simple_working_villages.register_villager(product_name, {
 	hp_max     = 30,
 	weight     = 20,
 	mesh       = "character.b3d",

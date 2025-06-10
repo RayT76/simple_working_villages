@@ -43,16 +43,16 @@ function building_sign.load_schematic(modpath,filename,pos)
 	for i,v in ipairs(data) do --this is actually not nessecary
 		if v.name and v.x and v.y and v.z then
 			local node = {name=v.name, param1=v.param1, param2=v.param2}
-			local npos = vector.add(working_villages.buildings.get_build_pos(meta), {x=v.x, y=v.y, z=v.z})
-			local name = working_villages.buildings.get_registered_nodename(v.name)
+			local npos = vector.add(simple_working_villages.buildings.get_build_pos(meta), {x=v.x, y=v.y, z=v.z})
+			local name = simple_working_villages.buildings.get_registered_nodename(v.name)
 			if minetest.registered_items[name]==nil then
 				node = DEFAULT_NODE
 			end
 			nodedata[i] = {pos=npos, node=node}
 		end
 	end
-	local buildpos = working_villages.buildings.get_build_pos(meta)
-	local building = working_villages.buildings.get(buildpos)
+	local buildpos = simple_working_villages.buildings.get_build_pos(meta)
+	local building = simple_working_villages.buildings.get(buildpos)
 	building.nodedata = nodedata
 end
 

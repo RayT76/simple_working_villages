@@ -1,5 +1,5 @@
 local func = {}
-local pathfinder = working_villages.require("pathfinder")
+local pathfinder = simple_working_villages.require("pathfinder")
 
 
 -- TODO this is a very quick inter NPC messaging service
@@ -102,13 +102,13 @@ local entitys = {
 
 		-- NOT REAL WORLD -- IGNORE
 		["visual_harm_1ndicators:hpbar"]={dummy=true},
-		["working_villages:dummy_item"]={dummy=true},
+		["simple_working_villages:dummy_item"]={dummy=true},
 		["__builtin:item"]={dummy=true},
 
 		-- WORKING VILLAGES NPCS
 		-- TODO add new working villages characters
-		["working_villages:villager_male"]={npc=true, block=true},
-		["working_villages:villager_female"]={npc=true, block=true},
+		["simple_working_villages:villager_male"]={npc=true, block=true},
+		["simple_working_villages:villager_female"]={npc=true, block=true},
 		["mobs_npc:npc"]={npc=true, block=true},
 		["mobs_npc:igor"]={npc=true, block=true},
 		["mobs_npc:trader"]={npc=true, block=true},
@@ -370,7 +370,7 @@ local locresult = nil
 
 local pos1       = vector.subtract(pos, { x = dist_xz, z = dist_xz, y = dist_y })
 local pos2       = vector.add(pos, { x = dist_xz, z = dist_xz, y = dist_y })
-local pos_list   = core.find_nodes_in_area(pos1, pos2, { "working_villages:building_marker" })
+local pos_list   = core.find_nodes_in_area(pos1, pos2, { "simple_working_villages:building_marker" })
 
 if pos_list == nil then return nil end
 
@@ -503,7 +503,7 @@ end
 -- Activating owner griefing settings departs from the documented behavior
 -- of the protection system, and may break some protection mods.
 local owner_griefing = minetest.settings:get(
-    "working_villages_owner_protection")
+    "simple_working_villages_owner_protection")
 local owner_griefing_lc = owner_griefing and string.lower(owner_griefing)
 
 if not owner_griefing or owner_griefing_lc == "false" then
@@ -516,7 +516,7 @@ else if owner_griefing_lc == "true" then
     -- Villagers may grief in areas protected by the owner.
     func.is_protected_owner = function(owner, pos)
         local myowner = owner or ""
-        if myowner == "working_villages:self_employed" then
+        if myowner == "simple_working_villages:self_employed" then
             myowner = ""
         end
         return minetest.is_protected(pos, myowner)
@@ -551,7 +551,7 @@ else
                     and string.sub(name,prefixlen+2)
                     and string.sub(name,1,prefixlen) == owner_griefing then
                 myname = string.sub(name,prefixlen+2)
-                if myname == "working_villages:self_employed" then
+                if myname == "simple_working_villages:self_employed" then
                     return true
                 end
             end

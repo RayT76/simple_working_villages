@@ -1,8 +1,8 @@
-local func = working_villages.require("jobs/util")
-local build = working_villages.require("building")
-local co_command = working_villages.require("job_coroutines").commands
+local func = simple_working_villages.require("jobs/util")
+local build = simple_working_villages.require("building")
+local co_command = simple_working_villages.require("job_coroutines").commands
 local use_vh1 = minetest.get_modpath("visual_harm_1ndicators")
-local pathfinder = working_villages.require("pathfinder")
+local pathfinder = simple_working_villages.require("pathfinder")
 
 
 -- set to check for a game load start
@@ -318,13 +318,13 @@ local function auto_go(self, isrunning)
 		if pathres == true then
 --			print("PATH FOUND GOING ON ROUTE")
 --	print("DUMP_PATHDATA:", dump(self.job_data["pathdata"]))
-			self:set_animation(working_villages.animation_frames.WALK)
+			self:set_animation(simple_working_villages.animation_frames.WALK)
 			current_job["status"] = 1
 			current_job["currloc"] = vector.round(mypos)
 			current_job["count"] = 0
 			rem_from_joblist(self)
 			add_to_joblist(self,current_job)
-			self:set_animation(working_villages.animation_frames.WALK)
+			self:set_animation(simple_working_villages.animation_frames.WALK)
 			return nil
 		elseif pathres == false then
 			print("NO PATH FOUND")
@@ -342,7 +342,7 @@ local function auto_go(self, isrunning)
 		self:handle_goto_obstacles(true)
 		local cani = self:get_animation()
 		if cani ~= nil and cani ~= "WALK" then
-			self:set_animation(working_villages.animation_frames.WALK)
+			self:set_animation(simple_working_villages.animation_frames.WALK)
 		end
 
 		if current_job["currloc"] == nil then
@@ -389,7 +389,7 @@ local function auto_go(self, isrunning)
 --			print("AUTOGO GOT TO DESTINATION")
 			local tdist = vector.distance(mypos,mydest)
 			self.object:set_velocity{x = 0, y = 0, z = 0}
-			self:set_animation(working_villages.animation_frames.STAND)
+			self:set_animation(simple_working_villages.animation_frames.STAND)
 			rem_from_joblist(self)
 			return true
 		elseif goonres == false then
@@ -427,7 +427,7 @@ local function check_my_name(self)
 	local current_job = get_from_joblist(self,1)	
 	if self.nametag == nil or self.nametag == '' then
 		-- no name found
-		self:set_animation(working_villages.animation_frames.MINE)
+		self:set_animation(simple_working_villages.animation_frames.MINE)
 		local notify_job = {
 			["name"] = "notify",
 			["status"] = 0,
@@ -438,7 +438,7 @@ local function check_my_name(self)
 		-- found a name tag
 		rem_from_joblist(self)
 		print("I am called ", self.nametag)		
---		self:set_animation(working_villages.animation_frames.STAND)
+--		self:set_animation(simple_working_villages.animation_frames.STAND)
 	end
 end
 
@@ -710,7 +710,7 @@ local function notify_me(self)
 		rem_from_joblist(self)
 		current_job.status = 1
 		add_to_joblist(self,current_job)
-		self:set_animation(working_villages.animation_frames.MINE)
+		self:set_animation(simple_working_villages.animation_frames.MINE)
 	elseif current_job.status == 1 then		
 		-- I want a JOBPOS from the boss
 		look_at_position(self,get_players_location(self.owner_name))
@@ -801,18 +801,18 @@ end
 
 
 local function find_building(p)
-	if minetest.get_node(p).name ~= "working_villages:building_marker" then
+	if minetest.get_node(p).name ~= "simple_working_villages:building_marker" then
 		return false
 	end
 	local buildera_meta = minetest.get_meta(p)
 	if buildera_meta:get_string("state") ~= "begun" then
 		return false
 	end
-	local buildera_build_pos = working_villages.buildings.get_build_pos(buildera_meta)
+	local buildera_build_pos = simple_working_villages.buildings.get_build_pos(buildera_meta)
 	if buildera_build_pos == nil then
 		return false
 	end
-	if working_villages.buildings.get(buildera_build_pos)==nil then
+	if simple_working_villages.buildings.get(buildera_build_pos)==nil then
 		return false
 	end
 	return true
@@ -947,8 +947,8 @@ local function build_this(self)
 
 --	print("BUILDERA: BUILD THIS JOB ", dump(current_job))
 	local buildera_meta = minetest.get_meta(buildera_marker)
-	local buildera_build_pos = working_villages.buildings.get_build_pos(buildera_meta)
-        local buildera_building_on_pos = working_villages.buildings.get(buildera_build_pos)
+	local buildera_build_pos = simple_working_villages.buildings.get_build_pos(buildera_meta)
+        local buildera_building_on_pos = simple_working_villages.buildings.get(buildera_build_pos)
 	local buildera_nname = nil
 
 
@@ -1029,7 +1029,7 @@ local function build_this(self)
 			goto_myhome(self)
 			--buildera_meta:set_string("house_label", "house " .. buildera_marker)
 						--TODO: save beds
-						--buildera_meta:set_string("formspec",working_villages.buildings.get_formspec(buildera_meta))
+						--buildera_meta:set_string("formspec",simple_working_villages.buildings.get_formspec(buildera_meta))
 
 				--			while go_to_here(self.object:get_pos(),self.pos_data.job_pos,self) ~= true do
 				--				self:set_displayed_action("going to have a well earned rest.")
@@ -1043,7 +1043,7 @@ local function build_this(self)
 
 				-- TODO RT looking for a nil node ?? not sure why though
 				--buildera_is_building = true
-				build_node = working_villages.buildings.get(buildera_build_pos).nodedata[buildera_meta:get_int("index")]
+				build_node = simple_working_villages.buildings.get(buildera_build_pos).nodedata[buildera_meta:get_int("index")]
 --				print("BUILDER:STAGE2:  CHECK FOR NIL NODE")--, dump(build_node)) 
 				if build_node == nil then
 					buildera_meta:set_int("index",buildera_meta:get_int("index")+1)
@@ -1088,7 +1088,7 @@ local function build_this(self)
 				local buildera_npos = build_node.pos
 				build_nodenode = build_node.node
 --				print("BUILDER STAGE4b NODENAME ", build_nodenode.name) 
-				buildera_nname = working_villages.buildings.get_registered_nodename(build_nodenode.name)
+				buildera_nname = simple_working_villages.buildings.get_registered_nodename(build_nodenode.name)
 --				print("BUILDER STAGE4b NNAME ", buildera_nname) 
 				if buildera_nname == "air" or buildera_nname == "doors:hidden" then
 --					print("SKIPPING THIS BUILD PART")
@@ -1109,7 +1109,7 @@ local function build_this(self)
 	rem_from_joblist(self)
 					add_to_joblist(self,current_job)
 
-					check_build_item(self,working_villages.buildings.get_registered_nodename(build_nodenode.name))
+					check_build_item(self,simple_working_villages.buildings.get_registered_nodename(build_nodenode.name))
 
 
 
@@ -1125,7 +1125,7 @@ local function build_this(self)
 				local buildera_npos = build_node.pos
 				--build_node = build_node.node
 				buildera_nname = nil
-				buildera_nname = working_villages.buildings.get_registered_nodename(build_nodenode.name)
+				buildera_nname = simple_working_villages.buildings.get_registered_nodename(build_nodenode.name)
 --				print("BUILDER:STAGE6: PLACING NODE", buildera_nname) 
 				local function is_material(name)
 					return name == buildera_nname
@@ -1200,15 +1200,15 @@ local function build_this(self)
 
 
 
-
 					local msg = "buildera at " .. minetest.pos_to_string(vector.round(self.object:get_pos())) .. " is going home to look for " .. buildera_nname
+					local smsg = "I am going home to look for a " .. dump(buildera_nname)
 					if self.owner_name then
 						minetest.chat_send_player(self.owner_name,msg)
 					else
 						print(msg)
 					end
 						current_job.status = 0
-					self:set_state_info("Hello there in the infomation text box")
+					self:set_state_info(smsg)
 						local checkforitem_job = {
 							["name"] = "checkforitem",
 							["status"] = 0,
@@ -1270,17 +1270,17 @@ end
 
 local function stand_up(self)
 	rem_from_joblist(self)
-	self:set_animation(working_villages.animation_frames.STAND)
+	self:set_animation(simple_working_villages.animation_frames.STAND)
 end
 
 local function sit_down(self)
 	rem_from_joblist(self)
-	self:set_animation(working_villages.animation_frames.SIT)
+	self:set_animation(simple_working_villages.animation_frames.SIT)
 end
 
 local function lay_down(self)
 	rem_from_joblist(self)
-	self:set_animation(working_villages.animation_frames.LAY)
+	self:set_animation(simple_working_villages.animation_frames.LAY)
 end
 
 local function do_situps(self)
@@ -1655,7 +1655,7 @@ local function do_bedtime(self)
 		else
 			print("BUILDER:CANT FIND BED")
 		end
-		self:set_animation(working_villages.animation_frames.LAY)
+		self:set_animation(simple_working_villages.animation_frames.LAY)
 		self:set_state_info("Zzzzzzz...")
 		self:set_displayed_action("sleeping")
 		reset_joblist(self)
@@ -1808,8 +1808,8 @@ local under_attack = false
 
 
 
-working_villages.register_job("working_villages:job_builder_a", {
-	description      = "builder A (working_villages)",
+simple_working_villages.register_job("simple_working_villages:job_builder_a", {
+	description      = "builder A (simple_working_villages)",
 	long_description = "I look for the nearest building marker with a started building site. "..
 "There I'll help building up the building.\
 If I have the materials of course. Also I'll look for building markers within a 10 block radius. "..
@@ -1824,7 +1824,7 @@ If I have the materials of course. Also I'll look for building markers within a 
 --	self.object:get_animation(frame_range, frame_speed, frame_blend, frame_loop)
 --		set_animation(frame_range, frame_speed, frame_blend, frame_loop)
 --		set_animation_frame_speed(frame_speed)
---function working_villages.villager:get_animation()
+--function simple_working_villages.villager:get_animation()
 --	if self.curr_animation == nil then 
 --		return nil
 --	end
@@ -1850,7 +1850,7 @@ If I have the materials of course. Also I'll look for building markers within a 
 
 
 
-		if use_vh1 then VH1.update_bar(self.object, self.health) end
+		if use_vh1 then VH1.update_bar(self.object, self.object:get_hp()) end
 
 -- ONCE ONLY ON CREATE
 		if self.job_data["isstarted"] == nil then
@@ -1947,7 +1947,7 @@ If I have the materials of course. Also I'll look for building markers within a 
 		--self:buried_check()
 
 -- TODO TODO TODO replace these with job_list
--- print("JOBLIST=", dump(buildera_joblist))
+----print("JOBLIST=", dump(buildera_joblist))
 
 --for ijl = 1, get_size_joblist(self) do
 --	print("BUILDERJOBS[", ijl, "]=", get_from_joblist(ijl).name)
@@ -2046,7 +2046,7 @@ end
 
 		else
 			-- ERROR HERE = UNKNOWN JOB
-			print("DUMP UNKNOWN JOB = ", dump(current_job.name))
+			print("BUILDER: ERROR UNKNOWN JOB = ", dump(current_job.name))
 			coroutine.yield(co_command.pause,"ERROR FOUND A JOB I DO NOT KNOW\n")
 		end
 

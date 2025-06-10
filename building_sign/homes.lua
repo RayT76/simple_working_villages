@@ -11,7 +11,7 @@ end
 -- building_sign.homes represents a table that contains the villagers homes.
 -- This table's keys are name ids, and values are home objects.
 building_sign.homes = (function()
-	local file_name = minetest.get_worldpath() .. "/working_villages_homes"
+	local file_name = minetest.get_worldpath() .. "/simple_working_villages_homes"
 
 	minetest.register_on_shutdown(function()
 		local save_data = {}
@@ -62,7 +62,7 @@ function building_sign.home:get_marker_meta()
 		minetest.get_voxel_manip():read_from_map(home_marker_pos, home_marker_pos)
 		--minetest.emerge_area(home_marker_pos, home_marker_pos) --Doesn't work
 	end
-	if minetest.get_node(home_marker_pos).name ~= "working_villages:building_marker" then
+	if minetest.get_node(home_marker_pos).name ~= "simple_working_villages:building_marker" then
 		if not(vector.equals(home_marker_pos,{x=0,y=0,z=0})) then
 			minetest.log("warning", "The position of an non existant home was requested.")
 			minetest.log("warning", "Given home position:" .. minetest.pos_to_string(home_marker_pos))

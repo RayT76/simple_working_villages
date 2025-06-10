@@ -1,5 +1,5 @@
-local func = working_villages.require("jobs/util")
-local co_command = working_villages.require("job_coroutines").commands
+local func = simple_working_villages.require("jobs/util")
+local co_command = simple_working_villages.require("job_coroutines").commands
 local use_vh1 = minetest.get_modpath("visual_harm_1ndicators")
 
 local herbs = {
@@ -124,12 +124,12 @@ local function put_func()
   return true;
 end
 
-working_villages.register_job("working_villages:job_plantcollector", {
-	description      = "plant collector (working_villages)",
+simple_working_villages.register_job("simple_working_villages:job_plantcollector", {
+	description      = "plant collector (simple_working_villages)",
 	long_description = "I look for all sorts of wild plants and herbs to collect.",
 	inventory_image  = "default_paper.png^working_villages_herb_collector.png",
 	jobfunc = function(self)
-		if use_vh1 then VH1.update_bar(self.object, self.health) end
+		if use_vh1 then VH1.update_bar(self.object, self.object:get_hp()) end
 
 
 -- ONCE ONLY ON CREATE
@@ -187,7 +187,7 @@ working_villages.register_job("working_villages:job_plantcollector", {
 			end
 			if found_plant_target == nil then 
 				self.object:set_velocity{x = 0, y = 0, z = 0}				
-				self:set_animation(working_villages.animation_frames.STAND)
+				self:set_animation(simple_working_villages.animation_frames.STAND)
 				searching_distance = searching_distance + 1000
 				--print("PLANTCOLLECTOR: expanding search to ", searching_distance)
 				searching_range.x = searching_distance
@@ -211,4 +211,4 @@ working_villages.register_job("working_villages:job_plantcollector", {
 	end,
 })
 
-working_villages.herbs = herbs
+simple_working_villages.herbs = herbs

@@ -1,8 +1,8 @@
-local func = working_villages.require("jobs/util")
-local build = working_villages.require("building")
-local co_command = working_villages.require("job_coroutines").commands
+local func = simple_working_villages.require("jobs/util")
+local build = simple_working_villages.require("building")
+local co_command = simple_working_villages.require("job_coroutines").commands
 local use_vh1 = minetest.get_modpath("visual_harm_1ndicators")
-local pathfinder = working_villages.require("pathfinder")
+local pathfinder = simple_working_villages.require("pathfinder")
 
 
 local tree_types = {
@@ -14,33 +14,32 @@ local tree_types = {
 
 
 -- hired working village NPC data
+local mayora_buildera_job = "simple_working_villages:job_builder_a"
+local mayora_buildera_npc = "simple_working_villages:villager_male_builder_a"
 
-
-local mayora_buildera_job = "working_villages:job_builder_a"
-local mayora_buildera_npc = "working_villages:villager_male_builder_a"
-
+-- this will be the newest format for each NPC
 local mayora_buildera = {
-    ["npc"] = "working_villages:villager_male_builder_a",
-    ["job"] = "working_villages:job_builder_a",
+    ["npc"] = "simple_working_villages:villager_male_builder_a",
+    ["job"] = "simple_working_villages:job_builder_a",
 }
 
-local mayora_lumberjacka_job = "working_villages:job_lumberjack_a"
-local mayora_lumberjacka_npc = "working_villages:villager_male_lumberjack_a"
-local mayora_minera_job = "working_villages:job_miner_a"
-local mayora_minera_npc = "working_villages:villager_male_miner_a"
-local mayora_farmera_job = "working_villages:job_farmer_a"
-local mayora_farmera_npc = "working_villages:villager_male_farmer_a"
-local mayora_medica_job = "working_villages:job_medic"
-local mayora_medica_npc = "working_villages:villager_male_medic"
+local mayora_lumberjacka_job = "simple_working_villages:job_lumberjack_a"
+local mayora_lumberjacka_npc = "simple_working_villages:villager_male_lumberjack_a"
+local mayora_minera_job = "simple_working_villages:job_miner_a"
+local mayora_minera_npc = "simple_working_villages:villager_male_miner_a"
+local mayora_farmera_job = "simple_working_villages:job_farmer_a"
+local mayora_farmera_npc = "simple_working_villages:villager_male_farmer_a"
+local mayora_medica_job = "simple_working_villages:job_medic"
+local mayora_medica_npc = "simple_working_villages:villager_male_medic"
 
-local mayora_gardenera_npc = "working_villages:villager_male_gardener_a"
-local mayora_gardenera_job = "working_villages:job_grass_cutter"
+local mayora_gardenera_npc = "simple_working_villages:villager_male_gardener_a"
+local mayora_gardenera_job = "simple_working_villages:job_grass_cutter"
 
-local mayora_veta_npc = "working_villages:villager_male_vet"
-local mayora_veta_job = "working_villages:job_vet"
+local mayora_veta_npc = "simple_working_villages:villager_male_vet"
+local mayora_veta_job = "simple_working_villages:job_vet"
 
-local mayora_firemana_npc = "working_villages:villager_male_fireman"
-local mayora_firemana_job = "working_villages:job_fireman"
+local mayora_firemana_npc = "simple_working_villages:villager_male_fireman"
+local mayora_firemana_job = "simple_working_villages:job_fireman"
 
 
 
@@ -87,7 +86,7 @@ local mayora_fire_loc = nil
 
 
 
-local mayora_marker = "working_villages:building_marker"
+local mayora_marker = "simple_working_villages:building_marker"
 
 
 
@@ -240,7 +239,7 @@ local town_data = {
 		["clear"] = true
 	},
 
-	[13] = {
+	[13] = {   -- FIXME TODO
 		["name"] = "Gdeners House test",
 		--["scheme"] = "building_wood_1S.we",
 		["scheme"] = "standard_plot_marker.we",
@@ -260,10 +259,8 @@ local town_data = {
 
 	[15] = {
 		["name"] = "Builders Upgrade 1",
---
---
---
-		["scheme"] = "building_owners_house_1E-1.we",
+		["scheme"] = "building_wood_2.we",
+		--["scheme"] = "building_owners_house_1E-1.we",
 		--["scheme"] = "standard_plot_marker.we",
 		["marker"] = { x = 5, y = 0, z = 1},
 		["location"] = { x = -6, y = -1, z = -35},
@@ -271,11 +268,12 @@ local town_data = {
 	},
 
 	[16] = {
-		["name"] = "lumberjack markers",
-		--["scheme"] = "building_wood_1S.we",
-		["scheme"] = "standard_plot_marker.we",
+		["name"] = "Builders Upgrade 2",
+		["scheme"] = "building_wood_3.we",
+		--["scheme"] = "building_owners_house_1E-1.we",
+		--["scheme"] = "standard_plot_marker.we",
 		["marker"] = { x = 6, y = 0, z = 1},
-		["location"] = { x = -22, y = 0, z = -35},
+		["location"] = { x = -6, y = -1, z = -35},
 		["clear"] = true
 	},
 
@@ -307,11 +305,12 @@ local town_data = {
 	},
 
 	[20] = { -- should be front fence to town center Compound
-		["name"] = "Owners markers",
-		--["scheme"] = "building_workshop_2.we",
-		["scheme"] = "standard_plot_marker.we",
+		["name"] = "Builders Upgrade 3",
+		["scheme"] = "building_wood_4.we",
+		--["scheme"] = "building_owners_house_1E-1.we",
+		--["scheme"] = "standard_plot_marker.we",
 		["marker"] = { x = 1, y = 0, z = 2},
-		["location"] = { x = -22, y = -1, z = -2},
+		["location"] = { x = -6, y = -1, z = -35},
 		["clear"] = true
 	},
 
@@ -548,7 +547,7 @@ local mayora_buildera = nil		-- tells if there is a builder on hand
 
 
 
---local mayora_marker = "working_villages:building_marker"
+--local mayora_marker = "simple_working_villages:building_marker"
 local mayora_is_morning = true		-- tells if it is the start of the day
 local mayora_buildera = nil		-- tells if there is a builder on hand
 local mayora_building_count = 0		-- current town building job number
@@ -831,11 +830,11 @@ local function auto_go(self, isrunning)
 		-- 3 = go to clostest you can within reason
 		local pathres = plan_to_next_to(mypos,mydest,self)
 		if pathres == true then
-			self:set_animation(working_villages.animation_frames.WALK)
+			self:set_animation(simple_working_villages.animation_frames.WALK)
 			current_job["status"] = 1
 			rem_from_joblist(self)
 			add_to_joblist(self,current_job)
-			self:set_animation(working_villages.animation_frames.WALK)
+			self:set_animation(simple_working_villages.animation_frames.WALK)
 			return nil
 		elseif pathres == false then
 			print("NO PATH FOUND")
@@ -849,7 +848,7 @@ local function auto_go(self, isrunning)
 		self:handle_goto_obstacles(true)
 		local cani = self:get_animation()
 		if cani ~= nil and cani ~= "WALK" then
-			self:set_animation(working_villages.animation_frames.WALK)
+			self:set_animation(simple_working_villages.animation_frames.WALK)
 		end
 		if current_job["currloc"] == nil then
 		 	current_job["currloc"] = vector.round(mypos)
@@ -892,7 +891,7 @@ local function auto_go(self, isrunning)
 		if goonres == true then
 			local tdist = vector.distance(mypos,mydest)
 			self.object:set_velocity{x = 0, y = 0, z = 0}
-			self:set_animation(working_villages.animation_frames.STAND)
+			self:set_animation(simple_working_villages.animation_frames.STAND)
 			rem_from_joblist(self)
 			return true
 		elseif goonres == false then
@@ -929,7 +928,7 @@ local function check_my_name(self)
 	local current_job = get_from_joblist(self,1)	
 	if self.nametag == nil or self.nametag == '' then
 		-- no name found
-		self:set_animation(working_villages.animation_frames.MINE)
+		self:set_animation(simple_working_villages.animation_frames.MINE)
 		local notify_job = {
 			["name"] = "notify",
 			["status"] = 0,
@@ -940,7 +939,7 @@ local function check_my_name(self)
 		-- found a name tag
 		rem_from_joblist(self)
 		print("I am called ", self.nametag)		
---		self:set_animation(working_villages.animation_frames.STAND)
+--		self:set_animation(simple_working_villages.animation_frames.STAND)
 	end
 end
 
@@ -951,7 +950,7 @@ local function check_my_jobpos(self)
 	local current_job = get_from_joblist(self,1)
 	if get_job_position(self) == nil  then
 		-- no jobpos found
-		self:set_animation(working_villages.animation_frames.MINE)
+		self:set_animation(simple_working_villages.animation_frames.MINE)
 		local notify_job = {
 			["name"] = "notify",
 			["status"] = 0,
@@ -1867,12 +1866,27 @@ local function check_the_buildings(self)
 		else
 			-- this building is planned by not started
 			print("START BUILDING")
-			rem_from_joblist(self)
 			local startbuild_job = {
 				["name"] = "startbuild",
 				["status"] = 0
 			}
+
+			rem_from_joblist(self)
 			add_to_joblist(self,startbuild_job)
+            if mayora_building_count == 1 then
+			    local notify_job = {
+			    	["name"] = "notify",
+			    	["status"] = 0,
+			    	["message"] = " waiting to give you an update.\n"
+			    }
+				local smsg = "I will place markers down to keep track of whats been built, and I am going to hire my mate Bob to help with the building\nYou may have to keep an eye on him.. they may need stuff.\nI have brought a selection of goodies which I have left in my chest, help yourself.. You will need the working villages command sceptor to get me to continue and interact with us fully\n\n Go grab it, and lets get building"
+			    self:set_state_info(smsg)
+			    add_to_joblist(self,notify_job)
+            end
+
+
+
+
 			return true
 		end	
 	end
@@ -2144,7 +2158,7 @@ local function signoff_building(self)
 			mayora_meta:set_string("state","built")
 			--local temps = 
 			mayora_meta:set_string("house_label", town_data[mayora_building_count].name)
---	???		mayora_meta:set_string("formspec",working_villages.buildings.get_formspec(mayora_meta))
+--	???		mayora_meta:set_string("formspec",simple_working_villages.buildings.get_formspec(mayora_meta))
 			mayora_meta:set_string("owner", self.owner_name)
 			mayora_meta:set_string("infotext", town_data[mayora_building_count].name)
 
@@ -2199,7 +2213,7 @@ local function signoff_building(self)
 
 --		if mayora_building_count == 6 then	
 
-        print("TESTING MOVEINS for ", mayora_meta:get_string("house_label"))
+       --print("TESTING MOVEINS for ", mayora_meta:get_string("house_label"))
 
 --				print("Testing movein's")
 
@@ -2467,7 +2481,7 @@ local function start_building(self)
 
 		local mayora_meta = minetest.get_meta(myml)
 		mayora_meta:set_string("build_pos",minetest.pos_to_string(mybl))
-		local tempxyz = working_villages.buildings.load_schematic( bscheme   ,myml)
+		local tempxyz = simple_working_villages.buildings.load_schematic( bscheme   ,myml)
 		mayora_meta:set_int("maxx",tempxyz.x)
 		mayora_meta:set_int("maxy",tempxyz.y)
 		mayora_meta:set_int("maxz",tempxyz.z)
@@ -2555,7 +2569,7 @@ local function start_building(self)
 		-- phoneing builder and then doing something while waiting for build to finish
 
 		rem_from_joblist(self)
-        print("MAYOR: stage 5 = phone builder")
+       --print("MAYOR: stage 5 = phone builder")
 
 
 
@@ -2629,7 +2643,7 @@ local function hire_a_builder(self)
 		elseif current_job.status == 1 then
 			--rem_from_joblist(self)
 			local hireloc = func.get_closest_clear_spot(self.object:get_pos(), get_home_position(self))	
-			local mayora_buildera_npc = "working_villages:villager_male_builder_a"
+			local mayora_buildera_npc = "simple_working_villages:villager_male_builder_a"
 			local obj = core.add_entity(hposb, mayora_buildera_npc, nil)
 			local ent = obj:get_luaentity()
 			ent.new_job = mayora_buildera_job
@@ -2722,7 +2736,7 @@ local function hire_a_farmer(self)
 		elseif current_job.status == 1 then
 			--rem_from_joblist(self)
 			local hireloc = func.get_closest_clear_spot(self.object:get_pos(), get_home_position(self))	
-			local mayora_farmera_npc = "working_villages:villager_male_farmer_a"
+			local mayora_farmera_npc = "simple_working_villages:villager_male_farmer_a"
 			local obj = core.add_entity(hposb, mayora_farmera_npc, nil)
 			local ent = obj:get_luaentity()
 			ent.new_job = mayora_farmera_job
@@ -2767,7 +2781,7 @@ local function hire_a_miner(self)
 		elseif current_job.status == 1 then
 			--rem_from_joblist(self)
 			local hireloc = func.get_closest_clear_spot(self.object:get_pos(), get_home_position(self))	
-			local mayora_minera_npc = "working_villages:villager_male_miner_a"
+			local mayora_minera_npc = "simple_working_villages:villager_male_miner_a"
 
 			local obj = core.add_entity(hposb, mayora_minera_npc, nil)
 			local ent = obj:get_luaentity()
@@ -2816,7 +2830,7 @@ local function hire_a_lumberjack(self)
 	elseif current_job.status == 1 then
 		--rem_from_joblist(self)
 		local hireloc = func.get_closest_clear_spot(self.object:get_pos(), get_home_position(self))	
-		--local mayora_buildera_npc = "working_villages:villager_male_lumberjack_a"
+		--local mayora_buildera_npc = "simple_working_villages:villager_male_lumberjack_a"
 
 		local obj = core.add_entity(hposb, mayora_lumberjacka_npc, nil)
 		local ent = obj:get_luaentity()
@@ -2861,7 +2875,7 @@ local function hire_a_medic(self)
 	elseif current_job.status == 1 then
 		--rem_from_joblist(self)
 		local hireloc = func.get_closest_clear_spot(self.object:get_pos(), get_home_position(self))	
-		--local mayora_buildera_npc = "working_villages:villager_male_lumberjack_a"
+		--local mayora_buildera_npc = "simple_working_villages:villager_male_lumberjack_a"
 
 		local obj = core.add_entity(hposb, mayora_medica_npc, nil)
 		local ent = obj:get_luaentity()
@@ -2908,7 +2922,7 @@ local function hire_a_vet(self)
 	elseif current_job.status == 1 then
 		--rem_from_joblist(self)
 		local hireloc = func.get_closest_clear_spot(self.object:get_pos(), get_home_position(self))	
-		--local mayora_buildera_npc = "working_villages:villager_male_lumberjack_a"
+		--local mayora_buildera_npc = "simple_working_villages:villager_male_lumberjack_a"
 
 		local obj = core.add_entity(hposb, mayora_veta_npc, nil)
 		local ent = obj:get_luaentity()
@@ -2955,7 +2969,7 @@ local function hire_a_fireman(self)
 	elseif current_job.status == 1 then
 		--rem_from_joblist(self)
 		local hireloc = func.get_closest_clear_spot(self.object:get_pos(), get_home_position(self))	
-		--local mayora_buildera_npc = "working_villages:villager_male_lumberjack_a"
+		--local mayora_buildera_npc = "simple_working_villages:villager_male_lumberjack_a"
 
 		local obj = core.add_entity(hposb, mayora_firemana_npc, nil)
 		local ent = obj:get_luaentity()
@@ -2983,13 +2997,14 @@ local function notify_me(self)
 		rem_from_joblist(self)
 		current_job.status = 1
 		add_to_joblist(self,current_job)
-		self:set_animation(working_villages.animation_frames.MINE)
+		self:set_animation(simple_working_villages.animation_frames.MINE)
 	elseif current_job.status == 1 then		
 		-- I want a JOBPOS from the boss
 		look_at_position(self,get_players_location(self.owner_name))
 		if vector.distance(self.object:get_pos(),get_players_location(self.owner_name)) < 3 then
 			coroutine.yield(co_command.pause,current_job.message)
 			rem_from_joblist(self)
+            self.job_data["newstart"] = false
 		end
 	end
 end
@@ -3225,18 +3240,18 @@ end
 
 
 local function find_building(p)
-	if minetest.get_node(p).name ~= "working_villages:building_marker" then
+	if minetest.get_node(p).name ~= "simple_working_villages:building_marker" then
 		return false
 	end
 	local mayora_meta = minetest.get_meta(p)
 	if mayora_meta:get_string("state") ~= "begun" then
 		return false
 	end
-	local mayora_build_pos = working_villages.buildings.get_build_pos(mayora_meta)
+	local mayora_build_pos = simple_working_villages.buildings.get_build_pos(mayora_meta)
 	if mayora_build_pos == nil then
 		return false
 	end
-	if working_villages.buildings.get(mayora_build_pos)==nil then
+	if simple_working_villages.buildings.get(mayora_build_pos)==nil then
 		return false
 	end
 	return true
@@ -3343,7 +3358,7 @@ local function check_for_tree(self,pos)
 end
 
 
---function working_villages.villager:handle_night()
+--function simple_working_villages.villager:handle_night()
 --	local tod = minetest.get_timeofday()
 --	if	tod < 0.2 or tod > 0.76 then
 --
@@ -3706,7 +3721,7 @@ local function check_my_bed(self)
 			end
 
 			-- need to check swap
-			check_build_item(self,working_villages.buildings.get_registered_nodename(bt_node.name))
+			check_build_item(self,simple_working_villages.buildings.get_registered_nodename(bt_node.name))
 
 			local wield_stack = self:get_wield_item_stack()
 			if is_material(wield_stack:get_name()) or self:has_item_in_main(is_material) then
@@ -3775,9 +3790,9 @@ print("FILLING MY CHEST WITH GOODIES")
 			local leftover = inv:add_item("main", stack)
 			local stack    = ItemStack("beds:bed_bottom")
 			local leftover = inv:add_item("main", stack)
-			local stack    = ItemStack("working_villages:commanding_sceptre")
+			local stack    = ItemStack("simple_working_villages:commanding_sceptre")
 			local leftover = inv:add_item("main", stack)
-			local stack    = ItemStack("working_villages:building_marker 99")
+			local stack    = ItemStack("simple_working_villages:building_marker 99")
 			local leftover = inv:add_item("main", stack)
 			local stack    = ItemStack("homedecor:gate_half_door_closed 10")
 			local leftover = inv:add_item("main", stack)
@@ -4062,17 +4077,17 @@ end
 
 local function stand_up(self)
 	rem_from_joblist(self)
-	self:set_animation(working_villages.animation_frames.STAND)
+	self:set_animation(simple_working_villages.animation_frames.STAND)
 end
 
 local function sit_down(self)
 	rem_from_joblist(self)
-	self:set_animation(working_villages.animation_frames.SIT)
+	self:set_animation(simple_working_villages.animation_frames.SIT)
 end
 
 local function lay_down(self)
 	rem_from_joblist(self)
-	self:set_animation(working_villages.animation_frames.LAY)
+	self:set_animation(simple_working_villages.animation_frames.LAY)
 end
 
 local function do_situps(self)
@@ -4381,7 +4396,7 @@ print("DO HOMETIME")
 end
 
 local function do_bedtime(self)
-    print("MAYOR: DO BEDTIME")
+   --print("MAYOR: DO BEDTIME")
 	local current_job = get_from_joblist(self,1)
 
 	if current_job.status == 0 then
@@ -4415,7 +4430,7 @@ local function do_bedtime(self)
 		else
 			-- cannot find bed
 		end
-		self:set_animation(working_villages.animation_frames.LAY)
+		self:set_animation(simple_working_villages.animation_frames.LAY)
 		self.object:set_pos(bed_pos)
 		self:set_state_info("Zzzzzzz...")
 		self:set_displayed_action("sleeping")
@@ -4466,8 +4481,8 @@ end
 local slow_update_count = 100
 local under_attack = false
 
-working_villages.register_job("working_villages:job_mayor_a", {
-	description      = "mayor A (working_villages)",
+simple_working_villages.register_job("simple_working_villages:job_mayor_a", {
+	description      = "mayor A (simple_working_villages)",
 	long_description = "I am going to build you a small town. "..
 "I have a few friends that I can call to help.\
 If I have the materials of course. Also I'll look for building markers within a 10 block radius. "..
@@ -4486,9 +4501,8 @@ If I have the materials of course. Also I'll look for building markers within a 
 
 -- DO ON TICK
 
-		if use_vh1 then 
-			VH1.update_bar(self.object, self.health) 
-		end
+		if use_vh1 then VH1.update_bar(self.object, self.object:get_hp()) end
+
 
 
 
@@ -4496,6 +4510,8 @@ If I have the materials of course. Also I'll look for building markers within a 
 -- ONCE ON NEW GAME
 		if self.job_data["isstarted"] == nil then
 			print("MAYOR A : Starting initial variables")
+
+
 			self.job_data["joblist"] = {}			-- list to hold current job list
 			self.job_data["jobaction"] = 0		-- TODO Idea to use this as the main loop control
 			
@@ -4533,14 +4549,15 @@ If I have the materials of course. Also I'll look for building markers within a 
 			local mayor_inv = self:get_inventory()
    			local stack    = ItemStack("beds:bed_bottom")
     		local leftover = mayor_inv:add_item("main", stack)
-   			local stack    = ItemStack("working_villages:building_marker 99")
+   			local stack    = ItemStack("simple_working_villages:building_marker 99")
    			local leftover = mayor_inv:add_item("main", stack)
    			local stack    = ItemStack("fake_fire:fancy_fire 1")
    			local leftover = mayor_inv:add_item("main", stack)
    			local stack    = ItemStack("default:chest 1")
    			local leftover = mayor_inv:add_item("main", stack)
 
-		
+
+
 
 	
 		end
@@ -4616,7 +4633,7 @@ local pos2 = vector.add     (pos, halfsize)
 					local my_oname = luae.name
 					
 
-					local dname1 = "working_villages:dummy_item"
+					local dname1 = "simple_working_villages:dummy_item"
 					local dname2 = "visual_harm_1ndicators:hpbar"
 					local dname3 = "__builtin:item"
 					--local dname1 = 
@@ -4629,7 +4646,7 @@ local pos2 = vector.add     (pos, halfsize)
 					end
 
 
-					--if my_oname == "working_villages:villager_male_builder_a" then
+					--if my_oname == "simple_working_villages:villager_male_builder_a" then
 					--	print("Builder is at ", object:get_pos())
 					--end
 				end

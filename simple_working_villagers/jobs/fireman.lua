@@ -1,4 +1,4 @@
-local func = working_villages.require("jobs/util")
+local func = simple_working_villages.require("jobs/util")
 local function find_fire(p) return minetest.get_node(p).name == "fire:basic_flame" end
 local function find_pfire(p) return minetest.get_node(p).name == "fire:permanant_flame" end
 local searching_range = {x = 50, y = 20, z = 50}
@@ -9,14 +9,14 @@ local found_fire_target = nil
 local is_searching = false
 
 
-working_villages.register_job("working_villages:job_fireman", {
-	description      = "fireman (working_villages)",
+simple_working_villages.register_job("simple_working_villages:job_fireman", {
+	description      = "fireman (simple_working_villages)",
 	long_description = "I fight fires.\
 I must confess I love my job.\
 Keeping everyone safe.",
 	inventory_image  = "default_paper.png^memorandum_letters.png",
 	jobfunc = function(self)
-		if use_vh1 then VH1.update_bar(self.object, self.health) end
+		if use_vh1 then VH1.update_bar(self.object, self.object:get_hp()) end
 
 -- ONCE ONLY ON CREATE
 		if self.job_data["isstarted"] == nil then

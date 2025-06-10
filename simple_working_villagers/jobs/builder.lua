@@ -1,5 +1,5 @@
-local func = working_villages.require("jobs/util")
-local co_command = working_villages.require("job_coroutines").commands
+local func = simple_working_villages.require("jobs/util")
+local co_command = simple_working_villages.require("job_coroutines").commands
 local use_vh1 = minetest.get_modpath("visual_harm_1ndicators")
 
 local is_building = false
@@ -7,18 +7,18 @@ local is_building = false
 
 
 local function find_building(p)
-	if minetest.get_node(p).name ~= "working_villages:building_marker" then
+	if minetest.get_node(p).name ~= "simple_working_villages:building_marker" then
 		return false
 	end
 	local meta = minetest.get_meta(p)
 	if meta:get_string("state") ~= "begun" then
 		return false
 	end
-	local build_pos = working_villages.buildings.get_build_pos(meta)
+	local build_pos = simple_working_villages.buildings.get_build_pos(meta)
 	if build_pos == nil then
 		return false
 	end
-	if working_villages.buildings.get(build_pos)==nil then
+	if simple_working_villages.buildings.get(build_pos)==nil then
 		return false
 	end
 	return true
@@ -32,15 +32,15 @@ local builder_path_data = nil
 
 
 
-working_villages.register_job("working_villages:job_builder", {
-	description      = "builder (working_villages)",
+simple_working_villages.register_job("simple_working_villages:job_builder", {
+	description      = "builder (simple_working_villages)",
 	long_description = "I look for the nearest building marker with a started building site. "..
 "There I'll help building up the building.\
 If I have the materials of course. Also I'll look for building markers within a 10 block radius. "..
 "And I ignore paused building sites.",
 	inventory_image  = "default_paper.png^working_villages_builder.png",
 	jobfunc = function(self)
-		if use_vh1 then VH1.update_bar(self.object, self.health) end
+		if use_vh1 then VH1.update_bar(self.object, self.object:get_hp()) end
 
 		local my_pos = self.object:get_pos()
 		self:handle_night()
@@ -92,8 +92,8 @@ If I have the materials of course. Also I'll look for building markers within a 
 
 				local meta = minetest.get_meta(marker)
 				--print("DUMP:META", dump(meta))
-				local build_pos = working_villages.buildings.get_build_pos(meta)
-        			local building_on_pos = working_villages.buildings.get(build_pos)
+				local build_pos = simple_working_villages.buildings.get_build_pos(meta)
+        			local building_on_pos = simple_working_villages.buildings.get(build_pos)
 				if building_on_pos.nodedata and (meta:get_int("index") > #building_on_pos.nodedata) then
 				  self:set_state_info("I am currently marking a building as finished.")
 
@@ -114,7 +114,7 @@ If I have the materials of course. Also I'll look for building markers within a 
 					is_building = false
 					meta:set_string("house_label", "house " .. minetest.pos_to_string(marker))
 					--TODO: save beds
-					meta:set_string("formspec",working_villages.buildings.get_formspec(meta))
+					meta:set_string("formspec",simple_working_villages.buildings.get_formspec(meta))
 					return
 				end
 
@@ -125,7 +125,7 @@ If I have the materials of course. Also I'll look for building markers within a 
 				-- TODO RT looking for a nil node ?? not sure why though
 				self:set_state_info("I am currently working on a building.")
 				is_building = true
-				local nnode = working_villages.buildings.get(build_pos).nodedata[meta:get_int("index")]
+				local nnode = simple_working_villages.buildings.get(build_pos).nodedata[meta:get_int("index")]
 				if nnode == nil then
 					
 					meta:set_int("index",meta:get_int("index")+1)
@@ -140,7 +140,7 @@ If I have the materials of course. Also I'll look for building markers within a 
 
 
 				nnode = nnode.node
-				local nname = working_villages.buildings.get_registered_nodename(nnode.name)
+				local nname = simple_working_villages.buildings.get_registered_nodename(nnode.name)
 				if nname == "air" then
 					meta:set_int("index",meta:get_int("index")+1)
 					return
@@ -310,7 +310,7 @@ If I have the materials of course. Also I'll look for building markers within a 
 
 
 					-- TODO check for dirt and remove if needed
-					--function working_villages.villager:dig(pos,collect_drops)
+					--function simple_working_villages.villager:dig(pos,collect_drops)
 --					local n_n = minetest.get_node(npos).name
 
 					--print("Replacing ", n_n, " with ", nnode.name)

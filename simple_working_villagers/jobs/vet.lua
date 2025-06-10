@@ -1,5 +1,5 @@
-local func = working_villages.require("jobs/util")
-local co_command = working_villages.require("job_coroutines").commands
+local func = simple_working_villages.require("jobs/util")
+local co_command = simple_working_villages.require("job_coroutines").commands
 local use_vh1 = minetest.get_modpath("visual_harm_1ndicators")
 
 local found_animal_target = nil
@@ -12,13 +12,13 @@ end
 
 local dobj = nil
 
-working_villages.register_job("working_villages:job_vet", {
-	description      = "vet (working_villages)",
+simple_working_villages.register_job("simple_working_villages:job_vet", {
+	description      = "vet (simple_working_villages)",
 	long_description = "I fix animals.\
 I Love it.",
 	inventory_image  = "default_paper.png^working_villages_vet.png",
 	jobfunc = function(self)
-		if use_vh1 then VH1.update_bar(self.object, self.health) end
+		if use_vh1 then VH1.update_bar(self.object, self.object:get_hp()) end
 
 -- ONCE ONLY ON CREATE
 		if self.job_data["isstarted"] == nil then
@@ -46,7 +46,7 @@ I Love it.",
 				local distance = vector.distance(self.object:get_pos(), dobj:get_pos())
 				if distance < 2 then
 					-- TODO RT need to face target
-					self:set_animation(working_villages.animation_frames.MINE)
+					self:set_animation(simple_working_villages.animation_frames.MINE)
 					local tophp = dobj:get_hp()
 					if dobj:get_luaentity() then
 						local luae = dobj:get_luaentity()
@@ -63,7 +63,7 @@ I Love it.",
 							dobj = nil
 						end
 					end
-					self:set_animation(working_villages.animation_frames.STAND)
+					self:set_animation(simple_working_villages.animation_frames.STAND)
 				else
 					found_animal_target = dobj:get_pos()
 					if found_animal_target ~= nil then

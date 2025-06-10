@@ -1,11 +1,11 @@
-minetest.register_tool("working_villages:commanding_sceptre", {
+minetest.register_tool("simple_working_villages:commanding_sceptre", {
 	description = "villager commanding sceptre",
 	inventory_image = "working_villages_commanding_sceptre.png",
 	on_use = function(itemstack, user, pointed_thing)
 		if (pointed_thing.type == "object") then
 			local obj = pointed_thing.ref
 			local luaentity = obj:get_luaentity()
-			if not working_villages.is_villager(luaentity.name) then
+			if not simple_working_villages.is_villager(luaentity.name) then
 				if luaentity.name == "__builtin:item" then
 					luaentity:on_punch(user)
 				end

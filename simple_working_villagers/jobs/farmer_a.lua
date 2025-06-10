@@ -1,8 +1,8 @@
-local func = working_villages.require("jobs/util")
-local build = working_villages.require("building")
-local co_command = working_villages.require("job_coroutines").commands
+local func = simple_working_villages.require("jobs/util")
+local build = simple_working_villages.require("building")
+local co_command = simple_working_villages.require("job_coroutines").commands
 local use_vh1 = minetest.get_modpath("visual_harm_1ndicators")
-local pathfinder = working_villages.require("pathfinder")
+local pathfinder = simple_working_villages.require("pathfinder")
 
 
 -- set to check for a game load start
@@ -318,13 +318,13 @@ local function auto_go(self, isrunning)
 		if pathres == true then
 --			print("PATH FOUND GOING ON ROUTE")
 --	print("DUMP_PATHDATA:", dump(self.job_data["pathdata"]))
-			self:set_animation(working_villages.animation_frames.WALK)
+			self:set_animation(simple_working_villages.animation_frames.WALK)
 			current_job["status"] = 1
 			current_job["currloc"] = vector.round(mypos)
 			current_job["count"] = 0
 			rem_from_joblist(self)
 			add_to_joblist(self,current_job)
-			self:set_animation(working_villages.animation_frames.WALK)
+			self:set_animation(simple_working_villages.animation_frames.WALK)
 			return nil
 		elseif pathres == false then
 			print("NO PATH FOUND")
@@ -342,7 +342,7 @@ local function auto_go(self, isrunning)
 		self:handle_goto_obstacles(true)
 		local cani = self:get_animation()
 		if cani ~= nil and cani ~= "WALK" then
-			self:set_animation(working_villages.animation_frames.WALK)
+			self:set_animation(simple_working_villages.animation_frames.WALK)
 		end
 
 		if current_job["currloc"] == nil then
@@ -389,7 +389,7 @@ local function auto_go(self, isrunning)
 --			print("AUTOGO GOT TO DESTINATION")
 			local tdist = vector.distance(mypos,mydest)
 			self.object:set_velocity{x = 0, y = 0, z = 0}
-			self:set_animation(working_villages.animation_frames.STAND)
+			self:set_animation(simple_working_villages.animation_frames.STAND)
 			rem_from_joblist(self)
 			return true
 		elseif goonres == false then
@@ -427,7 +427,7 @@ local function check_my_name(self)
 	local current_job = get_from_joblist(self,1)	
 	if self.nametag == nil or self.nametag == '' then
 		-- no name found
-		self:set_animation(working_villages.animation_frames.MINE)
+		self:set_animation(simple_working_villages.animation_frames.MINE)
 		local notify_job = {
 			["name"] = "notify",
 			["status"] = 0,
@@ -438,7 +438,7 @@ local function check_my_name(self)
 		-- found a name tag
 		rem_from_joblist(self)
 		print("I am called ", self.nametag)		
---		self:set_animation(working_villages.animation_frames.STAND)
+--		self:set_animation(simple_working_villages.animation_frames.STAND)
 	end
 end
 
@@ -739,7 +739,7 @@ local function notify_me(self)
 		rem_from_joblist(self)
 		current_job.status = 1
 		add_to_joblist(self,current_job)
-		self:set_animation(working_villages.animation_frames.MINE)
+		self:set_animation(simple_working_villages.animation_frames.MINE)
 	elseif current_job.status == 1 then		
 		-- I want a JOBPOS from the boss
 		look_at_position(self,get_players_location(self.owner_name))
@@ -830,18 +830,18 @@ end
 
 
 local function find_building(p)
-	if minetest.get_node(p).name ~= "working_villages:building_marker" then
+	if minetest.get_node(p).name ~= "simple_working_villages:building_marker" then
 		return false
 	end
 	local farmera_meta = minetest.get_meta(p)
 	if farmera_meta:get_string("state") ~= "begun" then
 		return false
 	end
-	local farmera_build_pos = working_villages.buildings.get_build_pos(farmera_meta)
+	local farmera_build_pos = simple_working_villages.buildings.get_build_pos(farmera_meta)
 	if farmera_build_pos == nil then
 		return false
 	end
-	if working_villages.buildings.get(farmera_build_pos)==nil then
+	if simple_working_villages.buildings.get(farmera_build_pos)==nil then
 		return false
 	end
 	return true
@@ -1252,17 +1252,17 @@ end
 
 local function stand_up(self)
 	rem_from_joblist(self)
-	self:set_animation(working_villages.animation_frames.STAND)
+	self:set_animation(simple_working_villages.animation_frames.STAND)
 end
 
 local function sit_down(self)
 	rem_from_joblist(self)
-	self:set_animation(working_villages.animation_frames.SIT)
+	self:set_animation(simple_working_villages.animation_frames.SIT)
 end
 
 local function lay_down(self)
 	rem_from_joblist(self)
-	self:set_animation(working_villages.animation_frames.LAY)
+	self:set_animation(simple_working_villages.animation_frames.LAY)
 end
 
 local function do_situps(self)
@@ -1637,7 +1637,7 @@ local function do_bedtime(self)
 		else
 			print("BUILDER:CANT FIND BED")
 		end
-		self:set_animation(working_villages.animation_frames.LAY)
+		self:set_animation(simple_working_villages.animation_frames.LAY)
 		self:set_state_info("Zzzzzzz...")
 		self:set_displayed_action("sleeping")
 		reset_joblist(self)
@@ -1778,8 +1778,8 @@ local under_attack = false
 
 
 
-working_villages.register_job("working_villages:job_farmer_a", {
-	description			= "farmer A (working_villages)",
+simple_working_villages.register_job("simple_working_villages:job_farmer_a", {
+	description			= "farmer A (simple_working_villages)",
 	long_description = "I look for cultivated plants to harvest and replant.",
 	inventory_image	= "default_paper.png^working_villages_farmer.png",
 	jobfunc = function(self)
@@ -1791,7 +1791,7 @@ working_villages.register_job("working_villages:job_farmer_a", {
 --	self.object:get_animation(frame_range, frame_speed, frame_blend, frame_loop)
 --		set_animation(frame_range, frame_speed, frame_blend, frame_loop)
 --		set_animation_frame_speed(frame_speed)
---function working_villages.villager:get_animation()
+--function simple_working_villages.villager:get_animation()
 --	if self.curr_animation == nil then 
 --		return nil
 --	end
@@ -1817,7 +1817,7 @@ working_villages.register_job("working_villages:job_farmer_a", {
 
 
 
-		if use_vh1 then VH1.update_bar(self.object, self.health) end
+		if use_vh1 then VH1.update_bar(self.object, self.object:get_hp()) end
 
 
 

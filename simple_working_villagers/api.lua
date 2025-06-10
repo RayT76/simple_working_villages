@@ -1,9 +1,9 @@
 --TODO: split this into single modules
 
-local log = working_villages.require("log")
+local log = simple_working_villages.require("log")
 local cmnp = modutil.require("check_prefix","venus")
 
-local func = working_villages.require("jobs/util")
+local func = simple_working_villages.require("jobs/util")
 
 -- TODO :: Animations wanted for characters
 
@@ -27,7 +27,7 @@ local func = working_villages.require("jobs/util")
 -- 
 
 
-working_villages.animation_frames = {
+simple_working_villages.animation_frames = {
   STAND     = { x=  0, y= 79, },
   LAY       = { x=162, y=166, },
   WALK      = { x=168, y=187, },
@@ -48,9 +48,9 @@ working_villages.animation_frames = {
 --	|Duck     |  381  | 399 |  30 |
 --	|Climb    |  410  | 429 |  30 |
 
-working_villages.registered_villagers = {}
-working_villages.registered_jobs = {}
-working_villages.registered_eggs = {}
+simple_working_villages.registered_villagers = {}
+simple_working_villages.registered_jobs = {}
+simple_working_villages.registered_eggs = {}
 local have_i_been_hit = false
 local been_hit_by = nil
 local curr_animation = nil
@@ -80,7 +80,7 @@ local function failed_pos_cleanup()
 end
 
 -- add a failed place position
-function working_villages.failed_pos_record(pos)
+function simple_working_villages.failed_pos_record(pos)
 --print("API:REGISTER_VILLAGER [", product_name, "]")
 	local key = minetest.hash_node_position(pos)
 	failed_pos_data[key] = os.clock() + 180 -- mark for 3 minutes
@@ -93,23 +93,23 @@ function working_villages.failed_pos_record(pos)
 end
 
 -- check if a position is marked as failed and hasn't expired
-function working_villages.failed_pos_test(pos)
+function simple_working_villages.failed_pos_test(pos)
 	local key = minetest.hash_node_position(pos)
 	local exp = failed_pos_data[key]
 	return exp ~= nil and exp >= os.clock()
 end
 
--- working_villages.is_job reports whether a item is a job item by the name.
-function working_villages.is_job(item_name)
-	if working_villages.registered_jobs[item_name] then
+-- simple_working_villages.is_job reports whether a item is a job item by the name.
+function simple_working_villages.is_job(item_name)
+	if simple_working_villages.registered_jobs[item_name] then
 		return true
 	end
 	return false
 end
 
--- working_villages.is_villager reports whether a name is villager's name.
-function working_villages.is_villager(name)
-  if working_villages.registered_villagers[name] then
+-- simple_working_villages.is_villager reports whether a name is villager's name.
+function simple_working_villages.is_villager(name)
+  if simple_working_villages.registered_villagers[name] then
     return true
   end
   return false
@@ -117,23 +117,23 @@ end
 
 ---------------------------------------------------------------------
 
--- working_villages.villager represents a table that contains common methods
+-- simple_working_villages.villager represents a table that contains common methods
 -- for villager object.
 -- this table must be contains by a metatable.__index of villager self tables.
 -- minetest.register_entity set initial properties as a metatable.__index, so
 -- this table's methods must be put there.
-working_villages.villager = {}
+simple_working_villages.villager = {}
 
--- working_villages.villager.get_inventory returns a inventory of a villager.
-function working_villages.villager:get_inventory()
+-- simple_working_villages.villager.get_inventory returns a inventory of a villager.
+function simple_working_villages.villager:get_inventory()
   return minetest.get_inventory {
     type = "detached",
     name = self.inventory_name,
   }
 end
 
--- working_villages.villager.get_job_name returns a name of a villager's current job.
-function working_villages.villager:get_job_name()
+-- simple_working_villages.villager.get_job_name returns a name of a villager's current job.
+function simple_working_villages.villager:get_job_name()
   local inv = self:get_inventory()
   local new_job = self.object:get_luaentity().new_job
   if new_job ~= "" then
@@ -145,25 +145,25 @@ function working_villages.villager:get_job_name()
   return inv:get_stack("job", 1):get_name()
 end
 
--- working_villages.villager.get_job returns a villager's current job definition.
-function working_villages.villager:get_job()
+-- simple_working_villages.villager.get_job returns a villager's current job definition.
+function simple_working_villages.villager:get_job()
   local name = self:get_job_name()
   if name ~= "" then
-    return working_villages.registered_jobs[name]
+    return simple_working_villages.registered_jobs[name]
   end
   return nil
 end
 
--- working_villages.villager.is_enemy returns if an object is an enemy.
-function working_villages.villager:is_enemy(obj)
+-- simple_working_villages.villager.is_enemy returns if an object is an enemy.
+function simple_working_villages.villager:is_enemy(obj)
   log.verbose("villager %s checks if %s is hostile",self.inventory_name,obj)
   --TODO
   return false
 end
 
--- working_villages.villager.get_nearest_player returns a player object who
+-- simple_working_villages.villager.get_nearest_player returns a player object who
 -- is the nearest to the villager, the position of and the distance to the player.
-function working_villages.villager:get_nearest_player(range_distance,pos)
+function simple_working_villages.villager:get_nearest_player(range_distance,pos)
   local min_distance = range_distance
   local player,ppos
   local position = pos or self.object:get_pos()
@@ -182,8 +182,8 @@ function working_villages.villager:get_nearest_player(range_distance,pos)
   return player,ppos,min_distance
 end
 
--- working_villages.villager.get_nearest_enemy returns an enemy who is the nearest to the villager.
-function working_villages.villager:get_nearest_enemy(range_distance)
+-- simple_working_villages.villager.get_nearest_enemy returns an enemy who is the nearest to the villager.
+function simple_working_villages.villager:get_nearest_enemy(range_distance)
   local enemy
   local min_distance = range_distance
   local position = self.object:get_pos()
@@ -200,9 +200,9 @@ function working_villages.villager:get_nearest_enemy(range_distance)
   end
   return enemy
 end
--- working_villages.villager.get_nearest_item_by_condition returns the position of
+-- simple_working_villages.villager.get_nearest_item_by_condition returns the position of
 -- an item that returns true for the condition
-function working_villages.villager:get_nearest_item_by_condition(cond, range_distance)
+function simple_working_villages.villager:get_nearest_item_by_condition(cond, range_distance)
   local max_distance=range_distance
   if type(range_distance) == "table" then
     max_distance=math.max(math.max(range_distance.x,range_distance.y),range_distance.z)
@@ -244,9 +244,9 @@ end
 
 -- TODO RT Editing this for testing
 
--- working_villages.villager.get_nearest_item_by_condition returns the position of
+-- simple_working_villages.villager.get_nearest_item_by_condition returns the position of
 -- an item that returns true for the condition
-function working_villages.villager:get_nearest_wounded_animal(distance)
+function simple_working_villages.villager:get_nearest_wounded_animal(distance)
 	local animal = nil
 	local myposition = self.object:get_pos() -- should round this function for pathing error prevention
 	local all_objects = minetest.get_objects_inside_radius(myposition, distance)
@@ -254,15 +254,15 @@ function working_villages.villager:get_nearest_wounded_animal(distance)
 		if object:get_luaentity() then
 			local my_oname = object:get_luaentity().name
 
-			if string.find(my_oname,"working_villages:villager_male") then
-			elseif string.find(my_oname,"working_villages:villager_female") then
+			if string.find(my_oname,"simple_working_villages:villager_male") then
+			elseif string.find(my_oname,"simple_working_villages:villager_female") then
 
 			elseif my_oname == "mobs_npc:npc" then  
 			elseif my_oname == "mobs_npc:igor" then
 			elseif my_oname == "mobs_npc:trader" then
 
 			elseif my_oname == "visual_harm_1ndicators:hpbar" then
-			elseif my_oname == "working_villages:dummy_item" then
+			elseif my_oname == "simple_working_villages:dummy_item" then
 			elseif my_oname == "__builtin:item" then
 
 			elseif my_oname == "mobs_monster:dirt_monster" then
@@ -289,26 +289,26 @@ function working_villages.villager:get_nearest_wounded_animal(distance)
 			elseif my_oname == "mobs_monster:dirt_monster" then
 
 			elseif string.find(my_oname,"mobs_animal:sheep_") then
-				if object:get_luaentity().health < object:get_hp() then return object end
+				if object:get_hp() < object:get_properties().hp_max then return object end
 
 			elseif my_oname == "mobs_animal:pumba" then
-				if object:get_luaentity().health < object:get_hp() then return object end
+				if object:get_hp() < object:get_properties().hp_max then return object end
 			elseif my_oname == "mobs_animal:chicken" then
-				if object:get_luaentity().health < object:get_hp() then return object end
+				if object:get_hp() < object:get_properties().hp_max then return object end
 			elseif my_oname == "mobs_animal:panda" then
-				if object:get_luaentity().health < object:get_hp() then return object end
+				if object:get_hp() < object:get_properties().hp_max then return object end
 			elseif my_oname == "mobs_animal:penguin" then
-				if object:get_luaentity().health < object:get_hp() then return object end
+				if object:get_hp() < object:get_properties().hp_max then return object end
 			elseif my_oname == "mobs_animal:bunny" then
-				if object:get_luaentity().health < object:get_hp() then return object end
+				if object:get_hp() < object:get_properties().hp_max then return object end
 			elseif my_oname == "mobs_animal:bee" then
-				if object:get_luaentity().health < object:get_hp() then return object end
+				if object:get_hp() < object:get_properties().hp_max then return object end
 			elseif my_oname == "mobs_animal:cow" then
-				if object:get_luaentity().health < object:get_hp() then return object end
+				if object:get_hp() < object:get_properties().hp_max then return object end
 			elseif my_oname == "mobs_animal:kitten" then
-				if object:get_luaentity().health < object:get_hp() then return object end
+				if object:get_hp() < object:get_properties().hp_max then return object end
 			elseif my_oname == "mobs_animal:rat" then
-				if object:get_luaentity().health < object:get_hp() then return object end
+				if object:get_hp() < object:get_properties().hp_max then return object end
 			else
 				print("WHAT IS A : ",my_oname)
 			end
@@ -324,9 +324,9 @@ end
 
 -- TODO RT Editing this for testing
 
--- working_villages.villager.get_nearest_item_by_condition returns the position of
+-- simple_working_villages.villager.get_nearest_item_by_condition returns the position of
 -- an item that returns true for the condition
-function working_villages.villager:get_nearest_wounded_npc(distance)
+function simple_working_villages.villager:get_nearest_wounded_npc(distance)
 	local animal = nil
 	local myposition = self.object:get_pos() -- should round this function for pathing error prevention
 	local ohp = nil
@@ -338,38 +338,30 @@ function working_villages.villager:get_nearest_wounded_npc(distance)
 			local my_oname = luae.name
 
             
-            if string.find(my_oname,"working_villages:villager") then
+            if string.find(my_oname,"simple_working_villages:villager") then
                 --print("Medic found ", my_oname, luae.health, fobject:get_hp(), fobject:get_properties().hp_max) 
                 local props = fobject:get_properties()
                 --print("DUMPLUEA:", dump(props.hp_max) )
-				if luae.health < props.hp_max then return fobject end
+				if fobject:get_hp() < fobject:get_properties().hp_max then return fobject end
 
-			elseif string.find(my_oname,"working_villages:villager_male") then
-				if luae.health < fobject:get_hp() then return fobject end
-			elseif string.find(my_oname,"working_villages:villager_female") then
-				if luae.health < fobject:get_hp() then return fobject end
+			elseif string.find(my_oname,"simple_working_villages:villager_male") then
+				if fobject:get_hp() < fobject:get_properties().hp_max then return fobject end
+			elseif string.find(my_oname,"simple_working_villages:villager_female") then
+				if fobject:get_hp() < fobject:get_properties().hp_max then return fobject end
 			elseif my_oname == "mobs_npc:npc" then  
-				if luae.health < fobject:get_hp() then return fobject end
+				if fobject:get_hp() < fobject:get_properties().hp_max then return fobject end
 			elseif my_oname == "mobs_npc:igor" then
 
 			elseif my_oname == "mobs_npc:trader" then
-				if luae.health < fobject:get_hp() then return fobject end
+				if fobject:get_hp() < fobject:get_properties().hp_max then return fobject end
 			-- WITCHES
 			elseif string.find(my_oname,"witches:witch_") then
 
-				if luae.health ~= nil then
-					if fobject:get_hp() ~= nil then
-						if luae.health < fobject:get_hp() then return fobject end
-					else
-						print("Object:get_hp() returned NIL")
-					end
-				else
-					print("LUAE.health returned NIL")
-				end
+				if fobject:get_hp() < fobject:get_properties().hp_max then return fobject end
 
 			elseif my_oname == "leads:lead" then
 			elseif my_oname == "visual_harm_1ndicators:hpbar" then
-			elseif my_oname == "working_villages:dummy_item" then
+			elseif my_oname == "simple_working_villages:dummy_item" then
 			elseif my_oname == "__builtin:item" then
 
 			elseif my_oname == "mobs_monster:dirt_monster" then
@@ -389,11 +381,7 @@ function working_villages.villager:get_nearest_wounded_npc(distance)
 			elseif my_oname == "mobs_skeletons:skeleton" then
 
 			elseif my_oname == "mobs_monster:dirt_monster" then
-			elseif my_oname == "mobs_monster:dirt_monster" then
-			elseif my_oname == "mobs_monster:dirt_monster" then
-			elseif my_oname == "mobs_monster:dirt_monster" then
-			elseif my_oname == "mobs_monster:dirt_monster" then
-			elseif my_oname == "mobs_monster:dirt_monster" then
+	
 
 			elseif string.find(my_oname,"mobs_animal:sheep_") then
 			elseif my_oname == "mobs_animal:pumba" then
@@ -420,8 +408,8 @@ end
 
 
 
--- working_villages.villager.get_front returns a position in front of the villager.
-function working_villages.villager:get_front()
+-- simple_working_villages.villager.get_front returns a position in front of the villager.
+function simple_working_villages.villager:get_front()
   local direction = self:get_look_direction()
   if math.abs(direction.x) >= 0.5 then
     if direction.x > 0 then	direction.x = 1	else direction.x = -1 end
@@ -437,14 +425,14 @@ function working_villages.villager:get_front()
   return vector.add(vector.round(self.object:get_pos()), direction)
 end
 
--- working_villages.villager.get_front_node returns a node that exists in front of the villager.
-function working_villages.villager:get_front_node()
+-- simple_working_villages.villager.get_front_node returns a node that exists in front of the villager.
+function simple_working_villages.villager:get_front_node()
   local front = self:get_front()
   return minetest.get_node(front)
 end
 
--- working_villages.villager.get_back returns a position behind the villager.
-function working_villages.villager:get_back()
+-- simple_working_villages.villager.get_back returns a position behind the villager.
+function simple_working_villages.villager:get_back()
   local direction = self:get_look_direction()
   if math.abs(direction.x) >= 0.5 then
     if direction.x > 0 then	direction.x = -1
@@ -465,26 +453,26 @@ function working_villages.villager:get_back()
   return vector.add(vector.round(self.object:get_pos()), direction)
 end
 
--- working_villages.villager.get_back_node returns a node that exists behind the villager.
-function working_villages.villager:get_back_node()
+-- simple_working_villages.villager.get_back_node returns a node that exists behind the villager.
+function simple_working_villages.villager:get_back_node()
   local back = self:get_back()
   return minetest.get_node(back)
 end
 
--- working_villages.villager.get_look_direction returns a normalized vector that is
+-- simple_working_villages.villager.get_look_direction returns a normalized vector that is
 -- the villagers's looking direction.
-function working_villages.villager:get_look_direction()
+function simple_working_villages.villager:get_look_direction()
   local yaw = self.object:get_yaw()
   return vector.normalize{x = -math.sin(yaw), y = 0.0, z = math.cos(yaw)}
 end
 
--- working_villages.villager.set_animation sets the villager's animation.
+-- simple_working_villages.villager.set_animation sets the villager's animation.
 -- this method is wrapper for self.object:set_animation.
-function working_villages.villager:set_animation(frame)
+function simple_working_villages.villager:set_animation(frame)
 	self.curr_animation = frame
 
   self.object:set_animation(frame, 15, 0)
-  if frame == working_villages.animation_frames.LAY then
+  if frame == simple_working_villages.animation_frames.LAY then
     local dir = self:get_look_direction()
     local dirx = math.abs(dir.x)*0.5
     local dirz = math.abs(dir.z)*0.5
@@ -497,7 +485,7 @@ end
 
 
 
---function working_villages.villager:get_animation()
+--function simple_working_villages.villager:get_animation()
 --	if self.curr_animation == nil then 
 --		return nil
 --	end
@@ -528,7 +516,7 @@ end
 
 
 
-function working_villages.villager:get_animation()
+function simple_working_villages.villager:get_animation()
 	if self.curr_animation == nil then 
 		return nil
 	end
@@ -551,40 +539,40 @@ end
 
 
 
--- working_villages.villager.set_yaw_by_direction sets the villager's yaw
+-- simple_working_villages.villager.set_yaw_by_direction sets the villager's yaw
 -- by a direction vector.
-function working_villages.villager:set_yaw_by_direction(direction)
+function simple_working_villages.villager:set_yaw_by_direction(direction)
   self.object:set_yaw(math.atan2(direction.z, direction.x) - math.pi / 2)
 end
 
--- working_villages.villager.get_wield_item_stack returns the villager's wield item's stack.
-function working_villages.villager:get_wield_item_stack()
+-- simple_working_villages.villager.get_wield_item_stack returns the villager's wield item's stack.
+function simple_working_villages.villager:get_wield_item_stack()
   local inv = self:get_inventory()
   return inv:get_stack("wield_item", 1)
 end
 
--- working_villages.villager.set_wield_item_stack sets villager's wield item stack.
-function working_villages.villager:set_wield_item_stack(stack)
+-- simple_working_villages.villager.set_wield_item_stack sets villager's wield item stack.
+function simple_working_villages.villager:set_wield_item_stack(stack)
   local inv = self:get_inventory()
   inv:set_stack("wield_item", 1, stack)
 end
 
--- working_villages.villager.add_item_to_main add item to main slot.
+-- simple_working_villages.villager.add_item_to_main add item to main slot.
 -- and returns leftover.
-function working_villages.villager:add_item_to_main(stack)
+function simple_working_villages.villager:add_item_to_main(stack)
   local inv = self:get_inventory()
   return inv:add_item("main", stack)
 end
 
-function working_villages.villager:replace_item_from_main(rstack,astack)
+function simple_working_villages.villager:replace_item_from_main(rstack,astack)
   local inv = self:get_inventory()
   inv:remove_item("main", rstack)
   inv:add_item("main", astack)
 end
 
--- working_villages.villager.move_main_to_wield moves itemstack from main to wield.
+-- simple_working_villages.villager.move_main_to_wield moves itemstack from main to wield.
 -- if this function fails then returns false, else returns true.
-function working_villages.villager:move_main_to_wield(pred)
+function simple_working_villages.villager:move_main_to_wield(pred)
   local inv = self:get_inventory()
   local main_size = inv:get_size("main")
 
@@ -601,14 +589,14 @@ function working_villages.villager:move_main_to_wield(pred)
   return false
 end
 
--- working_villages.villager.is_named reports the villager is still named.
-function working_villages.villager:is_named()
+-- simple_working_villages.villager.is_named reports the villager is still named.
+function simple_working_villages.villager:is_named()
 --print("API: IS_NAMED")
   return self.nametag ~= ""
 end
 
--- working_villages.villager.has_item_in_main reports whether the villager has item.
-function working_villages.villager:has_item_in_main(pred)
+-- simple_working_villages.villager.has_item_in_main reports whether the villager has item.
+function simple_working_villages.villager:has_item_in_main(pred)
   local inv = self:get_inventory()
   local stacks = inv:get_list("main")
 
@@ -620,8 +608,8 @@ function working_villages.villager:has_item_in_main(pred)
   end
 end
 
--- working_villages.villager.change_direction change direction to destination and velocity vector.
-function working_villages.villager:change_direction(destination,velocity)
+-- simple_working_villages.villager.change_direction change direction to destination and velocity vector.
+function simple_working_villages.villager:change_direction(destination,velocity)
 
 	local thevelocity = top_velocity
 
@@ -638,8 +626,8 @@ function working_villages.villager:change_direction(destination,velocity)
   self:set_yaw_by_direction(direction)
 end
 
--- working_villages.villager.change_direction_randomly change direction randonly.
-function working_villages.villager:change_direction_randomly()
+-- simple_working_villages.villager.change_direction_randomly change direction randonly.
+function simple_working_villages.villager:change_direction_randomly()
   local direction = {
     x = math.random(0, 5) * 2 - 5,
     y = 0,
@@ -648,29 +636,29 @@ function working_villages.villager:change_direction_randomly()
   local velocity = vector.multiply(vector.normalize(direction), top_velocity)
   self.object:set_velocity(velocity)
   self:set_yaw_by_direction(direction)
-  self:set_animation(working_villages.animation_frames.WALK)
+  self:set_animation(simple_working_villages.animation_frames.WALK)
 end
 
--- working_villages.villager.get_timer get the value of a counter.
-function working_villages.villager:get_timer(timerId)
+-- simple_working_villages.villager.get_timer get the value of a counter.
+function simple_working_villages.villager:get_timer(timerId)
   return self.time_counters[timerId]
 end
 
--- working_villages.villager.set_timer set the value of a counter.
-function working_villages.villager:set_timer(timerId,value)
+-- simple_working_villages.villager.set_timer set the value of a counter.
+function simple_working_villages.villager:set_timer(timerId,value)
   assert(type(value)=="number","timers need to be countable")
   self.time_counters[timerId]=value
 end
 
--- working_villages.villager.clear_timers set all counters to 0.
-function working_villages.villager:clear_timers()
+-- simple_working_villages.villager.clear_timers set all counters to 0.
+function simple_working_villages.villager:clear_timers()
   for timerId,_ in pairs(self.time_counters) do
     self.time_counters[timerId] = 0
   end
 end
 
--- working_villages.villager.count_timer count a counter up by 1.
-function working_villages.villager:count_timer(timerId)
+-- simple_working_villages.villager.count_timer count a counter up by 1.
+function simple_working_villages.villager:count_timer(timerId)
   if not self.time_counters[timerId] then
     log.info("villager %s timer %q was not initialized", self.inventory_name,timerId)
     self.time_counters[timerId] = 0
@@ -678,15 +666,15 @@ function working_villages.villager:count_timer(timerId)
   self.time_counters[timerId] = self.time_counters[timerId] + 1
 end
 
--- working_villages.villager.count_timers count all counters up by 1.
-function working_villages.villager:count_timers()
+-- simple_working_villages.villager.count_timers count all counters up by 1.
+function simple_working_villages.villager:count_timers()
   for id, counter in pairs(self.time_counters) do
     self.time_counters[id] = counter + 1
   end
 end
 
--- working_villages.villager.timer_exceeded if a timer exceeds the limit it will be reset and true is returned
-function working_villages.villager:timer_exceeded(timerId,limit)
+-- simple_working_villages.villager.timer_exceeded if a timer exceeds the limit it will be reset and true is returned
+function simple_working_villages.villager:timer_exceeded(timerId,limit)
   if self:get_timer(timerId)>=limit then
     self:set_timer(timerId,0)
     return true
@@ -695,8 +683,8 @@ function working_villages.villager:timer_exceeded(timerId,limit)
   end
 end
 
--- working_villages.villager.update_infotext updates the infotext of the villager.
-function working_villages.villager:update_infotext()
+-- simple_working_villages.villager.update_infotext updates the infotext of the villager.
+function simple_working_villages.villager:update_infotext()
 --print("API: UPDATE_INFOTEXT")
 
   local infotext = ""
@@ -717,14 +705,14 @@ function working_villages.villager:update_infotext()
   self.object:set_properties{infotext = infotext}
 end
 
--- working_villages.villager.is_near checks if the villager is within the radius of a position
-function working_villages.villager:is_near(pos, distance)
+-- simple_working_villages.villager.is_near checks if the villager is within the radius of a position
+function simple_working_villages.villager:is_near(pos, distance)
   local p = self.object:get_pos()
   p.y = p.y + 0.5
   return vector.distance(p, pos) < distance
 end
 
-function working_villages.villager:handle_liquids()
+function simple_working_villages.villager:handle_liquids()
   local ctrl = self.object
   local inside_node = minetest.get_node(self.object:get_pos())
   -- perhaps only when changed
@@ -743,7 +731,7 @@ end
 
 -- FIXME Hacked to get working -- needs work
 
-function working_villages.villager:jump()
+function simple_working_villages.villager:jump()
   local ctrl = self.object
   local below_node = minetest.get_node(vector.subtract(ctrl:get_pos(),{x=0,y=1,z=0}))
   local velocity = ctrl:get_velocity()
@@ -759,7 +747,7 @@ end
 
 -- FIXME Hacked to get working -- needs work
 
-function working_villages.villager:down()
+function simple_working_villages.villager:down()
   local ctrl = self.object
 --  local below_node = minetest.get_node(vector.subtract(ctrl:get_pos(),{x=0,y=1,z=0}))
 --  local velocity = ctrl:get_velocity()
@@ -776,7 +764,7 @@ end
 
 -- FIXME Hacked to get working -- not sure if needed ???
 
-function working_villages.villager:buried_check()
+function simple_working_villages.villager:buried_check()
 
 	--print("Buried Check")
 	local mylegs = vector.round(self.object:get_pos())
@@ -799,7 +787,7 @@ function working_villages.villager:buried_check()
 end
 
 
-function working_villages.villager:handle_doors()
+function simple_working_villages.villager:handle_doors()
 	local my_pos = vector.round(self.object:get_pos())
 	local my_dir = self:get_look_direction()
 	local my_fwd = vector.add(my_pos, vector.round(my_dir))
@@ -835,11 +823,11 @@ end
 
 
 
---working_villages.villager.handle_obstacles(ignore_fence,ignore_doors)
+--simple_working_villages.villager.handle_obstacles(ignore_fence,ignore_doors)
 --if the villager hits a walkable he wil jump
 --if ignore_fence is false the villager will not jump over fences
 --if ignore_doors is false and the villager hits a door he opens it
-function working_villages.villager:handle_obstacles(ignore_fence,ignore_doors)
+function simple_working_villages.villager:handle_obstacles(ignore_fence,ignore_doors)
 	local my_debug = false; 
 	local my_pos = vector.round(self.object:get_pos())
 	local my_vel = self.object:get_velocity()
@@ -979,7 +967,7 @@ end
 
 
 
-function working_villages.villager:handle_goto_obstacles(can_drop)
+function simple_working_villages.villager:handle_goto_obstacles(can_drop)
 
 	if can_drop == nil then can_drop = true end
 
@@ -1271,8 +1259,8 @@ end
 
 
 
--- working_villages.villager.pickup_item pickup items placed and put it to main slot.
-function working_villages.villager:pickup_item()
+-- simple_working_villages.villager.pickup_item pickup items placed and put it to main slot.
+function simple_working_villages.villager:pickup_item()
   local pos = self.object:get_pos()
   local radius = 1.0
   local all_objects = minetest.get_objects_inside_radius(pos, radius)
@@ -1297,8 +1285,8 @@ function working_villages.villager:pickup_item()
   end
 end
 
--- working_villages.villager.get_job_data get a job data field
-function working_villages.villager:get_job_data(key)
+-- simple_working_villages.villager.get_job_data get a job data field
+function simple_working_villages.villager:get_job_data(key)
   local actual_job_data = self.job_data[self:get_job_name()]
   if actual_job_data == nil then
     return nil
@@ -1306,8 +1294,8 @@ function working_villages.villager:get_job_data(key)
   return actual_job_data[key]
 end
 
--- working_villages.villager.set_job_data set a job data field
-function working_villages.villager:set_job_data(key, value)
+-- simple_working_villages.villager.set_job_data set a job data field
+function simple_working_villages.villager:set_job_data(key, value)
   local actual_job_data = self.job_data[self:get_job_name()]
   if actual_job_data == nil then
     actual_job_data = {}
@@ -1316,49 +1304,49 @@ function working_villages.villager:set_job_data(key, value)
   actual_job_data[key] = value
 end
 
--- working_villages.villager:new returns a new villager object.
-function working_villages.villager:new(o)
+-- simple_working_villages.villager:new returns a new villager object.
+function simple_working_villages.villager:new(o)
   return setmetatable(o or {}, {__index = self})
 end
 
-working_villages.require("villager_state")
+simple_working_villages.require("villager_state")
 
--- working_villages.villager.is_active check if the villager is paused.
+-- simple_working_villages.villager.is_active check if the villager is paused.
 -- deprecated check self.pause instesad
-function working_villages.villager:is_active()
+function simple_working_villages.villager:is_active()
   print("self:is_active is deprecated: check self.pause directly it's a boolean value")
   return self.pause
 end
 
---working_villages.villager.set_paused set the villager to paused state
+--simple_working_villages.villager.set_paused set the villager to paused state
 --deprecated use set_pause
-function working_villages.villager:set_paused(reason)
+function simple_working_villages.villager:set_paused(reason)
   print("self:set_paused() is deprecated use self:set_pause() and self:set_displayed_action() instead")
   self:set_pause(true)
   self:set_displayed_action(reason or "resting")
 end
 
-working_villages.require("async_actions")
+simple_working_villages.require("async_actions")
 
 -- compatibility with like player object
-function working_villages.villager:get_player_name()
+function simple_working_villages.villager:get_player_name()
   return self.object:get_player_name()
 end
 
 
 
 -- TODO TEST true from false
-function working_villages.villager:is_player()
+function simple_working_villages.villager:is_player()
   return false
 end
 
 -- TODO TEST true from false
-function working_villages.villager:get_wield_index()
+function simple_working_villages.villager:get_wield_index()
   return 1
 end
 
 --deprecated
-function working_villages.villager:set_state(id)
+function simple_working_villages.villager:set_state(id)
   if id == "idle" then
     print("the idle state is deprecated")
   elseif id == "goto_dest" then
@@ -1378,14 +1366,14 @@ end
 
 ---------------------------------------------------------------------
 
--- working_villages.manufacturing_data represents a table that contains manufacturing data.
+-- simple_working_villages.manufacturing_data represents a table that contains manufacturing data.
 -- this table's keys are product names, and values are manufacturing numbers
 -- that has been already manufactured.
-working_villages.manufacturing_data = (function()
-  local file_name = minetest.get_worldpath() .. "/working_villages_data"
+simple_working_villages.manufacturing_data = (function()
+  local file_name = minetest.get_worldpath() .. "/simple_working_villages_data"
   minetest.register_on_shutdown(function()
     local file = io.open(file_name, "w")
-    file:write(minetest.serialize(working_villages.manufacturing_data))
+    file:write(minetest.serialize(simple_working_villages.manufacturing_data))
     file:close()
   end)
   local file = io.open(file_name, "r")
@@ -1402,7 +1390,7 @@ end) ()
 -- register empty item entity definition.
 -- this entity may be hold by villager's hands.
 do
-  minetest.register_craftitem("working_villages:dummy_empty_craftitem", {
+  minetest.register_craftitem("simple_working_villages:dummy_empty_craftitem", {
     wield_image = "working_villages_dummy_empty_craftitem.png",
   })
 
@@ -1412,9 +1400,9 @@ do
     for _, obj in ipairs(all_objects) do
       local luaentity = obj:get_luaentity()
 
-      if working_villages.is_villager(luaentity.name) then
+      if simple_working_villages.is_villager(luaentity.name) then
         self.object:set_attach(obj, "Arm_R", {x = 0.065, y = 0.50, z = -0.15}, {x = -45, y = 0, z = 0})
-        self.object:set_properties{textures={"working_villages:dummy_empty_craftitem"}}
+        self.object:set_properties{textures={"simple_working_villages:dummy_empty_craftitem"}}
         self.object:set_properties{health={15}}
         return
       end
@@ -1426,13 +1414,13 @@ do
     for _, obj in ipairs(all_objects) do
       local luaentity = obj:get_luaentity()
 
-      if working_villages.is_villager(luaentity.name) then
+      if simple_working_villages.is_villager(luaentity.name) then
         local stack = luaentity:get_wield_item_stack()
 
         if stack:get_name() ~= self.itemname then
           if stack:is_empty() then
             self.itemname = ""
-            self.object:set_properties{textures={"working_villages:dummy_empty_craftitem"}}
+            self.object:set_properties{textures={"simple_working_villages:dummy_empty_craftitem"}}
           else
             self.itemname = stack:get_name()
             self.object:set_properties{textures={self.itemname}}
@@ -1446,7 +1434,7 @@ do
     return
   end
 
-  minetest.register_entity("working_villages:dummy_item", {
+  minetest.register_entity("simple_working_villages:dummy_item", {
     hp_max		    = 1,
     visual		    = "wielditem",
     visual_size	  = {x = 0.025, y = 0.025},
@@ -1461,7 +1449,7 @@ end
 
 ---------------------------------------------------------------------
 
-working_villages.job_inv = minetest.create_detached_inventory("working_villages:job_inv", {
+simple_working_villages.job_inv = minetest.create_detached_inventory("simple_working_villages:job_inv", {
   on_take = function(inv, listname, _, stack) --inv, listname, index, stack, player
     inv:add_item(listname,stack)
   end,
@@ -1472,12 +1460,12 @@ working_villages.job_inv = minetest.create_detached_inventory("working_villages:
     end
   end,
 })
-working_villages.job_inv:set_size("main", 32)
+simple_working_villages.job_inv:set_size("main", 32)
 
--- working_villages.register_job registers a definition of a new job.
-function working_villages.register_job(job_name, def)
+-- simple_working_villages.register_job registers a definition of a new job.
+function simple_working_villages.register_job(job_name, def)
   local name = cmnp(job_name)
-  working_villages.registered_jobs[name] = def
+  simple_working_villages.registered_jobs[name] = def
 
   minetest.register_tool(name, {
     stack_max       = 1,
@@ -1486,14 +1474,14 @@ function working_villages.register_job(job_name, def)
     groups          = {not_in_creative_inventory = 1}
   })
 
-  --working_villages.job_inv:set_size("main", #working_villages.registered_jobs)
-  working_villages.job_inv:add_item("main", ItemStack(name))
+  --simple_working_villages.job_inv:set_size("main", #simple_working_villages.registered_jobs)
+  simple_working_villages.job_inv:add_item("main", ItemStack(name))
 end
 
--- working_villages.register_egg registers a definition of a new egg.
-function working_villages.register_egg(egg_name, def)
+-- simple_working_villages.register_egg registers a definition of a new egg.
+function simple_working_villages.register_egg(egg_name, def)
   local name = cmnp(egg_name)
-  working_villages.registered_eggs[name] = def
+  simple_working_villages.registered_eggs[name] = def
 
   minetest.register_tool(name, {
     description     = def.description,
@@ -1518,17 +1506,17 @@ function working_villages.register_egg(egg_name, def)
   })
 end
 
-local job_coroutines = working_villages.require("job_coroutines")
-local forms = working_villages.require("forms")
+local job_coroutines = simple_working_villages.require("job_coroutines")
+local forms = simple_working_villages.require("forms")
 
--- working_villages.register_villager registers a definition of a new villager.
-function working_villages.register_villager(product_name, def)
+-- simple_working_villages.register_villager registers a definition of a new villager.
+function simple_working_villages.register_villager(product_name, def)
   local name = cmnp(product_name)
-  working_villages.registered_villagers[name] = def
+  simple_working_villages.registered_villagers[name] = def
 
   -- initialize manufacturing number of a new villager.
-  if working_villages.manufacturing_data[name] == nil then
-    working_villages.manufacturing_data[name] = 0
+  if simple_working_villages.manufacturing_data[name] == nil then
+    simple_working_villages.manufacturing_data[name] = 0
   end
 
   -- create_inventory creates a new inventory, and returns it.
@@ -1538,7 +1526,7 @@ function working_villages.register_villager(product_name, def)
       on_put = function(_, listname, _, stack) --inv, listname, index, stack, player
         if listname == "job" then
           local job_name = stack:get_name()
-          local job = working_villages.registered_jobs[job_name]
+          local job = simple_working_villages.registered_jobs[job_name]
           if type(job.on_start)=="function" then
             job.on_start(self)
             self.job_thread = coroutine.create(job.on_step)
@@ -1553,7 +1541,7 @@ function working_villages.register_villager(product_name, def)
         -- only jobs can put to a job inventory.
         if listname == "main" then
           return stack:get_count()
-      elseif listname == "job" and working_villages.is_job(stack:get_name()) then
+      elseif listname == "job" and simple_working_villages.is_job(stack:get_name()) then
         if not inv:is_empty("job") then
           inv:remove_item("job", inv:get_list("job")[1])
         end
@@ -1566,7 +1554,7 @@ function working_villages.register_villager(product_name, def)
       on_take = function(_, listname, _, stack) --inv, listname, index, stack, player
         if listname == "job" then
           local job_name = stack:get_name()
-          local job = working_villages.registered_jobs[job_name]
+          local job = simple_working_villages.registered_jobs[job_name]
           self.time_counters = {}
           if job then
             if type(job.on_stop)=="function" then
@@ -1591,7 +1579,7 @@ function working_villages.register_villager(product_name, def)
         --inv, from_list, from_index, to_list, to_index, count, player
         if to_list == "job" or from_list == "job" then
           local job_name = inv:get_stack(to_list, to_index):get_name()
-          local job = working_villages.registered_jobs[job_name]
+          local job = simple_working_villages.registered_jobs[job_name]
 
           if to_list == "job" then
             if type(job.on_start)=="function" then
@@ -1621,7 +1609,7 @@ function working_villages.register_villager(product_name, def)
 
         if to_list == "main" then
           return count
-        elseif to_list == "job" and working_villages.is_job(inv:get_stack(from_list, from_index):get_name()) then
+        elseif to_list == "job" and simple_working_villages.is_job(inv:get_stack(from_list, from_index):get_name()) then
           return count
         end
 
@@ -1645,7 +1633,7 @@ function working_villages.register_villager(product_name, def)
     end
     if self.village_name then
       -- TODO: share pos data from central village data
-      --local village = working_villages.get_village(self.village_name)
+      --local village = simple_working_villages.get_village(self.village_name)
       --if village then
         --self.pos_data = village:get_villager_pos_data(self.inventory_name)
       --end
@@ -1660,12 +1648,12 @@ function working_villages.register_villager(product_name, def)
     -- parse the staticdata, and compose a inventory.
     if staticdata == "" then
       self.product_name = name
-      self.manufacturing_number = working_villages.manufacturing_data[name]
-      working_villages.manufacturing_data[name] = working_villages.manufacturing_data[name] + 1
+      self.manufacturing_number = simple_working_villages.manufacturing_data[name]
+      simple_working_villages.manufacturing_data[name] = simple_working_villages.manufacturing_data[name] + 1
       create_inventory(self)
 
       -- attach dummy item to new villager.
-      minetest.add_entity(self.object:get_pos(), "working_villages:dummy_item")
+      minetest.add_entity(self.object:get_pos(), "simple_working_villages:dummy_item")
     else
       -- if static data is not empty string, this object has beed already created.
       local data = minetest.deserialize(staticdata)
@@ -1765,14 +1753,14 @@ function working_villages.register_villager(product_name, def)
   -- on_rightclick is a callback function that is called when a player right-click them.
   local function on_rightclick(self, clicker)
     local wielded_stack = clicker:get_wielded_item()
-    if wielded_stack:get_name() == "working_villages:commanding_sceptre"
-      and (self.owner_name == "working_villages:self_employed"
+    if wielded_stack:get_name() == "simple_working_villages:commanding_sceptre"
+      and (self.owner_name == "simple_working_villages:self_employed"
         or clicker:get_player_name() == self.owner_name or
         minetest.check_player_privs(clicker, "debug")) then
 
-      forms.show_formspec(self, "working_villages:inv_gui", clicker:get_player_name())
+      forms.show_formspec(self, "simple_working_villages:inv_gui", clicker:get_player_name())
     else
-      forms.show_formspec(self, "working_villages:talking_menu", clicker:get_player_name())
+      forms.show_formspec(self, "simple_working_villages:talking_menu", clicker:get_player_name())
     end
   end
 
@@ -1842,7 +1830,7 @@ function working_villages.register_villager(product_name, def)
 
   end
 
-function working_villages.villager:have_i_been_attacked()
+function simple_working_villages.villager:have_i_been_attacked()
 
 --	print("IS HIT = ", have_i_been_hit)
 --	print("HIT BY = ", been_hit_by)
@@ -1870,14 +1858,14 @@ end
 
   -- register a definition of a new villager.
 
-  local villager_def = working_villages.villager:new({
+  local villager_def = simple_working_villages.villager:new({
     initial_properties = {
       hp_max                      = def.hp_max,
       weight                      = def.weight,
       mesh                        = def.mesh,
       textures                    = def.textures,
 
-      --TODO: put these into working_villagers.villager
+      --TODO: put these into simple_working_villagers.villager
       physical                    = true,
       visual                      = "mesh",
       visual_size                 = {x = 1, y = 1},
@@ -2038,15 +2026,15 @@ end
   villager_def.get_staticdata              = get_staticdata
 
   -- storage methods
-  villager_def.get_stored_table            = working_villages.get_stored_villager_table
-  villager_def.set_stored_table            = working_villages.set_stored_villager_table
-  villager_def.clear_cached_table          = working_villages.clear_cached_villager_table
+  villager_def.get_stored_table            = simple_working_villages.get_stored_villager_table
+  villager_def.set_stored_table            = simple_working_villages.set_stored_villager_table
+  villager_def.clear_cached_table          = simple_working_villages.clear_cached_villager_table
 
   -- home methods
-  villager_def.get_home                    = working_villages.get_home
-  villager_def.has_home                    = working_villages.is_valid_home
-  villager_def.set_home                    = working_villages.set_home
-  villager_def.remove_home                 = working_villages.remove_home
+  villager_def.get_home                    = simple_working_villages.get_home
+  villager_def.has_home                    = simple_working_villages.is_valid_home
+  villager_def.set_home                    = simple_working_villages.set_home
+  villager_def.remove_home                 = simple_working_villages.remove_home
 
 
   minetest.register_entity(name, villager_def)
@@ -2055,7 +2043,7 @@ end
 
   if def.visible == nil or def.visible ~= false then 
   	-- register villager egg.
-		working_villages.register_egg(name .. "_egg", {
+		simple_working_villages.register_egg(name .. "_egg", {
 		description     = name .. " egg",
 		inventory_image = def.egg_image,
 		product_name    = name,

@@ -9,7 +9,7 @@ local commands = {
 }
 job_coroutines.commands = commands
 
-local log = working_villages.require("log")
+local log = simple_working_villages.require("log")
 
 function job_coroutines.resume(self,dtime)
   local job = self:get_job()

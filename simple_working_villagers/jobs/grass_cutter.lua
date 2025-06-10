@@ -1,6 +1,6 @@
-local func = working_villages.require("jobs/util")
+local func = simple_working_villages.require("jobs/util")
 local use_vh1 = minetest.get_modpath("visual_harm_1ndicators")
-local pathfinder = working_villages.require("pathfinder")
+local pathfinder = simple_working_villages.require("pathfinder")
 
 
 local cutter = {
@@ -85,12 +85,12 @@ local cutter_searching_distance = 50
 local cutter_found_plant_target = nil
 local cutter_path_data = nil
 
-working_villages.register_job("working_villages:job_grass_cutter", {
-	description      = "Grass cutter A (working_villages)",
+simple_working_villages.register_job("simple_working_villages:job_grass_cutter", {
+	description      = "Grass cutter A (simple_working_villages)",
 	long_description = "I keep your lawns looking prim and proper.",
 	inventory_image  = "default_paper.png^working_villages_grass_collector.png",
 	jobfunc = function(self)
-		if use_vh1 then VH1.update_bar(self.object, self.health) end
+		if use_vh1 then VH1.update_bar(self.object, self.object:get_hp()) end
 
 
 
@@ -157,7 +157,7 @@ working_villages.register_job("working_villages:job_grass_cutter", {
 
 			if cutter_found_plant_target == nil then
 				self.object:set_velocity{x = 0, y = 0, z = 0}				
-				self:set_animation(working_villages.animation_frames.STAND)
+				self:set_animation(simple_working_villages.animation_frames.STAND)
 				cutter_searching_distance = cutter_searching_distance + 10000
 				--print("GRASSCUTTER: expanding search to ", searching_distance)
 				cutter_searching_range.x = cutter_searching_distance
@@ -168,4 +168,4 @@ working_villages.register_job("working_villages:job_grass_cutter", {
 
 })
 
-working_villages.cutter = cutter
+simple_working_villages.cutter = cutter

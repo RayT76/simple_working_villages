@@ -1,6 +1,6 @@
 local wv_util = {}
 
-local debug_checks = working_villages.setting_enabled("debug_checks",true)
+local debug_checks = simple_working_villages.setting_enabled("debug_checks",true)
 
 function wv_util.get_euclidean_neighbors()
   local base = vector.new()

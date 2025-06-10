@@ -1,5 +1,5 @@
 
-local func = working_villages.require("jobs/util")
+local func = simple_working_villages.require("jobs/util")
 
 local follower = {}
 local use_vh1 = minetest.get_modpath("visual_harm_1ndicators")
@@ -13,7 +13,7 @@ function follower.walk_in_direction(v,dir)
 
   local velocity = v.object:get_velocity()
   if velocity.x==0 and velocity.y==0 then
-    v:set_animation(working_villages.animation_frames.WALK)
+    v:set_animation(simple_working_villages.animation_frames.WALK)
   end
   --speed should actually be limited
   v.object:set_velocity{x = dir.x, y = velocity.y, z = dir.z}
@@ -26,7 +26,7 @@ end
 function follower.stop(v)
   local velocity = v.object:get_velocity()
   if velocity.x~=0 or velocity.y~=0 then
-    v:set_animation(working_villages.animation_frames.STAND)
+    v:set_animation(simple_working_villages.animation_frames.STAND)
     v.object:set_velocity{x = 0, y = velocity.y, z = 0}
   end
 end
@@ -54,8 +54,8 @@ function follower.step(v)
   end
 end
 
-working_villages.register_job("working_villages:job_folow_player", {
-	description      = "follower (working_villages)",
+simple_working_villages.register_job("simple_working_villages:job_folow_player", {
+	description      = "follower (simple_working_villages)",
 	long_description = "I'll just follow you wherever you go.",
 	inventory_image  = "default_paper.png^memorandum_letters.png",
 	jobfunc = function(v)

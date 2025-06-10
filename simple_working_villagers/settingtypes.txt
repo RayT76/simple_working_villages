@@ -3,12 +3,12 @@
 #    Enables the debug tools for working villages.
 #    They can be obtained ingame through the creative inventory.
 #    They affect the nearby nodes in some way that helps to see if working villages is working properly.
-working_villages_enable_debug_tools (debug tools) bool false
+simple_working_villages_enable_debug_tools (debug tools) bool false
 
 #    Enables some extra asserts in the code that ensure everything runs as expected.
 #    This may have a small effect on the performance.
 #    It helps finding bugs within working villages and within mods using working villages.
-working_villages_enable_debug_checks (debug checks) bool false
+simple_working_villages_enable_debug_checks (debug checks) bool false
 
 [protection]
 #    Controls activity in protected areas.
@@ -20,10 +20,10 @@ working_villages_enable_debug_checks (debug checks) bool false
 #            the test will use the player name "owner:user1". This is
 #            useful with protection mods that allow protection to be
 #            configured using arbitrary player names.
-working_villages_owner_protection (owner protection) string false
+simple_working_villages_owner_protection (owner protection) string false
 
 [spawning]
 
 #    Enables spawning self-employed working villagers. The villagers that
 #    spawn in will interact with any player who has a command sceptre.
-working_villages_enable_spawn (spawn working villagers) bool false
+simple_working_villages_enable_spawn (spawn working villagers) bool false
