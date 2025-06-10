@@ -113,146 +113,172 @@ All skins used in this mod excluding the originals from working_villages are cre
 
 
 
-#CURRENT NPC STATUS
+# CURRENT NPC STATUS
+
+## Mayor
+**Working**
+
+    Holds the Town development Plans
+    Hires New Villagers
+    Manages Moving in the Villagers
+    Instructs/Managers the Villagers
+    Brings a starter pack to start the construction
 
 ## Builder
 **Working**
-Builds buildings for the town under instructions from the Town Mayor
+
+    Builds buildings for the town under instructions from the Town Mayor.
+    Uses a designated chest for storage
+    Notifies the owner if he runs out of supplies
 
 ## Empty
 Does nothing.
 
 ## Farmer
 **Working**
-Farms and Replants crops - Thought the player has to plant the first crops to show the farmer what do grow.
+
+    Works under instruction from the Mayor
+    Farms and Replants crops (Though, the player has to plant the first crops to show the farmer what do grow and where)
+    Collects harvested crops and stores them in his chest
 
 ## Fireman
 Working Prototype
-Buggy AI movement, needs updating to current AI
-Looks for wild fires, if founds attempts to extinguish them
+
+    Buggy AI movement, needs updating to current AI
+    Wonders around aimlessly Looking for wild fires
+    If a fire is found, he attempts to extinguish it
+        
 
 ## Follow_player
 **Working**
 
 ## Gardener
 **Working**
-Clears plots ready for Builder (currently under development)
-Clears weeds and cuts grass on a plot
+
+    Clears plots ready for Builder (currently under development)
+    Clears weeds and cuts grass on a plot (currently under development)
+    Currently Wonders around cutting grass.
 
 ## Lumberjack
 **Working**
-Chops down trees under orders from the Mayor
-Manages an Orchard for a wood supply
 
-## Mayor
-**Working**
-Manages the Town development and NPC's
+    Chops down trees under orders from the Mayor.
+    Manages an Orchard
+    Collects harvested wood and saplings in a chest
 
 ## Medic
 Working Prototype
-Buggy AI movement, needs updating to current AI
-Searches for wounded friendly NPC's and heals them
+
+    Buggy AI movement, needs updating to current AI
+    Wonders around looking for wounded friendly NPC's
+    Heals them if he can catch them
 
 ## Miner
 **Working**
-Complexity of the Mining will be updated in the future, this will enable "scanning" for wanted items.
-Currently digs a big hole and collects whats dug.
+
+    Currently digs a big hole down as far as he can (before he unloads from the game)
+    He collects whats dug in a chest.
+    Complexity of the Miner will be updated in the future, this will enable "scanning" for wanted items.
 
 ## Plant_collector
 Working Prototype
-Buggy AI movement, needs updating to current AI
-Searches and collects wild farmable crops
+
+    Buggy AI movement, needs updating to current AI
+    Searches and collects wild farmable crops
 
 ## Snowclearer
 Working Prototype
-Buggy AI movement, needs updating to current AI
-Looks for and removes snow
+
+    Buggy AI movement, needs updating to current AI
+    Looks for and removes snow
 
 ## Torcher
 Untested
 
 ## Vet
 Working Prototype
-Buggy AI movement, needs updating to current AI
-Same as medic but for friendly animals
+
+    Buggy AI movement, needs updating to current AI
+    Same as medic but for friendly animals
 
 
 ## FUTURE ROLE CONSIDERATIONS
 
 **Rubbish Collector**
-goes around looking for rubbish to collect
+    goes around looking for rubbish to collect
 
 **Sheep Shearer**
-Handles the shearing of sheep and collection of Wool
+    Handles the shearing of sheep and collection of Wool
 
 **Cow Milker**
-Handles the  milking of Cows and collection of Milk
+    Handles the  milking of Cows and collection of Milk
 
 **Roaming Hunter**
-Goes out and Hunts known enemys
+    Goes out and Hunts known enemys
 
 **Body guard**
-Follows a player and attacks known enemys within a distance
+    Follows a player and attacks known enemys within a distance
 
 **Policeman**
-Goes around the town looking for enemys
+    Goes around the town looking for enemys
 
 **Security guard**
-Stands guard on a entrance to a building or Town
+    Stands guard on a entrance to a building or Town
 
 **Roadlayer**
-Like the builder but only Builds roads and paths
+    Like the builder but only Builds roads and paths
 
 **egg collector**
-Collects Eggs from a chicken pen
+    Collects Eggs from a chicken pen
 
 **Shepard**
-Looks after Sheep or Cows
+    Looks after Sheep or Cows
 
 **Waterboy**
-Collects water for use by others
+    Collects water for use by others
 
 **Foundry Worker**
-Handles all cooking of recipes 
+    Handles all cooking of recipes 
 
 **Engineer**
-Handles Crafting of non-wood based items
+    Handles Crafting of non-wood based items
 
 **Carpenter**
-Handles the crafting of Wood based items
+    Handles the crafting of Wood based items
 
 **Baker**
-Converts farmed goods into food
+    Converts farmed goods into food
 
 **Butcher**
-Not sure if applicable ??
+    Not sure if applicable ??
 
 **School teacher**
-stays with the children in a school enviroment for most of the day
+    stays with the children in a school enviroment for most of the day
 
 **Child NPC's**
-Water boy
-rabbit feeder
-chicken feeder
-ect
+    Water boy
+    rabbit feeder
+    chicken feeder
+    ect
 
 ## CURRENT / FIXES / KNOWN BUGS
 
-There is a few.. but hopefully less each day.
+There are a few.. but hopefully less each week.
 
 One to be looked into shortly is the placement of Hires seems to be incorrect, not where I expect some of them to be created..  minor but annoying.
-Medic Fixs people well, but his AI cannot handle fences for love nor money. Fix is in the works.
+Medic Fixs people well, but his AI cannot handle fences for love nor money. Updated AI is in the works.
 
-A Dirt with Grass node seems to have slipped in the field schematic..  will be removed at some point.. minor, and I would test with creative at this point of development.
+A Dirt with Grass node seems to have slipped in the field schematic..  will be removed at some point.. minor. I would test with creative at this point of development.
  
-A few of the latest bugs "fixed":
+A few of the latest bugs Fixed:
+    the old working_villages over-riding simple_working_villages in the Luanti game
     Lumberjack not trying to collect supplies from his chest.
     Miner not trying to collect supplies from his chest.
     Medic not healing the actual Object health, just the entitys health ?
     Farmer not moving into his house correctly
     Plot marker left in Town plan has now been replaced with a test building upgrade
 
-## CURRENT TOWN TODOS
+## CURRENT TOWN TODOS ??
 
 
 **Problem:** If a NPC dies its currently a pain to get them back.
@@ -264,14 +290,14 @@ To Movein the New NPC, find his house marker and remove it. The Builder will che
 **Solution:** Have the Town-Planning-Data Selectable and Loadable from a file. Either Different Mayors for Different Towns, or a selection menu for the Town-Plan.
 
 ## Animation Updates
-Want to add Fly, Swim, Crouch and Climb animations from the "Charater Animations" MOD to the NPC's.
+I want to add Fly, Swim, Crouch and Climb animations from the "Character Animations" MOD to the NPC's.
 
 
 ## Animation Updates
 It is planned to look into the Wielded item display functions, which currently does not seem to work.
 
 
-Mayor AI Tasks. 
+Mayor AI advanced Tasks, and implementing a more advanced town-plan.. 
 
 
 

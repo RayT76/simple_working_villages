@@ -751,25 +751,35 @@ local function check_for_buildings(self)
 	end
 end
 
+local function look_at_fire(self)
+    --look_at_position(self,vector.add(get_job_position(self),mayora_start_fire_loc))
+	rem_from_joblist(self)
+end
 
 local function goto_myhome(self)
-		rem_from_joblist(self)
 		local hpos = get_home_position(self)
 
 		local wait_job = {
 			["name"] = "waitfor",
 			["status"] = 100
 		}
-		add_to_joblist(self,wait_job)
 
-
+    	local laf_job = {
+			["name"] = "lookatfire",
+			["status"] = 100
+		}
 
 		local goto_job = {
 			["name"] = "gotohere",
 			["dest"] = hpos,
 			["status"] = 0
 		}
+		rem_from_joblist(self)
+		add_to_joblist(self,wait_job)
+		add_to_joblist(self,laf_job)
 		add_to_joblist(self,goto_job)
+
+
 end
 
 
@@ -2727,6 +2737,11 @@ When I find a sappling I'll plant it on some soil near a bright place so a new t
 
 		elseif current_job.name == "gotohome" then
 			goto_myhome(self)
+
+		elseif current_job.name == "lookatfire" then
+			look_at_fire(self)
+
+
 
 --		elseif current_job.name == "movein1" then
 --			move_in_1(self)
