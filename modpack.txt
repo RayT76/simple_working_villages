@@ -1,7 +1,7 @@
 name = simple_working_villages
 description = Add a Mayor to start creating a town full of people.
 depends = default
-optional_depends = areas,Basic Materials and items,FakeLib,Farming Redo,Mobs Redo,Mobs Animal,Mobs Monster,mod utilities,Unified Inventory Plus,Unified Dyes,Visual Harm 1Ndicators,Xcompat,Charater Animations (planned implementation)
+optional_depends = areas
 
 
 
