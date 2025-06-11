@@ -62,6 +62,16 @@ function func.get_medic_a_message()
 	return medic_a_message
 end
 
+local fireman_a_message = nil
+function func.set_fireman_a_message(inmsg)
+	fireman_a_message = inmsg
+	print("DEBUG: SET fireman MSG = ", dump(inmsg))
+end
+function func.get_fireman_a_message()
+	return fireman_a_message
+end
+
+
 
 
 local vet_a_message = nil

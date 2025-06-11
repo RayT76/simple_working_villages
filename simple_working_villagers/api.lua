@@ -276,6 +276,7 @@ function simple_working_villages.villager:get_nearest_wounded_animal(distance)
 			elseif my_oname == "mobs_monster:spider" then
 			elseif my_oname == "mobs_monster:stone_monster" then
 			elseif my_oname == "mobs_monster:tree_monster" then
+           elseif my_oname == "mobs_monster:dungeon_master" then
 
 			elseif my_oname == "mobs_skeletons:skeleton_archer" then
 			elseif my_oname == "mobs_skeletons:skeleton_archer_dark" then
@@ -310,7 +311,7 @@ function simple_working_villages.villager:get_nearest_wounded_animal(distance)
 			elseif my_oname == "mobs_animal:rat" then
 				if object:get_hp() < object:get_properties().hp_max then return object end
 			else
-				print("WHAT IS A : ",my_oname)
+				print("VET: WHAT IS A : ",my_oname)
 			end
 		end
 	end
@@ -375,14 +376,14 @@ function simple_working_villages.villager:get_nearest_wounded_npc(distance)
 			elseif my_oname == "mobs_monster:spider" then
 			elseif my_oname == "mobs_monster:stone_monster" then
 			elseif my_oname == "mobs_monster:tree_monster" then
+            elseif my_oname == "mobs_monster:dungeon_master" then
+	
 
 			elseif my_oname == "mobs_skeletons:skeleton_archer" then
 			elseif my_oname == "mobs_skeletons:skeleton_archer_dark" then
 			elseif my_oname == "mobs_skeletons:skeleton" then
 
-			elseif my_oname == "mobs_monster:dirt_monster" then
-	
-
+			
 			elseif string.find(my_oname,"mobs_animal:sheep_") then
 			elseif my_oname == "mobs_animal:pumba" then
 			elseif my_oname == "mobs_animal:chicken" then
@@ -395,7 +396,7 @@ function simple_working_villages.villager:get_nearest_wounded_npc(distance)
 			elseif my_oname == "mobs_animal:rat" then
 --				end   nativevillages:toad
 			else
-				print("WHAT IS A : ",my_oname)
+				print("MEDIC: WHAT IS A : ",my_oname)
 				--print("DUMP : ", fobject:get_luaentity())
 			end
 		end

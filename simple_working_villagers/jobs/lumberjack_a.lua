@@ -269,7 +269,7 @@ local function plot_around(self,loc)
 	elseif varx == -1 and varz == 0 then 
 		nloc = vector.new{ x = mloc.x-2, y = mloc.y, z = mloc.z - 2 }
 	elseif varx == -1 and varz == -1 then 
-		nloc = vector.new{ x = mloc.x - 2, y = mloc.y, z = mloc.z }
+		nloc = vector.new{ x = mloc.x, y = mloc.y, z = mloc.z  - 2}
 	else
 	print("ERROR PLOTTING AROUND ", loc, " FROM ", mloc)	
 	end

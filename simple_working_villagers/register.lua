@@ -161,7 +161,7 @@ simple_working_villages.register_villager(product_name, {
 	stop_time = 0.75,
 	bed_time = 0.885,
 	walk_speed = 2.5,
-	dig_delay = 50,
+	dig_delay = 15,
 	build_delay = 100,
 	run_speed = 2.2,
 	size_x = 0.9,
@@ -263,7 +263,7 @@ local egg_img_name = "villager_male_egg.png"
 simple_working_villages.register_villager(product_name, {
 	name = "Frank Fireman",
 	visible = false,
-	start_job = "simple_working_villages:job_vet",
+	start_job = "simple_working_villages:job_fireman",
 	wakeup_time = 0.27,
 	work_time = 0.291,
 	stop_time = 0.78,

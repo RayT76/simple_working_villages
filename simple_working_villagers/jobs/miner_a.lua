@@ -1821,8 +1821,19 @@ local function mine_pitmine(self)
 
 	elseif current_job.status == 1 then
 
+
+        -- try to go down then open out
+        local minewide = 0
+
+        if current_job["depth"] < -40 then
+            minewide = 3 - (current_job["depth"] + 40)
+        else
+            minewide = 3
+        end
+
 --		print("MINER: Check Next position XZ is within mine E",  current_job["erow"],  current_job["nrow"])
-		if current_job["erow"] > (2 - current_job["depth"]) then --(current_job.x-2) then
+		--if current_job["erow"] > (3 - minewide) then --(current_job.x-2) then
+		if current_job["erow"] > minewide then --(current_job.x-2) then
 			-- too far try next nrow 
 			current_job["erow"] = 1
 			current_job["nrow"] = current_job["nrow"] + 1
@@ -1830,7 +1841,7 @@ local function mine_pitmine(self)
 		rem_from_joblist(self)
 			add_to_joblist(self,current_job)
 		else
-			if current_job["nrow"] > (2 - current_job["depth"]) then --(current_job.x-2) then
+			if current_job["nrow"] > minewide then --(current_job.x-2) then
 				-- we have finished the mine layer 
 				-- should go down
 				current_job["erow"] = 1

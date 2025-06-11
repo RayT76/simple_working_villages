@@ -58,7 +58,7 @@ local drop_off_point_1 = vector.new{ x=16, y=0, z=4 }  --  ??????
 
 
 local mayora_start_meet_loc = {
-	--[0] = vector.new{ x=-2, y=0, z=4 }, -- Mayor position North
+	[0] = vector.new{ x=-2, y=0, z=4 }, -- Mayor position North
 	[1] = vector.new{ x=2, y=0, z=4 }, -- NWW
 
 	[2] = vector.new{ x=4, y=0, z=2 }, -- SW
@@ -1252,7 +1252,7 @@ local function move_in_builder(self, buildnum)
 			print("ERRRROOORRRRR   FIRE LOCATION = NIL !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 		end
 
-		local hposb = vector.add(mayora_fire_loc,mayora_start_meet_loc[2])
+		local hposb = vector.add(mayora_fire_loc,mayora_start_meet_loc[1])
 
 		mayora_moveinmessage.bed_pos = bposb
 		mayora_moveinmessage.chest_pos = cposb
@@ -1296,7 +1296,7 @@ local function move_in_lumberjack(self, buildnum)
 
 		local bposb = vector.new(found_beds[1])
 		local cposb = vector.new(found_chests[1])
-local hposb = vector.add(mayora_fire_loc,mayora_start_meet_loc[3])
+local hposb = vector.add(mayora_fire_loc,mayora_start_meet_loc[5])
 
 		lumberjacka_moveinmessage.bed_pos = bposb
 		lumberjacka_moveinmessage.chest_pos = cposb
@@ -1386,7 +1386,7 @@ local function move_in_farmer(self, buildnum)
 
 	local bposb = vector.new(found_beds[1])
 	local cposb = vector.new(found_chests[1])
-local hposb = vector.add(mayora_fire_loc,mayora_start_meet_loc[5])
+local hposb = vector.add(mayora_fire_loc,mayora_start_meet_loc[3])
 
 	farmer_moveinmessage.bed_pos = bposb
 	farmer_moveinmessage.chest_pos = cposb
@@ -1431,7 +1431,7 @@ local function move_in_gardener(self, buildnum)
 
 	local bposb = vector.new(found_beds[1])
 	local cposb = vector.new(found_chests[1])
-local hposb = vector.add(mayora_fire_loc,mayora_start_meet_loc[6])
+local hposb = vector.add(mayora_fire_loc,mayora_start_meet_loc[2])
 
 	gardener_moveinmessage.bed_pos = bposb
 	gardener_moveinmessage.chest_pos = cposb
@@ -1481,7 +1481,7 @@ local function move_in_medic(self, buildnum)
 
 	local bposb = vector.new(found_beds[1])
 	local cposb = vector.new(found_chests[1])
-local hposb = vector.add(mayora_fire_loc,mayora_start_meet_loc[7])
+local hposb = vector.add(mayora_fire_loc,mayora_start_meet_loc[6])
 
 	medic_moveinmessage.bed_pos = bposb
 	medic_moveinmessage.chest_pos = cposb
@@ -1534,7 +1534,7 @@ local function move_in_vet(self, buildnum)
 
 	local bposb = vector.new(found_beds[1])
 	local cposb = vector.new(found_chests[1])
-local hposb = vector.add(mayora_fire_loc,mayora_start_meet_loc[8])
+local hposb = vector.add(mayora_fire_loc,mayora_start_meet_loc[7])
 
 	vet_moveinmessage.bed_pos = bposb
 	vet_moveinmessage.chest_pos = cposb
@@ -1584,7 +1584,7 @@ local function move_in_fireman(self, buildnum)
 
 	local bposb = vector.new(found_beds[1])
 	local cposb = vector.new(found_chests[1])
-local hposb = vector.add(mayora_fire_loc,mayora_start_meet_loc[9])
+local hposb = vector.add(mayora_fire_loc,mayora_start_meet_loc[8])
 
 	fireman_moveinmessage.bed_pos = bposb
 	fireman_moveinmessage.chest_pos = cposb
@@ -2271,6 +2271,22 @@ local function signoff_building(self)
 
 		end
 
+				if string.find(mayora_meta:get_string("house_label"),"Vets House") then
+					print("MAYOR: TRYING TO MOVEIN Vet")
+					move_in_vet(self,mayora_building_count)					
+--				end
+
+
+		end
+
+				if string.find(mayora_meta:get_string("house_label"),"Medics House") then
+					print("MAYOR: TRYING TO MOVEIN Medic")
+					move_in_medic(self,mayora_building_count)					
+--				end
+
+
+		end
+
 
 
 
@@ -2638,7 +2654,7 @@ local function hire_a_builder(self)
 	local current_job = get_from_joblist(self,1)
 	rem_from_joblist(self)
 	mayora_fire_loc = vector.add(get_job_position(self),mayora_start_fire_loc)
-	local hposb = vector.add(mayora_fire_loc,mayora_start_meet_loc[2])
+	local hposb = vector.add(mayora_fire_loc,mayora_start_meet_loc[1])
 	if self.job_data["hired_builder"] == true then
 		print("MAYOR_A: I have a Builder")
 	else
@@ -2681,7 +2697,7 @@ local function hire_a_gardener(self)
 	local current_job = get_from_joblist(self,1)
 	rem_from_joblist(self)
 	mayora_fire_loc = vector.add(get_job_position(self),mayora_start_fire_loc)
-	local hposb = vector.add(mayora_fire_loc,mayora_start_meet_loc[3])
+	local hposb = vector.add(mayora_fire_loc,mayora_start_meet_loc[2])
 	if self.job_data["hired_gardener"] == true then
 		print("MAYOR_A: I have a gardener")
 	else
@@ -2725,7 +2741,7 @@ local function hire_a_farmer(self)
 	local current_job = get_from_joblist(self,1)
 	rem_from_joblist(self)
 	mayora_fire_loc = vector.add(get_job_position(self),mayora_start_fire_loc)
-	local hposb = vector.add(mayora_fire_loc,mayora_start_meet_loc[4])
+	local hposb = vector.add(mayora_fire_loc,mayora_start_meet_loc[3])
 			local wait_job = {
 				["name"] = "waitfor",
 				["status"] = 100
@@ -2773,7 +2789,7 @@ local function hire_a_miner(self)
 	rem_from_joblist(self)
 
 	mayora_fire_loc = vector.add(get_job_position(self),mayora_start_fire_loc)
-	local hposb = vector.add(mayora_fire_loc,mayora_start_meet_loc[5])
+	local hposb = vector.add(mayora_fire_loc,mayora_start_meet_loc[4])
 
 	if self.job_data["hired_miner"] == true then
 		print("MAYOR_A: I have a Miner")
@@ -2825,7 +2841,7 @@ local function hire_a_lumberjack(self)
 	rem_from_joblist(self)
 
 	mayora_fire_loc = vector.add(get_job_position(self),mayora_start_fire_loc)
-	local hposb = vector.add(mayora_fire_loc,mayora_start_meet_loc[6])
+	local hposb = vector.add(mayora_fire_loc,mayora_start_meet_loc[5])
 
 	if current_job.status == 0 then
 
@@ -2867,7 +2883,7 @@ local function hire_a_medic(self)
 	rem_from_joblist(self)
 
 	mayora_fire_loc = vector.add(get_job_position(self),mayora_start_fire_loc)
-	local hposb = vector.add(mayora_fire_loc,mayora_start_meet_loc[7])
+	local hposb = vector.add(mayora_fire_loc,mayora_start_meet_loc[6])
 	if self.job_data["hired_medic"] == true then
 		print("MAYOR_A: I have a medic")
 	else
@@ -2914,7 +2930,7 @@ local function hire_a_vet(self)
 	rem_from_joblist(self)
 
 	mayora_fire_loc = vector.add(get_job_position(self),mayora_start_fire_loc)
-	local hposb = vector.add(mayora_fire_loc,mayora_start_meet_loc[6])
+	local hposb = vector.add(mayora_fire_loc,mayora_start_meet_loc[7])
 	if self.job_data["hired_vet"] == true then
 		print("MAYOR_A: I have a vet")
 	else
@@ -2961,7 +2977,7 @@ local function hire_a_fireman(self)
 	rem_from_joblist(self)
 
 	mayora_fire_loc = vector.add(get_job_position(self),mayora_start_fire_loc)
-	local hposb = vector.add(mayora_fire_loc,mayora_start_meet_loc[6])
+	local hposb = vector.add(mayora_fire_loc,mayora_start_meet_loc[8])
 	if self.job_data["hired_fireman"] == true then
 		print("MAYOR_A: I have a fireman")
 	else
@@ -3126,14 +3142,15 @@ local function move_in_1(self)
 		current_job.status = current_job.status + 1
 	rem_from_joblist(self)
 		add_to_joblist(self,current_job)
-		print("MAYORA MOVEIN STAGE 5: I AM MOVING IN")
+		print("MAYORA MOVEIN STAGE 5: Moving people in")
 
 		local jpos = get_job_position(self)
 		local cposa = vector.new(found_chests[4])
 		print("MAYOR chest pos = ", cposa)
 		local bposa = vector.new(found_beds[4])
 		print("MAYOR bed pos = ", bposa)
-		local hposa = vector.add(vector.new(found_fancyfires[1]),vector.new{x=-2, y=0, z=2})
+		local hposa = vector.add(mayora_fire_loc,mayora_start_meet_loc[0])
+		--local hposa = vector.add(vector.new(found_fancyfires[1]),vector.new{x=-2, y=0, z=2})
 		print("MAYOR home pos = ", hposa)
 	
 		local data = { } 
@@ -3154,7 +3171,8 @@ local function move_in_1(self)
 
 		local bposb = vector.new(found_beds[1])
 		local cposb = vector.new(found_chests[1])
-		local hposb = vector.add(vector.new(found_fancyfires[1]),vector.new{x=0, y=0, z=-2})
+		local hposb = vector.add(mayora_fire_loc,mayora_start_meet_loc[1])
+        --local hposb = vector.add(vector.new(found_fancyfires[1]),vector.new{x=0, y=0, z=-2})
 		--print("MAYORA: BEDB POS = ", bpos)
 		--print("MAYORA: CHESTB POS = ", cpos)
 		--print("MAYORA: HOMEB POS = ", hpos)
@@ -3172,7 +3190,8 @@ local function move_in_1(self)
 
 		local bposc = vector.new(found_beds[2])
 		local cposc = vector.new(found_chests[2])
-		local hposc = vector.add(vector.new(found_fancyfires[1]),vector.new{x= 2, y=0, z=-2})
+		local hposc = vector.add(mayora_fire_loc,mayora_start_meet_loc[5])		
+        --local hposc = vector.add(vector.new(found_fancyfires[1]),vector.new{x= 2, y=0, z=-2})
 		--print("MAYORA: BEDB POS = ", bpos)
 		--print("MAYORA: CHESTB POS = ", cpos)
 		--print("MAYORA: HOMEB POS = ", hpos)
@@ -3188,22 +3207,23 @@ local function move_in_1(self)
 		func.set_lumberjack_a_message(lumberjacka_moveinmessage)
 
 
-		local bposd = vector.new(found_beds[3])
-		local cposd = vector.new(found_chests[3])
-		local hposd = vector.add(vector.new(found_fancyfires[1]),vector.new{x= 2, y=0, z=0})
+--		local bposd = vector.new(found_beds[3])
+--		local cposd = vector.new(found_chests[3])
+--		local hposb = vector.add(mayora_fire_loc,mayora_start_meet_loc[1])
+--		local hposd = vector.add(vector.new(found_fancyfires[1]),vector.new{x= 2, y=0, z=0})
 		--print("MAYORA: BEDB POS = ", bpos)
 		--print("MAYORA: CHESTB POS = ", cpos)
 		--print("MAYORA: HOMEB POS = ", hpos)
 
-		miner_moveinmessage.bed_pos = bposd
-		miner_moveinmessage.food_pos = cposd
-		miner_moveinmessage.storage_pos = cposd
-		miner_moveinmessage.job_pos = hposd
-		miner_moveinmessage.tools_pos = cposd
-		miner_moveinmessage.chest_pos = cposd
-		miner_moveinmessage.home_pos = hposd
-		print("MAYORA: MINER MOVEIN MESSAGE = ", dump(miner_moveinmessage))
-		func.set_miner_a_message(miner_moveinmessage)
+--		miner_moveinmessage.bed_pos = bposd
+--		miner_moveinmessage.food_pos = cposd
+--		miner_moveinmessage.storage_pos = cposd
+--		miner_moveinmessage.job_pos = hposd
+--		miner_moveinmessage.tools_pos = cposd
+--		miner_moveinmessage.chest_pos = cposd
+--		miner_moveinmessage.home_pos = hposd
+--		print("MAYORA: MINER MOVEIN MESSAGE = ", dump(miner_moveinmessage))
+--		func.set_miner_a_message(miner_moveinmessage)
 
 
 	elseif current_job.status == 6 then
