@@ -1822,7 +1822,7 @@ local function mine_pitmine(self)
 	elseif current_job.status == 1 then
 
 --		print("MINER: Check Next position XZ is within mine E",  current_job["erow"],  current_job["nrow"])
-		if current_job["erow"] > 3 + current_job["depth"] then --(current_job.x-2) then
+		if current_job["erow"] > (2 - current_job["depth"]) then --(current_job.x-2) then
 			-- too far try next nrow 
 			current_job["erow"] = 1
 			current_job["nrow"] = current_job["nrow"] + 1
@@ -1830,7 +1830,7 @@ local function mine_pitmine(self)
 		rem_from_joblist(self)
 			add_to_joblist(self,current_job)
 		else
-			if current_job["nrow"] > 3 + current_job["depth"] then --(current_job.x-2) then
+			if current_job["nrow"] > (2 - current_job["depth"]) then --(current_job.x-2) then
 				-- we have finished the mine layer 
 				-- should go down
 				current_job["erow"] = 1
@@ -1903,19 +1903,19 @@ local function mine_pitmine(self)
 		local locz = current_job["buildpos"].z + (current_job["nrow"])
 		local locy = current_job["buildpos"].y + current_job["depth"]
 		local locp = vector.new{ x = locx, y= locy, z= locz}
---		print("MINER: MINING ", minetest.get_node(locp).name, " AT ", locp)
-		
-		self:dig(locp,false) 
-
-		local digdelay_job = {
-			["name"] = "waitfor",
-			["status"] = self.dig_delay
-		}
-
-		current_job.status = 5
-		rem_from_joblist(self)
-		add_to_joblist(self,current_job)
-	--	add_to_joblist(self,digdelay_job)
+        
+        if minetest.get_node(locp).name == "air" then
+    		current_job.status = 5
+    		rem_from_joblist(self)
+    		add_to_joblist(self,current_job)
+        else
+		    self:dig(locp,false) 
+    		local digdelay_job = {
+	    		["name"] = "waitfor",
+		    	["status"] = self.dig_delay
+    		}
+    		add_to_joblist(self,digdelay_job)
+        end
 
 
 	elseif current_job.status == 5 then
@@ -1929,6 +1929,13 @@ local function mine_pitmine(self)
 			["param2"] = 5
 		}
 
+
+--      HE LIKES TO WORK IN THE DARK
+--		local lnode = {
+--			["name"] = "default:torch_wall",
+--			["param2"] = 3
+--		}
+
 		local delay = 0
 		if current_job["erow"] == 1 and current_job["nrow"] == 1 then
 			local lnnode = minetest.get_node(locp).name
@@ -1937,13 +1944,13 @@ local function mine_pitmine(self)
 -- 				print("MINER PLACING A LADDER AT ", locp)
 
 				local function is_material(name)
-					return name == buildera_nname
+					return name == lnode.name
 				end
 
 				local wield_stack = self:get_wield_item_stack()
 				if is_material(wield_stack:get_name()) or self:has_item_in_main(is_material) then
-					if minetest.get_node(placeloc).name == "air" then
-						self:place(lnode,placeloc)
+					if minetest.get_node(locp).name == "air" then
+						self:place(lnode,locp)
 						coroutine.yield()
 --						print("Tying to place node")
 					else

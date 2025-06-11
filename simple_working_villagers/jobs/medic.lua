@@ -122,17 +122,17 @@ I love people.",
 			--end
 			if found_npc_target == nil then 
 				if is_searching then 
-					local my_vel = self.object:get_velocity()
-					if my_vel.x == 0 and my_vel.z == 0 and my_vel.y == 0 then
-						self:change_direction_randomly()
-					end
-					if self:timer_exceeded("medic:change_dir",500) then
-						if is_searching then self:change_direction_randomly() end
-					end
+					--local my_vel = self.object:get_velocity()
+					--if my_vel.x == 0 and my_vel.z == 0 and my_vel.y == 0 then
+						--self:change_direction_randomly()
+					--end
+					--if self:timer_exceeded("medic:change_dir",500) then
+					--	if is_searching then self:change_direction_randomly() end
+					--end
 				else
-					print("MEDIC:Searching")
+					--print("MEDIC:Searching")
 					is_searching = true
-					self:change_direction_randomly()
+					--self:change_direction_randomly()
 				end
 			end
 		end
