@@ -264,7 +264,7 @@ function simple_working_villages.villager:get_nearest_wounded_animal(distance)
 			elseif my_oname == "visual_harm_1ndicators:hpbar" then
 			elseif my_oname == "simple_working_villages:dummy_item" then
 			elseif my_oname == "__builtin:item" then
-
+			elseif my_oname == "leads:lead" then
 			elseif my_oname == "mobs_monster:dirt_monster" then
 			elseif my_oname == "mobs_monster:fire_spirit" then
 			elseif my_oname == "mobs_monster:land_guard" then
@@ -290,26 +290,37 @@ function simple_working_villages.villager:get_nearest_wounded_animal(distance)
 			elseif my_oname == "mobs_monster:dirt_monster" then
 
 			elseif string.find(my_oname,"mobs_animal:sheep_") then
-				if object:get_hp() < object:get_properties().hp_max then return object end
+                print("VET:", my_oname, " HP:", object:get_luaentity().health, " MAX:", object:get_properties().hp_max)
+				print("VET:DUMP:", dump(object:get_luaentity().health))
+				if object:get_luaentity().health < object:get_properties().hp_max then return object end
 
 			elseif my_oname == "mobs_animal:pumba" then
-				if object:get_hp() < object:get_properties().hp_max then return object end
+                print("VET: ", my_oname)
+				if object:get_luaentity().health < object:get_properties().hp_max then return object end
 			elseif my_oname == "mobs_animal:chicken" then
-				if object:get_hp() < object:get_properties().hp_max then return object end
+                print("VET: ", my_oname)
+				if object:get_luaentity().health < object:get_properties().hp_max then return object end
 			elseif my_oname == "mobs_animal:panda" then
-				if object:get_hp() < object:get_properties().hp_max then return object end
+                print("VET: ", my_oname)
+				if object:get_luaentity().health < object:get_properties().hp_max then return object end
 			elseif my_oname == "mobs_animal:penguin" then
-				if object:get_hp() < object:get_properties().hp_max then return object end
+                print("VET: ", my_oname)
+				if object:get_luaentity().health < object:get_properties().hp_max then return object end
 			elseif my_oname == "mobs_animal:bunny" then
-				if object:get_hp() < object:get_properties().hp_max then return object end
+                print("VET: ", my_oname)
+				if object:get_luaentity().health < object:get_properties().hp_max then return object end
 			elseif my_oname == "mobs_animal:bee" then
-				if object:get_hp() < object:get_properties().hp_max then return object end
+                print("VET: ", my_oname)
+				if object:get_luaentity().health < object:get_properties().hp_max then return object end
 			elseif my_oname == "mobs_animal:cow" then
-				if object:get_hp() < object:get_properties().hp_max then return object end
+                print("VET: ", my_oname)
+				if object:get_luaentity().health < object:get_properties().hp_max then return object end
 			elseif my_oname == "mobs_animal:kitten" then
-				if object:get_hp() < object:get_properties().hp_max then return object end
+                print("VET: ", my_oname)
+				if object:get_luaentity().health < object:get_properties().hp_max then return object end
 			elseif my_oname == "mobs_animal:rat" then
-				if object:get_hp() < object:get_properties().hp_max then return object end
+                print("VET: ", my_oname)
+				if object:get_luaentity().health < object:get_properties().hp_max then return object end
 			else
 				print("VET: WHAT IS A : ",my_oname)
 			end

@@ -4,6 +4,10 @@ local co_command = simple_working_villages.require("job_coroutines").commands
 local use_vh1 = minetest.get_modpath("visual_harm_1ndicators")
 local pathfinder = simple_working_villages.require("pathfinder")
 
+local function find_fire(p) return minetest.get_node(p).name == "fire:basic_flame" end
+--local function find_pfire(p) return minetest.get_node(p).name == "fire:permanant_flame" end
+local searching_range = {x = 20, y = 10, z = 20}
+
 
 -- set to check for a game load start
 local fireman_new_start = true
@@ -1188,9 +1192,14 @@ end
 
 local found_fire_target = nil
 local dobj = nil
+--local cutter_searching_distance = 50
 
+--local cutter_searching_range = {
+--                                x = cutter_searching_distance, 
+--                                y = 8, 
+--                                z = cutter_searching_distance}
 
-local function farm_this(self)
+local function check_for_fires(self)
 
 -- TODO CHANGE THIS TO CUT GRASS ---
 
@@ -1236,7 +1245,7 @@ local function farm_this(self)
 
 	elseif current_job.status == 2 then
 
-		local distance = vector.distance(self.object:get_pos(), dobj:get_pos())
+		local distance = vector.distance(self.object:get_pos(), found_fire_target)
 		if distance < 2 then
             self:set_animation(simple_working_villages.animation_frames.MINE)
     		current_job.status = 3 
@@ -1397,7 +1406,7 @@ local function check_time(self)
 		if self.job_data["jobaction"] == 1 then
 --			print("BED TIME HAS BEEN SET")
 		else
-			print("NOW SETTING BED TIME")
+			print("FIREMAN: NOW SETTING BED TIME")
 			local bedtime_job = {
 				["name"] = "bedtime",
 				["status"] = 0
@@ -1411,7 +1420,7 @@ local function check_time(self)
 		-- get finish work time
 --		print("BUILDER: Testing hometime")
 		if self.job_data["jobaction"] ~= 2 then
-			print("SETTING HOME TIME")
+			print("FIREMAN: SETTING HOME TIME")
 			local hometime_job = {
 				["name"] = "hometime",
 				["status"] = 0
@@ -1425,7 +1434,7 @@ local function check_time(self)
 		-- go to work time
 --		print("BUILDER: Testing worktime")
 		if self.job_data["jobaction"] ~= 3 then
-			print("SETTING WORK TIME")
+			print("FIREMAN: SETTING WORK TIME")
 			local worktime_job = {
 				["name"] = "worktime",
 				["status"] = 0
@@ -1439,7 +1448,7 @@ local function check_time(self)
 		-- get out of bed time
 --		print("BUILDER: Testing uptime")
 		if self.job_data["jobaction"] ~= 4 then
-			print("SETTING GETTING UP")
+			print("FIREMAN: SETTING GETTING UP")
 			local uptime_job = {
 				["name"] = "uptime",
 				["status"] = 0
@@ -1451,7 +1460,7 @@ local function check_time(self)
 	else 
 --		print("BUILDER: Testing endbedtime")
 		if self.job_data["jobaction"] ~= 1 then
-			print("SETTING ENDBED TIME")
+			print("FIREMAN: SETTING ENDBED TIME")
 			local bedtime_job = {
 				["name"] = "bedtime",
 				["status"] = 0
@@ -1473,7 +1482,7 @@ end
 
 local function on_game_load(self)
 
-			print("fireman: STARTING")
+			print("FIREMAN: STARTING")
 			-- check if I already have a bed and chest
 --			local inv = self:get_inventory()
 --			local stacks = inv:get_list("main")
@@ -1558,7 +1567,7 @@ end
 
 
 local function do_uptime(self)
-print("BUILDER: DO UPTIME")
+print("FIREMAN: DO UPTIME")
 -- get up, go to home, sit down 
 
 	local nothing_job = {
@@ -1592,7 +1601,7 @@ print("BUILDER: DO UPTIME")
 end
 
 local function do_worktime(self)
-print("BUILDER: DO WORKTIME")
+print("FIREMAN: DO WORKTIME")
 --	local dest = get_job_position(self)
 --	local goto_job = {
 --		["name"] = "gotohere",
@@ -1601,13 +1610,13 @@ print("BUILDER: DO WORKTIME")
 --	}
 
 	local cgrass_job = {
-		["name"] = "cutgrass",
+		["name"] = "checkforfires",
 		["status"] = 0
 	}
 
     
 
-	rem_from_joblist(self)
+	reset_joblist(self)
 	add_to_joblist(self,cgrass_job)
 
 --	add_to_joblist(self,goto_job)
@@ -1616,7 +1625,7 @@ print("BUILDER: DO WORKTIME")
 	-- do work if there is anything to do 
 	-- or was working before continue
 	-- should just stay put
-	self:set_displayed_action("Ready for Work")
+--	self:set_displayed_action("Ready for Work")
 
     
 
@@ -1624,7 +1633,7 @@ print("BUILDER: DO WORKTIME")
 end
 
 local function do_hometime(self)
-print("BUILDER: DO HOMETIME")
+print("FIREMAN: DO HOMETIME")
 -- go to home, sit down 
 
 	self.object:set_velocity{x = 0, y = 0, z = 0}
@@ -1644,7 +1653,7 @@ print("BUILDER: DO HOMETIME")
 end
 
 local function do_bedtime(self)
-	print("BUILDER: DO BEDTIME.")
+	print("FIREMAN: DO BEDTIME.")
 
 	local current_job = get_from_joblist(self,1)
 	print("CURRENT_JOB STATUS = ", current_job["status"])
@@ -1656,7 +1665,7 @@ local function do_bedtime(self)
 	if current_job.status == 0 then
 
 		if self.pos_data.bed_pos == nil then 
-			print("BUILDER: DOES NOT KNOW WHERE TO SLEEP")
+			print("FIREMAN: DOES NOT KNOW WHERE TO SLEEP")
 			current_job.status = 1
 			reset_joblist(self)
 			add_to_joblist(self,current_job)
@@ -1677,7 +1686,7 @@ local function do_bedtime(self)
 		end
 	else
 		--rem_from_joblist(self)
-		print("Finishing BEDTIME")
+		print("FIREMAN Finishing BEDTIME")
 		-- FIXME Unless set defaults to 0,0,0, and places NPC in ground
 
 
@@ -1689,13 +1698,13 @@ local function do_bedtime(self)
 		function(p) return string.find(minetest.get_node(p).name,"_bottom") end)
 
 		if bed_top and bed_bottom then
-			print("BUILDER:FOUND BED")
+			print("FIREMAN:FOUND BED")
 			self:set_yaw_by_direction(vector.subtract(bed_bottom, bed_top))
 			bed_pos = vector.divide(vector.add(bed_top,bed_bottom),2)
 			self.object:set_pos(bed_pos)
 
 		else
-			print("BUILDER:CANT FIND BED")
+			print("FIREMAN:CANT FIND BED")
 		end
 		self:set_animation(simple_working_villages.animation_frames.LAY)
 		self:set_state_info("Zzzzzzz...")
@@ -2053,8 +2062,8 @@ end
 		elseif current_job.name == "checkname" then
 			check_my_name(self)
 
-		elseif current_job.name == "cutgrass" then
-			farm_this(self)
+		elseif current_job.name == "checkforfires" then
+			check_for_fires(self)
 
 		elseif current_job.name == "waitfor" then
 			wait_for_time(self) 

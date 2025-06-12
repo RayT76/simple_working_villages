@@ -310,7 +310,7 @@ local town_data = {
 		--["scheme"] = "building_owners_house_1E-1.we",
 		--["scheme"] = "standard_plot_marker.we",
 		["marker"] = { x = 1, y = 0, z = 2},
-		["location"] = { x = -6, y = -1, z = -35},
+		["location"] = { x = -6, y = 0, z = -35},
 		["clear"] = true
 	},
 
@@ -322,6 +322,119 @@ local town_data = {
 		["location"] = { x = -22, y = -1, z = 23},
 		["clear"] = true
 	},
+
+
+
+
+
+	[22] = {
+		["name"] = "Lumberjacks Upgrade 1",
+		["scheme"] = "building_wood_2.we",
+		--["scheme"] = "building_owners_house_1E-1.we",
+		--["scheme"] = "standard_plot_marker.we",
+		["marker"] = { x = 3, y = 0, z = 2},
+		["location"] = { x = -26, y = -1, z = -35},
+		["clear"] = true
+	},
+
+	[23] = {
+		["name"] = "Farmers Upgrade 1",
+		["scheme"] = "building_wood_2.we",
+		--["scheme"] = "building_owners_house_1E-1.we",
+		--["scheme"] = "standard_plot_marker.we",
+		["marker"] = { x = 4, y = 0, z = 2},
+		["location"] = { x = -46, y = -1, z = -35},
+		["clear"] = true
+	},
+
+	[24] = {
+		["name"] = "Miners Upgrade 1",
+		["scheme"] = "building_wood_2.we",
+		--["scheme"] = "building_owners_house_1E-1.we",
+		--["scheme"] = "standard_plot_marker.we",
+		["marker"] = { x = 5, y = 0, z = 2},
+		["location"] = { x = 38, y = -1, z = -35},
+		["clear"] = true
+	},
+
+
+
+	[25] = {
+		["name"] = "Lumberjacks Upgrade 2",
+		["scheme"] = "building_wood_3.we",
+		--["scheme"] = "building_owners_house_1E-1.we",
+		--["scheme"] = "standard_plot_marker.we",
+		["marker"] = { x = 6, y = 0, z = 2},
+		["location"] = { x = -26, y = -1, z = -35},
+		["clear"] = true
+	},
+
+	[26] = {
+		["name"] = "Farmers Upgrade 2",
+		["scheme"] = "building_wood_3.we",
+		--["scheme"] = "building_owners_house_1E-1.we",
+		--["scheme"] = "standard_plot_marker.we",
+		["marker"] = { x = 7, y = 0, z = 2},
+		["location"] = { x = -46, y = -1, z = -35},
+		["clear"] = true
+	},
+
+	[27] = {
+		["name"] = "Miners Upgrade 2",
+		["scheme"] = "building_wood_3.we",
+		--["scheme"] = "building_owners_house_1E-1.we",
+		--["scheme"] = "standard_plot_marker.we",
+		["marker"] = { x = 8, y = 0, z = 2},
+		["location"] = { x = 38, y = -1, z = -35},
+		["clear"] = true
+	},
+
+
+
+
+	[28] = {
+		["name"] = "Lumberjacks Upgrade 3",
+		["scheme"] = "building_wood_4.we",
+		--["scheme"] = "building_owners_house_1E-1.we",
+		--["scheme"] = "standard_plot_marker.we",
+		["marker"] = { x = 0, y = 0, z = 3},
+		["location"] = { x = -26, y = 0, z = -35},
+		["clear"] = true
+	},
+
+	[29] = {
+		["name"] = "Farmers Upgrade 3",
+		["scheme"] = "building_wood_4.we",
+		--["scheme"] = "building_owners_house_1E-1.we",
+		--["scheme"] = "standard_plot_marker.we",
+		["marker"] = { x = 1, y = 0, z = 3},
+		["location"] = { x = -46, y = 0, z = -35},
+		["clear"] = true
+	},
+
+	[30] = {
+		["name"] = "Miners Upgrade 3",
+		["scheme"] = "building_wood_4.we",
+		--["scheme"] = "building_owners_house_1E-1.we",
+		--["scheme"] = "standard_plot_marker.we",
+		["marker"] = { x = 2, y = 0, z = 3},
+		["location"] = { x = 38, y = 0, z = -35},
+		["clear"] = true
+	},
+
+
+
+[[--	[15] = {
+		["name"] = "Main Road (East/West)",
+		["scheme"] = "building_wood_4.we",
+		--["scheme"] = "building_owners_house_1E-1.we",
+		--["scheme"] = "standard_plot_marker.we",
+		["marker"] = { x = 5, y = 0, z = 1},
+		["location"] = { x = 38, y = 0, z = -35},
+		["clear"] = true
+	},]]
+
+
 
 }
 
@@ -1627,14 +1740,14 @@ local function check_the_buildings(self)
 
 	elseif current_job["status"] == 1 then
 		--print("MAYORA: FINDING BLUEPRINT : ", mayora_building_count)
-		if town_data[mayora_building_count].marker == nil then 
+		if town_data[mayora_building_count] == nil then 
 			rem_from_joblist(self)
---			local notify_job = {
---				["name"] = "notify",
---				["status"] = 0,
---				["message"] = "There is no plan for the next building\n"
---			}
---			add_to_joblist(self,notify_job)
+			local notify_job = {
+				["name"] = "notify",
+				["status"] = 0,
+				["message"] = "There is no plan for the next building\n"
+			}
+			add_to_joblist(self,notify_job)
 			return false
 		end
 		local mpos = self.object:get_pos() -- my position
@@ -2287,6 +2400,14 @@ local function signoff_building(self)
 
 		end
 
+				if string.find(mayora_meta:get_string("house_label"),"Firemans House") then
+					print("MAYOR: TRYING TO MOVEIN Fireman")
+					move_in_fireman(self,mayora_building_count)					
+--				end
+
+
+		end
+
 
 
 
@@ -2473,7 +2594,7 @@ local function start_building(self)
 
 	elseif current_job.status == 1 then
 		-- place marker down
-		print("MAYOR:found ", minetest.get_node(myml).name, " where my marker needs to go")
+		--print("MAYOR:found ", minetest.get_node(myml).name, " where my marker needs to go")
 		if minetest.get_node(myml).name ~= "air" and minetest.get_node(myml).name ~= mayora_marker then
 			self:dig(myml,false)
 			coroutine.yield()
@@ -2678,7 +2799,7 @@ local function hire_a_builder(self)
 			local ent = obj:get_luaentity()
 			ent.new_job = mayora_buildera_job
 			ent.owner_name = self.owner_name
-			print("MAYORA: product_name ", dump(self.product_name))
+			--print("MAYORA: product_name ", dump(self.product_name))
 			ent:update_infotext()
 			--print("MAYORA: NEW ENT DUMP ", dump(ent.product_name))
 			self.job_data["hired_builder"] = true
@@ -2721,7 +2842,7 @@ local function hire_a_gardener(self)
 			local ent = obj:get_luaentity()
 			ent.new_job = mayora_gardenera_job
 			ent.owner_name = self.owner_name
-			print("MAYORA: product_name ", dump(self.product_name))
+			--print("MAYORA: product_name ", dump(self.product_name))
 			ent:update_infotext()
 			--print("MAYORA: NEW ENT DUMP ", dump(ent.product_name))
 			self.job_data["hired_gardener"] = true
@@ -2771,7 +2892,7 @@ local function hire_a_farmer(self)
 			local ent = obj:get_luaentity()
 			ent.new_job = mayora_farmera_job
 			ent.owner_name = self.owner_name
-			print("MAYORA: product_name ", dump(self.product_name))
+			--print("MAYORA: product_name ", dump(self.product_name))
 			ent:update_infotext()
 			--print("MAYORA: NEW ENT DUMP ", dump(ent.product_name))
 			self.job_data["hired_farmer"] = true
@@ -3081,7 +3202,7 @@ end
 local function move_in_1(self)
 	local current_job = get_from_joblist(self,1)
 
-	print("DUMP JOB:", dump(current_job))
+	--print("DUMP JOB:", dump(current_job))
 
 	if current_job.status == 0 then
 		print("MAYORA: I AM BEGINNING TO MOVE IN CAMP")
@@ -3090,7 +3211,7 @@ local function move_in_1(self)
 		add_to_joblist(self,current_job)
 		
 	elseif current_job.status == 1 then
-		print("MAYORA: HIRING LUMBERJACK = TODO")
+		--print("MAYORA: HIRING LUMBERJACK = TODO")
 		current_job.status = current_job.status + 1
 	rem_from_joblist(self)
 		add_to_joblist(self,current_job)
@@ -3426,7 +3547,7 @@ local function mine_pit(self)
 		s_job["x"] = current_job["x"]
 		s_job["y"] = current_job["y"]
 		s_job["z"] = current_job["z"]
-		print("MAYORA: SENDING MINER MINE PITMINE MESSAGE")
+		print("MAYORA: TELLING MINER TO MINE")
 		func.set_miner_a_message(s_job)
 
 --	end	
@@ -3451,7 +3572,7 @@ local function build_orchard(self)
 	s_job["z"] = current_job["z"]
 
 
-	print("MAYORA: SENDING LUMBERJACK PLANT ORCHARD MESSAGE")
+	print("MAYORA: TELLING LUMBERJACK TO TEND ORCHARD")
 	func.set_lumberjack_a_message(s_job)	
 
 
@@ -3471,7 +3592,7 @@ local function farmer_farm(self)
 	s_job["x"] = current_job["x"]
 	s_job["y"] = current_job["y"]
 	s_job["z"] = current_job["z"]
-	print("MAYORA: SENDING FARMER TO FARM")
+	print("MAYORA: TELLING FARMER TO FARM")
 	func.set_farmer_a_message(s_job)	
 
 
@@ -3495,7 +3616,7 @@ local function check_build_item(self,initem)
 
 
 
-				print("CheckBuildItem=", initem)
+			--	print("CheckBuildItem=", initem)
 				-- TODO TRY BEDTOP REPLACEMENT
 				if initem:find("beds:bed_top") then
 					print("I Need a Bed Top")
@@ -3792,22 +3913,22 @@ end
 
 local function fill_my_chest(self)
 
-print("FILLING MY CHEST WITH GOODIES")
+print("MAYOR: CALLING IN A SUPPLY DROP")
 
 	local jpos = get_job_position(self)
 --	if jpos ~= nil then
 	mayora_chest_loc = vector.add(jpos,mayora_start_chest_loc)
-	print("CHEST LOCATION", mayora_chest_loc)
-	print("Where my chest should be = ", dump(minetest.get_node(mayora_chest_loc)))
+	--print("CHEST LOCATION", mayora_chest_loc)
+	--print("Where my chest should be = ", dump(minetest.get_node(mayora_chest_loc)))
 --	if self.job_data["townchest"] == true then
 --		-- already used
 --		return false
 --	else
-		print("getting chest meta")		
+		--print("getting chest meta")		
 		local inv = core.get_inventory({ type="node", pos=mayora_chest_loc })
-		print("chest size = ", inv:get_size("main"))
+		--print("chest size = ", inv:get_size("main"))
 		if inv:is_empty("main") then
-			print("The chest is empty, as it should be !")
+			--print("The chest is empty, as it should be !")
 			local stack    = ItemStack("beds:bed_bottom")
 			local leftover = inv:add_item("main", stack)
 			local stack    = ItemStack("beds:bed_bottom")
@@ -3871,7 +3992,7 @@ print("FILLING MY CHEST WITH GOODIES")
 			--self.job_data["townchest"] = true
 			return true
 		else
-			print("The chest is NOT empty, listing stacks !")
+			--print("The chest is NOT empty, listing stacks !")
 			local stacks = inv:get_list("main")
 			for _, stack in ipairs(stacks) do
 				local itemname = stack:get_name()
@@ -3894,7 +4015,7 @@ end
 local function check_my_chest(self)
 	local current_job = get_from_joblist(self,1)
 
-	print("MAYORA: CHECKMYCHEST JOB:")
+	--print("MAYORA: CHECKMYCHEST JOB:")
 
 	local c_node = { }
 	c_node.param1 = 158
@@ -3908,7 +4029,7 @@ local function check_my_chest(self)
 		mayora_chest_loc = vector.add(jpos,mayora_start_chest_loc)
 
 		if current_job.status == 0 then
-			print("MAYOR_A: Going to chest location")
+			--print("MAYOR_A: Going to chest location")
 			current_job.status = 1
 	rem_from_joblist(self)
 			add_to_joblist(self,current_job)
@@ -3940,7 +4061,7 @@ local function check_my_chest(self)
 		elseif current_job.status == 2 then
 			-- place bed bottom
 				
-			print("MAYOR_A: Trying to place chest")
+			--print("MAYOR_A: Trying to place chest")
 			if minetest.get_node(mayora_chest_loc).name ~= "air" then
 				self:dig(mayora_chest_loc,false)
 				--coroutine.yield()
@@ -3979,7 +4100,7 @@ local function check_my_chest(self)
 
 		elseif current_job.status == 3 then
 			-- placed chest
-			print("MAYOR_A: Finished checking chest and filling with start goods")
+			--print("MAYOR_A: Finished checking chest and filling with start goods")
 	rem_from_joblist(self)
 			self.pos_data.chest_pos = mayora_chest_loc
 			fill_my_chest(self)
@@ -4006,7 +4127,7 @@ end
 local function check_my_fire(self)
 	local current_job = get_from_joblist(self,1)
 	
-	print("MAYORA: CHECKMYFIRE JOB:")
+	--print("MAYORA: CHECKMYFIRE JOB:")
 
 	local c_node = { }
 	c_node.name = "fake_fire:fancy_fire"
@@ -4018,7 +4139,7 @@ local function check_my_fire(self)
 		mayora_fire_loc = vector.add(jpos,mayora_start_fire_loc)
 
 		if current_job.status == 0 then
-			print("MAYOR_A: Going to fire location")
+			--print("MAYOR_A: Going to fire location")
 			current_job.status = 1
 			-- go to the bed location
 			local mypos = self.object:get_pos()
@@ -4052,7 +4173,7 @@ local function check_my_fire(self)
 
 		elseif current_job.status == 2 then
 			-- place fire
-			print("MAYOR_A: Trying to place fire")
+			--print("MAYOR_A: Trying to place fire")
 			if minetest.get_node(mayora_fire_loc).name ~= "air" then
 				self:dig(mayora_fire_loc,false)
 				--coroutine.yield()
@@ -4088,7 +4209,7 @@ local function check_my_fire(self)
 
 		elseif current_job.status == 3 then
 			-- placed fire
-			print("MAYOR_A: Finished checking fire")
+			--print("MAYOR_A: Finished checking fire")
 				rem_from_joblist(self)
 			self.pos_data.fire_pos = mayora_fire_loc
 		end
@@ -4127,7 +4248,7 @@ end
 local function do_situps(self)
 	local current_job = get_from_joblist(self,1)
 	if current_job.status > 0 then
-		print("Do Situp")
+		--print("Do Situp")
 		local waitjob1 = {
 			["name"] = "waitfor",
 			["status"] = 50
@@ -4315,7 +4436,7 @@ end
 
 local function on_game_load(self)
 
-	print("MAYORA:ON_GAME_LOAD")
+	print("MAYORA: ON_GAME_LOAD")
 
 	local nothing_job = {
 		name = "nothing",
@@ -4331,7 +4452,7 @@ end
 
 
 local function do_uptime(self)
-print("DO UPTIME")
+print("MAYOR: DO UPTIME")
 -- get up, go to home, sit down 
 
 	local current_job = get_from_joblist(self,1)
@@ -4372,7 +4493,7 @@ print("DO UPTIME")
 end
 
 local function do_worktime(self)
-print("DO WORKTIME")
+print("MAOR: DO WORKTIME")
 	local dest = get_job_position(self)
 	local cbuilds_job = {
 		["name"] = "checkbuilds",
@@ -4404,7 +4525,7 @@ print("DO WORKTIME")
 end
 
 local function do_hometime(self)
-print("DO HOMETIME")
+print("MAYOR: DO HOMETIME")
 -- go to home, sit down 
 
 
@@ -4435,7 +4556,7 @@ local function do_bedtime(self)
 
 	if current_job.status == 0 then
 
-		print("MAYOR BED POS = ", self.pos_data.bed_pos)
+		--print("MAYOR BED POS = ", self.pos_data.bed_pos)
 		local dest = func.get_closest_clear_spot(self.object:get_pos(),self.pos_data.bed_pos)
 		local gotobed_job = {
 			["name"] = "gotohere",
@@ -4599,7 +4720,7 @@ If you run out of supplies just empty my chest and I will call in a fresh load."
 
 -- ONLY ON GAME LOAD AND CONTINUE
 		if mayora_new_start then
-			print("MAYOR:NEW_START")
+			print("MAYOR: LOAD_START")
 
 -- FIXME FOR TESTING BUILDER
 	--self.job_data["hired_builder"] = false

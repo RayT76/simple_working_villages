@@ -226,7 +226,7 @@ local function plot_around(self,loc)
 	elseif varx == 1 and varz == 0 then 
 		nloc = vector.new{ x = mloc.x+2, y = mloc.y, z = mloc.z + 2 }
 	elseif varx == 1 and varz == -1 then 
-		nloc = vector.new{ x = mloc.x +2, y = mloc.y, z = mloc.z}
+		nloc = vector.new{ x = mloc.x , y = mloc.y, z = mloc.z-2}
 	elseif varx == 0 and varz == 1 then 
 		nloc = vector.new{ x = mloc.x + 2, y = mloc.y, z = mloc.z+2 }
 	elseif varx == 0 and varz == -1 then 
@@ -1198,7 +1198,7 @@ local function farm_this(self)
 
 	if current_job.status == 0 then
 			self:set_displayed_action("Looking out for a injured Animal")
-			dobj = self:get_nearest_wounded_animal(50)	
+			dobj = self:get_nearest_wounded_animal(30)	
             
 			if dobj ~= nil then
 				found_npc_target = dobj:get_pos()
@@ -1236,12 +1236,20 @@ local function farm_this(self)
 
 	elseif current_job.status == 2 then
 
-		local distance = vector.distance(self.object:get_pos(), dobj:get_pos())
-		if distance < 2 then
-            self:set_animation(simple_working_villages.animation_frames.MINE)
-    		current_job.status = 3 
-    		rem_from_joblist(self)
-    		add_to_joblist(self,current_job)
+        if dobj ~= nil then
+		    local distance = vector.distance(self.object:get_pos(), dobj:get_pos())
+		    if distance < 3 then
+                look_at_position(self,dobj:get_pos())
+                self:set_animation(simple_working_villages.animation_frames.MINE)
+        		current_job.status = 3 
+        		rem_from_joblist(self)
+        		add_to_joblist(self,current_job)
+            else
+                self:set_animation(simple_working_villages.animation_frames.STAND)
+        		current_job.status = 0 
+        		rem_from_joblist(self)
+        		add_to_joblist(self,current_job)
+            end
         else
             self:set_animation(simple_working_villages.animation_frames.STAND)
     		current_job.status = 0 
@@ -1252,11 +1260,11 @@ local function farm_this(self)
 	elseif current_job.status == 3 then
 
 					local tophp = dobj:get_properties().hp_max
-					local curhp = dobj:get_hp()
+					local curhp = dobj:get_luaentity().health
                     print("Top HP = ", tophp)
                     print("Cur HP = ", curhp)
 				    if tophp ~= curhp then
-                        dobj:set_hp(curhp + 1,{"Healed by vet"})
+                        dobj:get_luaentity().health = dobj:get_luaentity().health + 1
     		            current_job.status = 4 
     		            local waitjob1 = {
     			            ["name"] = "waitfor",
@@ -1268,7 +1276,6 @@ local function farm_this(self)
 					else
 							print("vet:I have healed the Animal")
 							found_npc_target = nil
-							destination = nil
 							dobj = nil
 					        self:set_animation(simple_working_villages.animation_frames.STAND)
 					        current_job.status = 0 
@@ -1283,7 +1290,8 @@ local function farm_this(self)
 
 
 		local distance = vector.distance(self.object:get_pos(), dobj:get_pos())
-		if distance < 2 then
+		if distance < 3 then
+            look_at_position(self,dobj:get_pos())
     		current_job.status = 3 
     		rem_from_joblist(self)
     		add_to_joblist(self,current_job)

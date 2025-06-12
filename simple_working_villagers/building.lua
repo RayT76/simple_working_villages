@@ -543,11 +543,11 @@ local on_receive_fields = function(pos, _, fields, sender)
 end
 
 minetest.register_node("simple_working_villages:building_marker", {
-	description = "building marker for simple_working_villages",
+	description = "original building marker for the simple_working_villages",
 	drawtype = "nodebox",
 	tiles = {"default_sign_wall_wood.png"},
-	inventory_image = "default_sign_wood.png",
-	wield_image = "default_sign_wood.png",
+	inventory_image = "default_sign_wall_wood.png",
+	wield_image = "default_sign_wall_wood.png",
 	paramtype = "light",
 	paramtype2 = "wallmounted",
 	sunlight_propagates = true,
@@ -584,6 +584,238 @@ minetest.register_node("simple_working_villages:building_marker", {
 		return pname == owner or pname == minetest.setting_get("name")
 	end,
 })
+
+
+
+
+
+
+
+
+
+minetest.register_node("simple_working_villages:building_marker_build", {
+	description = "building marker for the simple_working_villages build",
+	drawtype = "nodebox",
+	tiles = {"simple_working_marker_build.png"},
+	inventory_image = "simple_working_marker_build.png",
+	wield_image = "simple_working_marker_build.png",
+	paramtype = "light",
+	paramtype2 = "wallmounted",
+	sunlight_propagates = true,
+	is_ground_content = false,
+	walkable = false,
+	node_box = {
+		type = "wallmounted",
+		wall_top    = {-0.4375, 0.4375, -0.3125, 0.4375, 0.5, 0.3125},
+		wall_bottom = {-0.4375, -0.5, -0.3125, 0.4375, -0.4375, 0.3125},
+		wall_side   = {-0.5, -0.3125, -0.4375, -0.4375, 0.3125, 0.4375},
+	},
+	groups = {choppy = 2, dig_immediate = 2, attached_node = 1},
+	sounds = default.node_sound_defaults(),
+	after_place_node = function(pos, placer)
+		local meta = minetest.get_meta(pos)
+		local owner = placer:get_player_name()
+		meta:set_string("owner", owner)
+	end,
+	on_construct = function(pos)
+		local meta = minetest.get_meta(pos)
+		meta:set_string("valid","false")
+		meta:set_string("state","unplanned")
+		--meta:set_string("formspec",simple_working_villages.buildings.get_formspec(meta))
+	end,
+	--on_receive_fields = on_receive_fields,
+	can_dig = function(pos, player)
+		local pname = player:get_player_name()
+		if minetest.is_protected(pos, pname) then
+			minetest.record_protection_violation(pos, pname)
+			return false
+		end
+		local meta = minetest.get_meta(pos)
+		local owner = meta:get_string("owner")
+		return pname == owner or pname == minetest.setting_get("name")
+	end,
+})
+
+
+
+
+
+
+
+
+minetest.register_node("simple_working_villages:building_marker_hire", {
+	description = "building marker for the simple_working_villages hire",
+	drawtype = "nodebox",
+	tiles = {"simple_working_marker_hire.png"},
+	inventory_image = "simple_working_marker_hire.png",
+	wield_image = "simple_working_marker_hire.png",
+	paramtype = "light",
+	paramtype2 = "wallmounted",
+	sunlight_propagates = true,
+	is_ground_content = false,
+	walkable = false,
+	node_box = {
+		type = "wallmounted",
+		wall_top    = {-0.4375, 0.4375, -0.3125, 0.4375, 0.5, 0.3125},
+		wall_bottom = {-0.4375, -0.5, -0.3125, 0.4375, -0.4375, 0.3125},
+		wall_side   = {-0.5, -0.3125, -0.4375, -0.4375, 0.3125, 0.4375},
+	},
+	groups = {choppy = 2, dig_immediate = 2, attached_node = 1},
+	sounds = default.node_sound_defaults(),
+	after_place_node = function(pos, placer)
+		local meta = minetest.get_meta(pos)
+		local owner = placer:get_player_name()
+		meta:set_string("owner", owner)
+	end,
+	on_construct = function(pos)
+		local meta = minetest.get_meta(pos)
+		meta:set_string("valid","false")
+		meta:set_string("state","unplanned")
+		meta:set_string("formspec",simple_working_villages.buildings.get_formspec(meta))
+	end,
+	--on_receive_fields = on_receive_fields,
+	can_dig = function(pos, player)
+		local pname = player:get_player_name()
+		if minetest.is_protected(pos, pname) then
+			minetest.record_protection_violation(pos, pname)
+			return false
+		end
+		local meta = minetest.get_meta(pos)
+		local owner = meta:get_string("owner")
+		return pname == owner or pname == minetest.setting_get("name")
+	end,
+})
+
+
+
+
+
+
+
+
+minetest.register_node("simple_working_villages:building_marker_move", {
+	description = "building marker for the simple_working_villages move",
+	drawtype = "nodebox",
+	tiles = {"simple_working_marker_move.png"},
+	inventory_image = "simple_working_marker_move.png",
+	wield_image = "simple_working_marker_move.png",
+	paramtype = "light",
+	paramtype2 = "wallmounted",
+	sunlight_propagates = true,
+	is_ground_content = false,
+	walkable = false,
+	node_box = {
+		type = "wallmounted",
+		wall_top    = {-0.4375, 0.4375, -0.3125, 0.4375, 0.5, 0.3125},
+		wall_bottom = {-0.4375, -0.5, -0.3125, 0.4375, -0.4375, 0.3125},
+		wall_side   = {-0.5, -0.3125, -0.4375, -0.4375, 0.3125, 0.4375},
+	},
+	groups = {choppy = 2, dig_immediate = 2, attached_node = 1},
+	sounds = default.node_sound_defaults(),
+	after_place_node = function(pos, placer)
+		local meta = minetest.get_meta(pos)
+		local owner = placer:get_player_name()
+		meta:set_string("owner", owner)
+	end,
+	on_construct = function(pos)
+		local meta = minetest.get_meta(pos)
+		meta:set_string("valid","false")
+		meta:set_string("state","unplanned")
+		--meta:set_string("formspec",simple_working_villages.buildings.get_formspec(meta))
+	end,
+	on_receive_fields = on_receive_fields,
+	can_dig = function(pos, player)
+		local pname = player:get_player_name()
+		if minetest.is_protected(pos, pname) then
+			minetest.record_protection_violation(pos, pname)
+			return false
+		end
+		local meta = minetest.get_meta(pos)
+		local owner = meta:get_string("owner")
+		return pname == owner or pname == minetest.setting_get("name")
+	end,
+})
+
+
+
+
+
+
+
+
+
+
+
+
+
+minetest.register_node("simple_working_villages:building_marker_edit", {
+	description = "building marker for the simple_working_villages edit",
+	drawtype = "nodebox",
+	tiles = {"simple_working_marker_edit.png"},
+	inventory_image = "simple_working_marker_edit.png",
+	wield_image = "simple_working_marker_edit.png",
+	paramtype = "light",
+	paramtype2 = "wallmounted",
+	sunlight_propagates = true,
+	is_ground_content = false,
+	walkable = false,
+	node_box = {
+		type = "wallmounted",
+		wall_top    = {-0.4375, 0.4375, -0.3125, 0.4375, 0.5, 0.3125},
+		wall_bottom = {-0.4375, -0.5, -0.3125, 0.4375, -0.4375, 0.3125},
+		wall_side   = {-0.5, -0.3125, -0.4375, -0.4375, 0.3125, 0.4375},
+	},
+	groups = {choppy = 2, dig_immediate = 2, attached_node = 1},
+	sounds = default.node_sound_defaults(),
+	after_place_node = function(pos, placer)
+		local meta = minetest.get_meta(pos)
+		local owner = placer:get_player_name()
+		meta:set_string("owner", owner)
+	end,
+	on_construct = function(pos)
+		local meta = minetest.get_meta(pos)
+
+
+
+			meta:set_string("state","built")
+			--local temps = 
+			meta:set_string("house_label", "MY HOUSE BITCH")
+--	???		mayora_meta:set_string("formspec",simple_working_villages.buildings.get_formspec(mayora_meta))
+			meta:set_string("owner", "singleplayer")
+			meta:set_string("infotext", "I SAID MY HOUSE BITCH")
+
+
+
+		--meta:set_string("valid","false")
+		--meta:set_string("state","unplanned")
+		--meta:set_string("formspec",simple_working_villages.buildings.get_formspec(meta))
+	end,
+	--on_receive_fields = on_receive_fields,
+	can_dig = function(pos, player)
+		local pname = player:get_player_name()
+		if minetest.is_protected(pos, pname) then
+			minetest.record_protection_violation(pos, pname)
+			return false
+		end
+		local meta = minetest.get_meta(pos)
+		local owner = meta:get_string("owner")
+		return pname == owner or pname == minetest.setting_get("name")
+	end,
+})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 -- get the home of a villager
 function simple_working_villages.get_home(self)

@@ -232,7 +232,7 @@ local function plot_around(self,loc)
 	elseif varx == 0 and varz == -1 then 
 		nloc = vector.new{ x = mloc.x + 2, y = mloc.y, z = mloc.z-2 }
 	elseif varx == -1 and varz == 1 then 
-		nloc = vector.new{ x = mloc.x, y = mloc.y, z = mloc.z + 2 }
+		nloc = vector.new{ x = mloc.x + 2, y = mloc.y, z = mloc.z + 2 }
 	elseif varx == -1 and varz == 0 then 
 		nloc = vector.new{ x = mloc.x-2, y = mloc.y, z = mloc.z - 2 }
 	elseif varx == -1 and varz == -1 then 
@@ -1237,7 +1237,8 @@ local function farm_this(self)
 	elseif current_job.status == 2 then
 
 		local distance = vector.distance(self.object:get_pos(), dobj:get_pos())
-		if distance < 2 then
+		if distance < 3 then
+            look_at_position(self,dobj:get_pos())
             self:set_animation(simple_working_villages.animation_frames.MINE)
     		current_job.status = 3 
     		rem_from_joblist(self)
@@ -1283,7 +1284,8 @@ local function farm_this(self)
 
 
 		local distance = vector.distance(self.object:get_pos(), dobj:get_pos())
-		if distance < 2 then
+		if distance < 3 then
+            look_at_position(self,dobj:get_pos())
     		current_job.status = 3 
     		rem_from_joblist(self)
     		add_to_joblist(self,current_job)

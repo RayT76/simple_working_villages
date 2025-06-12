@@ -36,7 +36,7 @@ end
 local farmer_a_message = nil
 function func.set_farmer_a_message(inmsg)
 	farmer_a_message = inmsg
-	print("DEBUG: SET FARMER MSG = ", dump(inmsg))
+	--print("DEBUG: SET FARMER MSG = ", dump(inmsg))
 end
 function func.get_farmer_a_message()
 	return farmer_a_message
@@ -46,7 +46,7 @@ end
 local gardener_a_message = nil
 function func.set_gardener_a_message(inmsg)
 	gardener_a_message = inmsg
-	print("DEBUG: SET GARDENER MSG = ", dump(inmsg))
+	--print("DEBUG: SET GARDENER MSG = ", dump(inmsg))
 end
 function func.get_gardener_a_message()
 	return gardener_a_message
@@ -56,7 +56,7 @@ end
 local medic_a_message = nil
 function func.set_medic_a_message(inmsg)
 	medic_a_message = inmsg
-	print("DEBUG: SET MEDIC MSG = ", dump(inmsg))
+	--print("DEBUG: SET MEDIC MSG = ", dump(inmsg))
 end
 function func.get_medic_a_message()
 	return medic_a_message
@@ -65,7 +65,7 @@ end
 local fireman_a_message = nil
 function func.set_fireman_a_message(inmsg)
 	fireman_a_message = inmsg
-	print("DEBUG: SET fireman MSG = ", dump(inmsg))
+	--print("DEBUG: SET fireman MSG = ", dump(inmsg))
 end
 function func.get_fireman_a_message()
 	return fireman_a_message
@@ -77,7 +77,7 @@ end
 local vet_a_message = nil
 function func.set_vet_a_message(inmsg)
 	vet_a_message = inmsg
-	print("DEBUG: SET VET MSG = ", dump(inmsg))
+	--print("DEBUG: SET VET MSG = ", dump(inmsg))
 end
 function func.get_vet_a_message()
 	return vet_a_message
