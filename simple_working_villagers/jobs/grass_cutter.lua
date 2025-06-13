@@ -1200,7 +1200,7 @@ local function farm_this(self)
 			self:set_displayed_action("Searching for Grass to cut")
 		cutter_found_plant_target = func.search_surrounding(self.object:get_pos(), find_grass_node, cutter_searching_range)
 		if cutter_found_plant_target == nil then
-			cutter_searching_distance = cutter_searching_distance + 1
+			--cutter_searching_distance = cutter_searching_distance + 1
             print("Searching Distance = ",cutter_searching_distance)
         else
 
